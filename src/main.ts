@@ -11,6 +11,7 @@ if(typeof window === 'undefined') {
     throw new Error('Application is meant to run in browser!');
 }
 Log.setUp(new ConsoleLogger());
+Log.setDebug(true);
 new BrowserSettingsLoader().load();
 // const pitchRecognition = new ZeroCrossingRecognition();
 // const audioStream = new MicrophoneAudioStream();

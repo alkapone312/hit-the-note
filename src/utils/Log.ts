@@ -7,6 +7,8 @@ import Logger from "./Logger.js";
 class Log {
     private static logger = new ConsoleLogger();
 
+    private static shouldDebug = false;
+
     private constructor() {
         throw new Error("Log class is not instantiable");
     }
@@ -24,11 +26,17 @@ class Log {
     }
 
     static debug(msg: string): void {
-        this.logger.debug(msg);
+        if(this.shouldDebug) {
+            this.logger.debug(msg);
+        }
     }
 
     static setUp(logger: Logger) {
         this.logger = logger;
+    }
+
+    static setDebug(debug: boolean): void {
+        this.shouldDebug = debug;
     }
 }
 

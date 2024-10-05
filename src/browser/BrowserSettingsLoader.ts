@@ -32,7 +32,9 @@ class BrowserSettingsLoader {
         if(Object.hasOwn(window, 'AudioContext')) {
             const audioContext = new AudioContext();
             if(Object.hasOwn(audioContext, 'createMediaStreamTrackSource')) {
-                //@ts-ignore
+                // @ts-expect-error AudioContext.createMediaStreamTrackSource is only supported by firefox
+                // it is used here to fetch sample rate that firefox will record audio
+                // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaStreamTrackSource
                 audioContext.createMediaStreamTrackSource(this.audioTrack);
             }
 
@@ -44,8 +46,8 @@ class BrowserSettingsLoader {
     }
 
     private getSampleSize(): number {
-        if(Object.hasOwn(this.settings, 'sampleRate')) {
-            return this.settings.sampleRate;
+        if(Object.hasOwn(this.settings, 'sampleSize')) {
+            return this.settings.sampleSize;
         }
         Log.warn("Cannot fetch default sampleSize, defaulting to 16")
 

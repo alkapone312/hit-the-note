@@ -22,7 +22,7 @@ class Setting<T> {
     }
 
     /**
-     * @param value Value of specified settings
+     * @param value - Value of specified settings
      */
     public setValue(value: T): void {
         this.value = value;

@@ -51,11 +51,11 @@ class Settings {
 
     /**
      * Checks that setting with specified name exists
-     * @param name 
+     * @param name - name to search for
      * @returns 
      */
     public has(name: string): boolean {
-        return this.settings.hasOwnProperty('name');
+        return this.settings.hasOwnProperty(name);
     }
 }
 

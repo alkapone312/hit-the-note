@@ -14,6 +14,7 @@ export default tseslint.config({
     ],
     rules: {
         'tsdoc/syntax': 'warn',
-        '@typescript-eslint/ban-ts-comment': 'warn'
+        '@typescript-eslint/ban-ts-comment': 'warn',
+        '@typescript-eslint/no-extraneous-class': 'off'
     }
   })

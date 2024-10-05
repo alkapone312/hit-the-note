@@ -1,3 +1,4 @@
+import Log from "../utils/Log.js";
 import NoSuchASettingException from "./NoSuchASettingException.js";
 import Setting from "./Setting.js";
 
@@ -32,6 +33,7 @@ class Settings {
      * @param setting - Setting to be registered
      */
     public register(setting: Setting<unknown>): void {
+        Log.debug(`Registering setting ${setting.getName()} with value ${setting.getValue()}`);
         this.settings[setting.getName()] = setting;
     }
 
@@ -40,11 +42,20 @@ class Settings {
      * @param name - name of the setting
      */
     public get(name: string): Setting<unknown> {
-        if(this.settings.hasOwnProperty('name')) {
+        if(this.has('name')) {
             return this.settings[name];
         }
 
         throw new NoSuchASettingException();
+    }
+
+    /**
+     * Checks that setting with specified name exists
+     * @param name 
+     * @returns 
+     */
+    public has(name: string): boolean {
+        return this.settings.hasOwnProperty('name');
     }
 }
 

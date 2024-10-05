@@ -1,0 +1,13 @@
+{
+    "include": ["src/**/*"],
+    "compilerOptions": {
+        "lib": ["es5", "es2015.promise", "dom", "es2015"],
+        "target": "es2015",
+        "outDir": "dist",
+        "module": "es2015",
+        "downlevelIteration": true,
+        "declaration": true,
+        "sourceMap": true,
+        "declarationMap": true,
+    }
+}

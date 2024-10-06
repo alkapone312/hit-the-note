@@ -1,21 +1,12 @@
+import StreamNode from "./StreamNode.js";
 
-type StreamDataCallback = (data: Float32Array) => void;
-
-abstract class AudioStream {
-    private callbacks: StreamDataCallback[] = [];
-
-    protected sampleRate: number = 44100;
-    
-    public onData(callback: StreamDataCallback) {
-        this.callbacks.push(callback);
+abstract class AudioStream extends StreamNode<Float32Array, Float32Array> {
+    constructor(protected readonly sampleRate: number) {
+        super();
     }
 
     public getSampleRate(): number {
         return this.sampleRate;
-    }
-
-    protected propagateData(data: Float32Array) {
-        this.callbacks.forEach(cb => cb(data));
     }
 }
 

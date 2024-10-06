@@ -42,7 +42,7 @@ class Settings {
      * @param name - name of the setting
      */
     public get(name: string): Setting<unknown> {
-        if(this.has('name')) {
+        if(this.has(name)) {
             return this.settings[name];
         }
 
@@ -55,7 +55,7 @@ class Settings {
      * @returns 
      */
     public has(name: string): boolean {
-        return this.settings.hasOwnProperty(name);
+        return !!this.settings[name];
     }
 }
 

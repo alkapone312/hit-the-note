@@ -1,14 +1,28 @@
-import AudioStream from "./AudioStream.js";
 import PitchRecognition from "./PitchRecognition.js";
 
 class ZeroCrossingRecognition extends PitchRecognition {
-    public startRecognition(stream: AudioStream): void {
-        console.log(stream);
-        throw new Error("Method not implemented.");
-    }
+    public accept(data: Float32Array) {
+        const N = data.length;  // Length of the input array
+        let zeroCrossings = 0;  // To count the number of zero crossings
 
-    public stopRecognition(): void {
-        throw new Error("Method not implemented.");
+        // Step 1: Iterate through the signal to detect zero crossings
+        for (let i = 1; i < N; i++) {
+            // Check for a sign change (zero crossing) between adjacent samples
+            if ((data[i - 1] >= 0 && data[i] < 0) || 
+                (data[i - 1] < 0 && data[i] >= 0)) {
+                zeroCrossings++;
+            }
+        }
+
+        // Step 2: Calculate zero crossing rate (ZCR)
+        const zcr = zeroCrossings / N;  // Zero crossings per sample
+
+        // Step 3: Estimate the fundamental frequency (pitch)
+        // The factor of 2 accounts for positive and negative half cycles in one period
+        const estimatedFrequency = (this.getSampleRate() / 2) * zcr;
+        this.pitchDetected(estimatedFrequency);
+        
+        this.broadcast(data);
     }
 }
 

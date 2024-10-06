@@ -1,34 +1,28 @@
-import AudioStream from "./AudioStream.js";
 import PitchRecognition from "./PitchRecognition.js";
 
-class FFTPitchRecognition extends PitchRecognition {
-    private propagate = false;
-
+class FFTPitchRecognition extends PitchRecognition {    
     private spectrumCallback: (spectrum: Float32Array) => void = () => {};
 
-    public startRecognition(stream: AudioStream): void {
-        stream.onData((data) => {
-            if(this.propagate) {
-                let spectrum = this.computeFFT(data);
-                this.spectrumCallback(spectrum);
-                let index = 0;
-                let max = 0;
-                for(let i = 0 ; i < spectrum.length; i++) {
-                    if(spectrum[i] > max) {
-                        max = spectrum[i];
-                        index = i;
-                    }
-                }
-                let frequency = index / spectrum.length * stream.getSampleRate() / 2;
-                this.pitchDetected(frequency);
+    public constructor(sampleRate: number) {
+        super(sampleRate);
+    }
+    
+    public accept(data: Float32Array) {
+        const spectrum = this.computeFFT(data);
+        this.spectrumCallback(spectrum);
+        let index = 0;
+        let max = 0;
+        for(let i = 0 ; i < spectrum.length; i++) {
+            if(spectrum[i] > max) {
+                max = spectrum[i];
+                index = i;
             }
-        })
-        this.propagate = true;
+        }
+        const frequency = index / spectrum.length * this.getSampleRate() / 2;
+        this.pitchDetected(frequency);
+        this.broadcast(data);
     }
-
-    public stopRecognition(): void {
-        this.propagate = false;
-    }
+    
 
     public onSpectrum(callback: (spectrum: Float32Array) => void): void {
         this.spectrumCallback = callback;

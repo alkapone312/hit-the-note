@@ -2,20 +2,16 @@ import AudioStream from "./AudioStream.js";
 
 type PitchDetectedCallback = (frequency: number) => void;
 
-abstract class PitchRecognition {
+abstract class PitchRecognition extends AudioStream {
     callbacks: PitchDetectedCallback[] = []
+    
+    public onPitchDetected(callback: PitchDetectedCallback) {
+        this.callbacks.push(callback)
+    }
     
     protected pitchDetected(pitch: number) {
         this.callbacks.forEach(cb => cb(pitch));
     }
-
-    public onPitchDetected(callback: PitchDetectedCallback) {
-        this.callbacks.push(callback)
-    }
-
-    public abstract startRecognition(stream: AudioStream): void;
-
-    public abstract stopRecognition(): void;
 }
 
 export default PitchRecognition;

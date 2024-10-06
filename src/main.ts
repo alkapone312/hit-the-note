@@ -1,11 +1,33 @@
 /* eslint-disable */
 import BrowserSettingsLoader from "./browser/BrowserSettingsLoader.js";
 import ConsoleLogger from "./utils/ConsoleLogger.js";
-import MicrophoneAudioStream from "./MicrophoneAudioStream.js";
 import Log from "./utils/Log.js";
-import ZeroCrossingRecognition from "./ZeroCrossingRecognition.js";
+import MediaStreamAnalyserAudioStream from "./browser/MediaStreamAnalyserAudioStream.js";
+import FFTPitchRecognition from "./FFTPitchRecognition.js";
 
 declare var Chart: any;
+
+const ctx = document.getElementById('myCanvas') as HTMLCanvasElement;
+const chart = new Chart(ctx, {
+    type: 'line',
+    responsive: false,
+    data: {
+        labels: [],
+        datasets: [{
+            data: []
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'Value'
+                }
+            }
+        }
+    }
+});
 
 if(typeof window === 'undefined') {
     throw new Error('Application is meant to run in browser!');
@@ -13,62 +35,23 @@ if(typeof window === 'undefined') {
 Log.setUp(new ConsoleLogger());
 Log.setDebug(true);
 new BrowserSettingsLoader().load();
-// const pitchRecognition = new ZeroCrossingRecognition();
-// const audioStream = new MicrophoneAudioStream();
 
-// pitchRecognition.onPitchDetected((frequency) => {
-//     console.log(frequency)
-// })
-
-// pitchRecognition.startRecognition(audioStream);
-
-// pitchRecognition.stopRecognition();
-console.log(navigator.userAgent)
-const ctx = document.getElementById('myCanvas') as HTMLCanvasElement;
-const chart = new Chart(ctx, {
-    type: 'line',
-    responsive: true,
-    data: {
-        labels: [],
-        datasets: [{
-            data: []
-        }]
-    }
-});
-
-
-(async () => {
-    // const mediaStream = await navigator.mediaDevices.getUserMedia({audio: {
-    //     autoGainControl: false,
-    //     echoCancellation: false,
-    //     noiseSuppression: false,
-    //     channelCount: 1,
-    //     sampleSize: 16,
-    //     sampleRate: 44.1
-    // }});
-    // const mediaRecorder = new MediaRecorder(mediaStream);
-    
-    // let chunks = [];
-    // mediaRecorder.addEventListener('dataavailable', (event: BlobEvent) => {
-    //     event.data.arrayBuffer().then(buffer => {
-    //         const arr = new Int16Array(buffer);
-    //         const s = Math.max(...arr);
-    //         chart.data.labels.push(1);
-    //         chart.data.datasets[0].data.push(s);
-    //         chart.update();
-    //     })
-    // })
-
-    // mediaRecorder.addEventListener('stop', (event: BlobEvent) => {
-    //     const blob = new Blob(chunks)
-    //     chunks = [];
-
-    //     console.log('ok');
-    // });
-
-    // mediaRecorder.start(1000/10);
-    // setTimeout(() => {
-    //     mediaRecorder.stop();
-    // }, 30000);
-})()
-
+const pitchRecognition = new FFTPitchRecognition();
+pitchRecognition.onPitchDetected((pitch) => {
+    console.log(pitch)
+    frequencies.push(pitch);
+})
+pitchRecognition.onSpectrum((spectrum) => {
+    chart.data.labels = [...spectrum];
+    chart.data.datasets[0].data = [...spectrum];
+    chart.update();
+})
+const stream = new MediaStreamAnalyserAudioStream(200);
+stream.onReady(() => {
+    stream.startRecording();
+    pitchRecognition.startRecognition(stream);
+    setTimeout(() => {
+        stream.stopRecording()
+        pitchRecognition.stopRecognition()
+    }, 20000);
+})

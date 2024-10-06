@@ -6,9 +6,11 @@ import Log from "../utils/Log.js";
  * Settings loader for browser environment.
  */
 class BrowserSettingsLoader {
+    
     private audioTrack: MediaStreamTrack;
 
     private settings: MediaTrackSettings;
+
     /**
      * Load settings to Settings singleton.
      */
@@ -22,6 +24,7 @@ class BrowserSettingsLoader {
         settings.register(new Setting('sampleRate', this.getSampleRate()));
         settings.register(new Setting('sampleSize', this.getSampleSize()));
         settings.register(new Setting('channelCount', this.getChannelCount()));
+        settings.register(new Setting('windowSize', this.getWindowSize()));
     }
 
     private getSampleRate(): number {
@@ -54,13 +57,17 @@ class BrowserSettingsLoader {
         return 16;
     }
 
-    private getChannelCount() {
+    private getChannelCount(): number {
         if(Object.hasOwn(this.settings, 'channelCount')) {
             return this.settings.channelCount;
         }
         Log.warn("Cannot fetch default channelCount, defaulting to 2")
 
         return 2;
+    }
+
+    private getWindowSize(): number {
+        return 2**15;
     }
 }
 

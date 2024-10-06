@@ -9,7 +9,9 @@ class FFTPitchRecognition extends PitchRecognition {
     
     public accept(data: Float32Array) {
         const spectrum = this.computeFFT(data);
-        this.spectrumCallback(spectrum);
+        if(this.spectrumCallback) {
+            this.spectrumCallback(spectrum);
+        }
         let index = 0;
         let max = 0;
         for(let i = 0 ; i < spectrum.length; i++) {

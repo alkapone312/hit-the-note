@@ -8,13 +8,20 @@ class MediaRecorderAudioStream extends AudioStream {
     
     private getDataFunction: () => void;
     
-    public constructor(private readonly timeslice: number, sampleRate: number) {
+    public constructor(
+        private readonly timeslice: number, 
+        private readonly windowSize: number,
+        sampleRate: number
+    ) {
         super(sampleRate);
-        navigator.mediaDevices.getUserMedia({audio: true}).then((stream) => {
-            const audioCtx = new AudioContext({sampleRate: this.getSampleRate()});
-            this.analyser = audioCtx.createAnalyser();
-            audioCtx.createMediaStreamSource(stream).connect(this.analyser);
-        });
+    }
+
+    public async setUp(): Promise<void> {
+        const stream = await navigator.mediaDevices.getUserMedia({audio: true})
+        const audioCtx = new AudioContext({sampleRate: this.getSampleRate()});
+        this.analyser = audioCtx.createAnalyser();
+        this.analyser.fftSize = this.windowSize;
+        audioCtx.createMediaStreamSource(stream).connect(this.analyser);
         this.getDataFunction = () => {
             const data = new Float32Array(this.analyser.frequencyBinCount);
             this.analyser.getFloatTimeDomainData(data);

@@ -6,11 +6,15 @@ import MediaStreamAnalyserAudioStream from "./browser/MediaStreamAnalyserAudioSt
 import FFTPitchRecognition from "./FFTPitchRecognition.js";
 import Settings from "./settings/Settings.js";
 import ZeroCrossingRecognition from "./ZeroCrossingRecognition.js";
-
-declare var Chart: any;
+import AutoCorrelationPitchRecognition from "./AutoCorrelationPitchRecognition.js";
+import HammingWindowNode from "./HammingWindowNode.js";
+import MovingAverageLowPassFilter from "./MovingAverageLowPassFilter.js";
+import HighPassFilter from "./HighPassFilter.js";
+import AmplitudeThresholdFilter from "./AmplitudeThresholdFilter.js";
+import VisualiseNode from "./VisualiseNode.js";
+import PitchRecognition from "./PitchRecognition.js";
 
 (async () => {
-
     if(typeof window === 'undefined') {
         throw new Error('Application is meant to run in browser!');
     }
@@ -21,50 +25,78 @@ declare var Chart: any;
     await new BrowserSettingsLoader().load();
 
     // draw chart
-    const ctx = document.getElementById('myCanvas') as HTMLCanvasElement;
-    const chart = new Chart(ctx, {
-        type: 'line',
-        responsive: false,
-        data: {
-            labels: [],
-            datasets: [{
-                data: []
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Value'
-                    }
-                }
-            }
-        }
-    });
+    const freqCanvas = (document.getElementById('frequencyCanvas') as HTMLCanvasElement)
+    const freqCtx = freqCanvas.getContext('2d');
+    const waveCanvas = (document.getElementById('waveformCanvas') as HTMLCanvasElement)
+    const waveCtx = waveCanvas.getContext('2d');
+    function line(x, y, dx, dy) {
+        freqCtx.strokeStyle = "black";
+        freqCtx.stroke();
+        freqCtx.beginPath();
+        freqCtx.moveTo(x, freqCanvas.height - y);
+        freqCtx.lineTo(dx, freqCanvas.height - dy);
+        freqCtx.closePath();
+    }
 
     // set up recognition
     const settings = Settings.getInstance();
     const sampleRate = settings.get('sampleRate').getValue() as number;
-
-    const fftRecognition = new FFTPitchRecognition(sampleRate);
-    fftRecognition.onPitchDetected((pitch) => {
-        console.log('fft: ' + pitch)
-    })
-    fftRecognition.onSpectrum((spectrum) => {
-        chart.data.labels = [...spectrum];
-        chart.data.datasets[0].data = [...spectrum];
-        chart.update();
-    })
-    const zeroCrossingRecognition = new ZeroCrossingRecognition(sampleRate)
-    zeroCrossingRecognition.onPitchDetected((pitch) => {
-        console.log('zcr: ' + pitch);
-    })
-    const stream = new MediaStreamAnalyserAudioStream(200, sampleRate);
-    stream.connect(fftRecognition);
-    stream.connect(zeroCrossingRecognition);
+    // const windowSize = settings.get('windowSize').getValue() as number;
+    const windowSize = 8192;
+    const frequency = new Array(freqCanvas.width).fill(100) as number[];
+    const audioCtx = new AudioContext();
+    const osc = audioCtx.createOscillator();
+    osc.connect(audioCtx.destination);
+    osc.start();
+    
+    const pitchCb = (pitch) => {
+        for(let i = 0 ; i < 5; i++) {
+            osc.frequency.setValueAtTime(frequency.shift(), audioCtx.currentTime);
+            frequency.push(pitch);
+        }
+    };
+    
+    // const recognition = new FFTPitchRecognition(sampleRate)
+    // const recognition = new ZeroCrossingRecognition(sampleRate)
+    const stream = new MediaStreamAnalyserAudioStream(20, windowSize, sampleRate);
+    await stream.setUp();
+    const recognition = new AutoCorrelationPitchRecognition(sampleRate);
+    recognition.onPitchDetected(pitchCb);
+    
+    const hammingWindow = new HammingWindowNode();
+    const amplitudeThresholdFilter = new AmplitudeThresholdFilter(0.025);
+    const highPassFilter = new HighPassFilter(900, sampleRate);
+    const movingAverageLowPassFilter = new MovingAverageLowPassFilter(1000);
+    const visualiseNode = new VisualiseNode(waveCanvas.width, waveCanvas.height, waveCtx);
+    stream.connect(amplitudeThresholdFilter);
+    amplitudeThresholdFilter.connect(movingAverageLowPassFilter);
+    movingAverageLowPassFilter.connect(highPassFilter);
+    highPassFilter.connect(hammingWindow);
+    hammingWindow.connect(visualiseNode);
+    visualiseNode.connect(recognition);
     stream.startRecording();
-    setTimeout(() => {
-        stream.stopRecording();
-    }, 3000)
+    let recording = true;
+    document.addEventListener('keydown', (e) => {
+        if(e.key == " ") {
+            if(recording) {
+                stream.stopRecording();
+                osc.frequency.setValueAtTime(0, audioCtx.currentTime);
+                recording = false;
+            } else {
+                stream.startRecording();
+                recording = true;
+            }
+        }
+    })
+
+    setInterval(() => {
+        freqCtx.fillStyle = "white";
+        freqCtx.fillRect(0, 0, freqCanvas.width, freqCanvas.height);
+        const max = 2000;
+        for(let i = 0 ; i < frequency.length-1; i++) {
+            const oldValue = frequency[i] / max * freqCanvas.height;
+            const newValue = frequency[i + 1] / max * freqCanvas.height;
+            line(i, oldValue, i+1, newValue);
+        }
+    }, 1000/30);
 })()

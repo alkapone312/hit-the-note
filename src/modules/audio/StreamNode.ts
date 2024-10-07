@@ -1,4 +1,6 @@
 
+type StreamNodeSettings = {};
+
 abstract class StreamNode<T, R> {
     private nodes: StreamNode<R, unknown>[] = [];
 
@@ -14,3 +16,4 @@ abstract class StreamNode<T, R> {
 }
 
 export default StreamNode;
+export type { StreamNodeSettings };

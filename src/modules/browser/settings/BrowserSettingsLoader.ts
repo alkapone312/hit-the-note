@@ -1,11 +1,11 @@
-import Setting from "@/settings/Setting.js";
-import Settings from "@/settings/Settings.js";
 import Log from "@/utils/Log.js";
+import Settings from "@/settings/Settings";
+import SettingsLoader from "@/settings/SettingsLoader";
 
 /**
  * Settings loader for browser environment.
  */
-class BrowserSettingsLoader {
+class BrowserSettingsLoader implements SettingsLoader {
     
     private audioTrack: MediaStreamTrack;
 
@@ -14,17 +14,19 @@ class BrowserSettingsLoader {
     /**
      * Load settings to Settings singleton.
      */
-    public async load(): Promise<void> {
-        const settings = Settings.getInstance();
+    public async load(): Promise<Settings> {
         this.audioTrack = (await navigator
             .mediaDevices
             .getUserMedia({audio: true}))
             .getAudioTracks()[0]
         this.settings = this.audioTrack.getSettings();
-        settings.register(new Setting('sampleRate', this.getSampleRate()));
-        settings.register(new Setting('sampleSize', this.getSampleSize()));
-        settings.register(new Setting('channelCount', this.getChannelCount()));
-        settings.register(new Setting('windowSize', this.getWindowSize()));
+
+        return {
+            sampleRate: this.getSampleRate(),
+            sampleSize: this.getSampleSize(),
+            channelCount: this.getChannelCount(),
+            windowSize: this.getWindowSize(),
+        }
     }
 
     private getSampleRate(): number {

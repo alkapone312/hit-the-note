@@ -4,7 +4,6 @@ import ConsoleLogger from "@/utils/ConsoleLogger.js";
 import Log from "@/utils/Log.js";
 import MediaStreamAnalyserAudioStream from "@/browser/audio/MediaStreamAnalyserAudioStream.js";
 import FFTPitchRecognition from "@/audio/pitch/FFTPitchRecognition.js";
-import Settings from "@/settings/Settings.js";
 import ZeroCrossingRecognition from "@/audio/pitch/ZeroCrossingRecognition.js";
 import AutoCorrelationPitchRecognition from "@/audio/pitch/AutoCorrelationPitchRecognition.js";
 import HammingWindowNode from "@/audio/filter/HammingWindowNode.js";
@@ -23,42 +22,24 @@ import FFTNode from "@/audio/node/FFTNode";
     // set up
     Log.setUp(new ConsoleLogger());
     Log.setDebug(true);
-    await new BrowserSettingsLoader().load();
-
-    // draw chart
-    const canvas1 = (document.getElementById('canvas1') as HTMLCanvasElement)
-    const ctx1 = canvas1.getContext('2d');
-    const canvas2 = (document.getElementById('canvas2') as HTMLCanvasElement)
-    const ctx2 = canvas2.getContext('2d');
-    const canvas3 = (document.getElementById('canvas3') as HTMLCanvasElement)
-    const ctx3 = canvas3.getContext('2d');
+    const settings = await new BrowserSettingsLoader().load();
 
     // set up recognition
-    const settings = Settings.getInstance();
-    const sampleRate = settings.get('sampleRate').getValue() as number;
+    const sampleRate = settings.sampleRate;
     // const windowSize = settings.get('windowSize').getValue() as number;
     const windowSize = 4096;
-    const frequency = new Array(canvas2.width).fill(0) as number[];
     const audioCtx = new AudioContext();
     const osc = audioCtx.createOscillator();
     osc.connect(audioCtx.destination);
     osc.start();
     
-    const pitchCb = (pitch) => {
-        for(let i = 0 ; i < 5; i++) {
-            osc.frequency.setValueAtTime(frequency.shift(), audioCtx.currentTime);
-            frequency.push(pitch);
-        }
-    };
-    
-    const stream = new MediaStreamAnalyserAudioStream(20, windowSize, sampleRate);
+    const stream = new MediaStreamAnalyserAudioStream(10, windowSize, sampleRate);
     await stream.setUp();
     const fftNode = new FFTNode();
 
     // const recognition = new FFTPitchRecognition(fftNode, sampleRate)
     // const recognition = new ZeroCrossingRecognition(sampleRate)
     const recognition = new AutoCorrelationPitchRecognition(sampleRate);
-    recognition.onPitchDetected(pitchCb);
     
     const hammingWindow = new HammingWindowNode();
     const amplitudeThresholdFilter = new AmplitudeThresholdFilter(0.025);
@@ -86,18 +67,28 @@ import FFTNode from "@/audio/node/FFTNode";
     })
 
     // drawing
+    const canvas1 = (document.getElementById('canvas1') as HTMLCanvasElement)
+    const ctx1 = canvas1.getContext('2d');
+    const canvas2 = (document.getElementById('canvas2') as HTMLCanvasElement)
+    const ctx2 = canvas2.getContext('2d');
+    const canvas3 = (document.getElementById('canvas3') as HTMLCanvasElement)
+    const ctx3 = canvas3.getContext('2d');
     const visualise1 = new VisualiseNode(canvas1.width, canvas1.height, ctx1);
     const visualise2 = new VisualiseNode(canvas2.width, canvas2.height, ctx2);
     const visualise3 = new VisualiseNode(canvas3.width, canvas3.height, ctx3);
-    const movingAverage = new MovingAverageLowPassFilter(0);
-    movingAverage.connect(visualise3);
+    const frequency = new Array(canvas2.width).fill(0) as number[];
+    const pitchCb = (pitch) => {
+        osc.frequency.setValueAtTime(frequency.shift(), audioCtx.currentTime);
+        frequency.push(pitch);
+    };
+    recognition.onPitchDetected(pitchCb);
     hammingWindow.connect(visualise1);
     hammingWindow.connect(fftNode);
     fftNode.onSpectrum(spectrum => {
         visualise2.accept(spectrum);
     });
     recognition.onPitchDetected(() => {
-        movingAverage.accept(new Float32Array(frequency));
+        visualise3.accept(new Float32Array(frequency));
     })
     document.body.addEventListener('keydown', (e) => {
         if(e.key == 'r') {

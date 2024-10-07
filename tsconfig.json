@@ -10,7 +10,7 @@
         "sourceMap": true,
         "declarationMap": true,
         "paths": {
-            "@/*" : ["./src/*"]
+            "@/*" : ["./src/modules/*"]
         }
     }
 }

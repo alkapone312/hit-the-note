@@ -13,7 +13,7 @@ import HighPassFilter from "@/audio/filter/HighPassFilter.js";
 import AmplitudeThresholdFilter from "@/audio/filter/AmplitudeThresholdFilter.js";
 import VisualiseNode from "@/browser/audio/VisualiseNode.js";
 import PitchRecognition from "@/audio/pitch/PitchRecognition.js";
-import FFTNode from "./audio/node/FFTNode";
+import FFTNode from "@/audio/node/FFTNode";
 
 (async () => {
     if(typeof window === 'undefined') {
@@ -104,4 +104,4 @@ import FFTNode from "./audio/node/FFTNode";
             frequency.fill(0);
         }
     })
-})()
+})();

@@ -1,5 +1,5 @@
-import ConsoleLogger from "./ConsoleLogger.js";
-import Logger from "./Logger.js";
+import ConsoleLogger from "@/utils/ConsoleLogger.js";
+import Logger from "@/utils/Logger.js";
 
 /**
  * Application facade for logging functionality

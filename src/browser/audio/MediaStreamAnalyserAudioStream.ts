@@ -1,5 +1,5 @@
-import AudioStream from "../AudioStream.js";
-import StreamException from "../StreamException.js";
+import AudioStream from "@/audio/AudioStream.js";
+import StreamException from "@/audio/StreamException.js";
 
 class MediaRecorderAudioStream extends AudioStream {
     private analyser: AnalyserNode;

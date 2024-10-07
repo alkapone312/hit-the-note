@@ -1,4 +1,4 @@
-import StreamNode from "./StreamNode.js";
+import StreamNode from "@/audio/StreamNode.js";
 
 class HammingWindowNode extends StreamNode<Float32Array, Float32Array> {
     public accept(data: Float32Array) {

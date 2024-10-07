@@ -1,6 +1,6 @@
-import Log from "../utils/Log.js";
-import NoSuchASettingException from "./NoSuchASettingException.js";
-import Setting from "./Setting.js";
+import Log from "@/utils/Log.js";
+import NoSuchASettingException from "@/settings/NoSuchASettingException.js";
+import Setting from "@/settings/Setting.js";
 
 /**
  * Singleton class for holding settings of application.

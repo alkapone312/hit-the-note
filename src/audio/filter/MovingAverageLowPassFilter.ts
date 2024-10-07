@@ -1,4 +1,4 @@
-import StreamNode from "./StreamNode.js";
+import StreamNode from "@/audio/StreamNode.js";
 
 /**
  * Simple low-pass filter (moving average) to smooth the signal.

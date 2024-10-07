@@ -1,4 +1,4 @@
-import StreamNode from "./StreamNode.js";
+import StreamNode from "@/audio/StreamNode.js";
 
 abstract class AudioStream extends StreamNode<Float32Array, Float32Array> {
     constructor(protected readonly sampleRate: number) {

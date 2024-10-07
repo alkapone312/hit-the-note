@@ -1,4 +1,4 @@
-import AudioStream from "./AudioStream.js";
+import AudioStream from "@/audio/AudioStream.js";
 
 /**
  * Apply a high-pass filter to a signal.

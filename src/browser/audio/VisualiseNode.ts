@@ -1,4 +1,4 @@
-import StreamNode from "./StreamNode.js";
+import StreamNode from "@/audio/StreamNode.js";
 
 class VisualiseNode extends StreamNode<Float32Array, Float32Array> {
     public constructor(

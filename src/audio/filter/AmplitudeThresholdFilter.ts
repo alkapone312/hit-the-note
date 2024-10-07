@@ -1,4 +1,4 @@
-import StreamNode from "./StreamNode.js";
+import StreamNode from "@/audio/StreamNode.js";
 
 /**
  * Apply amplitude thresholding to filter out low-amplitude noise or silence.

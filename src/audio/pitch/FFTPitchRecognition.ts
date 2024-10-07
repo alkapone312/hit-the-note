@@ -1,4 +1,4 @@
-import PitchRecognition from "./PitchRecognition.js";
+import PitchRecognition from "@/audio/pitch/PitchRecognition.js";
 
 class FFTPitchRecognition extends PitchRecognition {    
     private spectrumCallback: (spectrum: Float32Array) => void = () => {};

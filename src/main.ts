@@ -1,18 +1,18 @@
 /* eslint-disable */
-import BrowserSettingsLoader from "./browser/BrowserSettingsLoader.js";
-import ConsoleLogger from "./utils/ConsoleLogger.js";
-import Log from "./utils/Log.js";
-import MediaStreamAnalyserAudioStream from "./browser/MediaStreamAnalyserAudioStream.js";
-import FFTPitchRecognition from "./FFTPitchRecognition.js";
-import Settings from "./settings/Settings.js";
-import ZeroCrossingRecognition from "./ZeroCrossingRecognition.js";
-import AutoCorrelationPitchRecognition from "./AutoCorrelationPitchRecognition.js";
-import HammingWindowNode from "./HammingWindowNode.js";
-import MovingAverageLowPassFilter from "./MovingAverageLowPassFilter.js";
-import HighPassFilter from "./HighPassFilter.js";
-import AmplitudeThresholdFilter from "./AmplitudeThresholdFilter.js";
-import VisualiseNode from "./VisualiseNode.js";
-import PitchRecognition from "./PitchRecognition.js";
+import BrowserSettingsLoader from "@/browser/settings/BrowserSettingsLoader.js";
+import ConsoleLogger from "@/utils/ConsoleLogger.js";
+import Log from "@/utils/Log.js";
+import MediaStreamAnalyserAudioStream from "@/browser/audio/MediaStreamAnalyserAudioStream.js";
+import FFTPitchRecognition from "@/audio/pitch/FFTPitchRecognition.js";
+import Settings from "@/settings/Settings.js";
+import ZeroCrossingRecognition from "@/audio/pitch/ZeroCrossingRecognition.js";
+import AutoCorrelationPitchRecognition from "@/audio/pitch/AutoCorrelationPitchRecognition.js";
+import HammingWindowNode from "@/audio/filter/HammingWindowNode.js";
+import MovingAverageLowPassFilter from "@/audio/filter/MovingAverageLowPassFilter.js";
+import HighPassFilter from "@/audio/filter/HighPassFilter.js";
+import AmplitudeThresholdFilter from "@/audio/filter/AmplitudeThresholdFilter.js";
+import VisualiseNode from "@/browser/audio/VisualiseNode.js";
+import PitchRecognition from "@/audio/pitch/PitchRecognition.js";
 
 (async () => {
     if(typeof window === 'undefined') {

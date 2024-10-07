@@ -1,6 +1,6 @@
-import Setting from "../settings/Setting.js";
-import Settings from "../settings/Settings.js";
-import Log from "../utils/Log.js";
+import Setting from "@/settings/Setting.js";
+import Settings from "@/settings/Settings.js";
+import Log from "@/utils/Log.js";
 
 /**
  * Settings loader for browser environment.

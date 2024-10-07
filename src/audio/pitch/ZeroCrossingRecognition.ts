@@ -1,4 +1,4 @@
-import PitchRecognition from "./PitchRecognition.js";
+import PitchRecognition from "@/audio/pitch/PitchRecognition.js";
 
 class ZeroCrossingRecognition extends PitchRecognition {
     public accept(data: Float32Array) {

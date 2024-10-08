@@ -4,7 +4,7 @@ import StreamNode from "../StreamNode";
 /**
  * Apply a high-pass filter to a signal.
  */
-class HighPassFilter extends StreamNode<Float32Array, Float32Array> {
+class HighPassFilter extends StreamNode {
     /**
      * @param cutoffFrequency - The cutoff frequency of the high-pass filter (in Hz).
      */

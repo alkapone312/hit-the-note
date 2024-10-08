@@ -2,7 +2,7 @@ import StreamNode from "@/audio/StreamNode.js";
 
 type SpectrumCallback = (spectrum: Float32Array) => void;
 
-class FFTNode extends StreamNode<Float32Array, Float32Array> {
+class FFTNode extends StreamNode {
     private callbacks: SpectrumCallback[] = []
 
     public accept(data: Float32Array) {
@@ -17,12 +17,12 @@ class FFTNode extends StreamNode<Float32Array, Float32Array> {
         this.callbacks.push(callback);
     }
 
-    private fft(real, imag) {
+    private fft(real: Float32Array, imag: Float32Array): void {
         const N = real.length;
     
         if (N <= 1) return;
     
-        // Step 3: Divide into even and odd parts
+        // Divide into even and odd parts
         const halfSize = N / 2;
         const evenReal = new Float32Array(halfSize);
         const evenImag = new Float32Array(halfSize);
@@ -36,11 +36,11 @@ class FFTNode extends StreamNode<Float32Array, Float32Array> {
             oddImag[i] = imag[i * 2 + 1]; // Odd-indexed imaginary parts
         }
     
-        // Step 4: Recursively perform FFT on even and odd parts
+        // Recursively perform FFT on even and odd parts
         this.fft(evenReal, evenImag);
         this.fft(oddReal, oddImag);
     
-        // Step 5: Combine the results using the butterfly operation
+        // Combine the results using the butterfly operation
         for (let k = 0; k < halfSize; k++) {
             const angle = (-2 * Math.PI * k) / N;
             const cos = Math.cos(angle);

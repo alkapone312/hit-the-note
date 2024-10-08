@@ -9,9 +9,15 @@ export default tseslint.config({
     files: ['src/**/*.ts', 'src/*.ts'],
     extends: [
       eslint.configs.strict,
-      ...tseslint.configs.strict,
+      ...tseslint.configs.strictTypeChecked,
       ...tseslint.configs.stylistic,
     ],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     rules: {
         'tsdoc/syntax': 'warn',
         '@typescript-eslint/ban-ts-comment': 'warn',

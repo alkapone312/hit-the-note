@@ -11,6 +11,7 @@
         "declarationMap": true,
         "paths": {
             "@/*" : ["./src/modules/*"]
-        }
+        },
+        "strictNullChecks": true
     }
 }

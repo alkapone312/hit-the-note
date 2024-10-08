@@ -2,7 +2,7 @@ import RecordingInterface from "@/audio/RecordingInterface";
 import StreamException from "@/audio/StreamException.js";
 import StreamNode from "@/audio/StreamNode";
 
-class MediaRecorderAudioStream extends StreamNode<Float32Array, Float32Array> implements RecordingInterface {
+class MediaRecorderAudioStream extends StreamNode implements RecordingInterface {
     private analyser: AnalyserNode;
     
     private requestDataInterval = 0;

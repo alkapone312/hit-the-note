@@ -5,9 +5,9 @@ import StreamNode from "./StreamNode";
 
 class PitchDetectionPipeline {
 
-    private readonly recorder: RecordingInterface & StreamNode<Float32Array, Float32Array>;
+    private readonly recorder: RecordingInterface & StreamNode;
 
-    private readonly filterPipeline: StreamNode<Float32Array, Float32Array>[];
+    private readonly filterPipeline: StreamNode[];
 
     private readonly pitchRecognition: PitchRecognition;
 
@@ -16,7 +16,7 @@ class PitchDetectionPipeline {
         this.filterPipeline = settings.filterChain ?? [];
         this.pitchRecognition = settings.pitchRecognition;
         this.recorder.setSettings(settings);
-        let lastNode = this.recorder as StreamNode<Float32Array, Float32Array>;
+        let lastNode = this.recorder as StreamNode;
         this.filterPipeline.forEach(node => { 
             node.setSettings(settings)
             lastNode.connect(node)

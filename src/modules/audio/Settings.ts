@@ -10,8 +10,8 @@ interface PipelineSettings {
 }
 
 interface Settings extends PipelineSettings {
-    recorder: RecordingInterface & StreamNode<Float32Array, Float32Array>;
-    filterChain?: StreamNode<Float32Array, Float32Array>[];
+    recorder: RecordingInterface & StreamNode;
+    filterChain?: StreamNode[];
     pitchRecognition: PitchRecognition;
 }
 

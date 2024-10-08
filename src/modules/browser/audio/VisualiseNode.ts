@@ -1,6 +1,6 @@
 import StreamNode from "@/audio/StreamNode.js";
 
-class VisualiseNode extends StreamNode<Float32Array, Float32Array> {
+class VisualiseNode extends StreamNode {
     public constructor(
         private readonly width: number, 
         private readonly height: number, 

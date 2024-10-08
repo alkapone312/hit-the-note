@@ -34,16 +34,17 @@ class BrowserSettingsLoader {
     }
 
     private getSampleRate(): number {
-        if(Object.hasOwn(this.settings, 'sampleRate')) {
+        if(typeof this.settings.sampleRate === 'number') {
             return this.settings.sampleRate;
         }
 
         if(Object.hasOwn(window, 'AudioContext')) {
             const audioContext = new AudioContext();
             if(Object.hasOwn(audioContext, 'createMediaStreamTrackSource')) {
-                // @ts-expect-error AudioContext.createMediaStreamTrackSource is only supported by firefox
                 // it is used here to fetch sample rate that firefox will record audio
                 // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaStreamTrackSource
+                // @ts-expect-error AudioContext.createMediaStreamTrackSource is only supported by firefox
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 audioContext.createMediaStreamTrackSource(this.audioTrack);
             }
 
@@ -55,8 +56,8 @@ class BrowserSettingsLoader {
     }
 
     private getSampleSize(): number {
-        if(Object.hasOwn(this.settings, 'sampleSize')) {
-            return this.settings.sampleSize;
+        if(typeof this.settings.sampleRate === 'number') {
+            return this.settings.sampleSize as number;
         }
         Log.warn("Cannot fetch default sampleSize, defaulting to 16")
 
@@ -64,8 +65,8 @@ class BrowserSettingsLoader {
     }
 
     private getChannelCount(): number {
-        if(Object.hasOwn(this.settings, 'channelCount')) {
-            return this.settings.channelCount;
+        if(typeof this.settings.sampleRate === 'number') {
+            return this.settings.channelCount as number;
         }
         Log.warn("Cannot fetch default channelCount, defaulting to 2")
 

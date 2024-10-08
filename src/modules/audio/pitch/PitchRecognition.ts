@@ -2,7 +2,7 @@ import StreamNode from "../StreamNode";
 
 type PitchDetectedCallback = (frequency: number) => void;
 
-abstract class PitchRecognition extends StreamNode<Float32Array, Float32Array> {
+abstract class PitchRecognition extends StreamNode {
     callbacks: PitchDetectedCallback[] = []
     
     public onPitchDetected(callback: PitchDetectedCallback) {
@@ -10,7 +10,7 @@ abstract class PitchRecognition extends StreamNode<Float32Array, Float32Array> {
     }
     
     protected pitchDetected(pitch: number) {
-        this.callbacks.forEach(cb => cb(pitch));
+        this.callbacks.forEach(cb => { cb(pitch); });
     }
 }
 

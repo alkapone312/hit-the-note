@@ -1,8 +1,8 @@
-import AudioStream from "@/audio/AudioStream.js";
+import StreamNode from "../StreamNode";
 
 type PitchDetectedCallback = (frequency: number) => void;
 
-abstract class PitchRecognition extends AudioStream {
+abstract class PitchRecognition extends StreamNode<Float32Array, Float32Array> {
     callbacks: PitchDetectedCallback[] = []
     
     public onPitchDetected(callback: PitchDetectedCallback) {

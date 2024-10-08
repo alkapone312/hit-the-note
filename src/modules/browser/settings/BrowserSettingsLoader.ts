@@ -1,11 +1,12 @@
 import Log from "@/utils/Log.js";
-import Settings from "@/settings/Settings";
-import SettingsLoader from "@/settings/SettingsLoader";
+import { Settings } from "@/audio/Settings";
+import AutoCorrelationPitchRecognition from "@/audio/pitch/AutoCorrelationPitchRecognition";
+import MediaStreamAnalyserAudioStream from "../audio/MediaStreamAnalyserAudioStream";
 
 /**
  * Settings loader for browser environment.
  */
-class BrowserSettingsLoader implements SettingsLoader {
+class BrowserSettingsLoader {
     
     private audioTrack: MediaStreamTrack;
 
@@ -21,11 +22,14 @@ class BrowserSettingsLoader implements SettingsLoader {
             .getAudioTracks()[0]
         this.settings = this.audioTrack.getSettings();
 
+        const sampleRate = this.getSampleRate()
         return {
-            sampleRate: this.getSampleRate(),
+            sampleRate: sampleRate,
             sampleSize: this.getSampleSize(),
             channelCount: this.getChannelCount(),
             windowSize: this.getWindowSize(),
+            recorder: new MediaStreamAnalyserAudioStream(10),
+            pitchRecognition: new AutoCorrelationPitchRecognition()
         }
     }
 

@@ -1,22 +1,22 @@
-import AudioStream from "@/audio/AudioStream.js";
+import StreamNode from "../StreamNode";
+
 
 /**
  * Apply a high-pass filter to a signal.
  */
-class HighPassFilter extends AudioStream {
+class HighPassFilter extends StreamNode<Float32Array, Float32Array> {
     /**
-     * @param sampleRate - The sampling rate of the audio signal (e.g., 44100 Hz).
      * @param cutoffFrequency - The cutoff frequency of the high-pass filter (in Hz).
      */
-    public constructor(private readonly cutoffFrequency: number, sampleRate: number) {
-        super(sampleRate);
+    public constructor(private readonly cutoffFrequency: number) {
+        super();
     }
 
     public accept(data: Float32Array) {
         const outputSignal = new Float32Array(data.length);
     
         // Time step based on sample rate
-        const dt = 1 / this.getSampleRate();
+        const dt = 1 / this.settings.sampleRate;
         
         // Calculate RC and alpha (smoothing factor)
         const RC = 1 / (2 * Math.PI * this.cutoffFrequency);

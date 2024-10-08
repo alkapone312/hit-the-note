@@ -19,7 +19,7 @@ class ZeroCrossingRecognition extends PitchRecognition {
 
         // Step 3: Estimate the fundamental frequency (pitch)
         // The factor of 2 accounts for positive and negative half cycles in one period
-        const estimatedFrequency = (this.getSampleRate() / 2) * zcr;
+        const estimatedFrequency = (this.settings.sampleRate / 2) * zcr;
         this.pitchDetected(estimatedFrequency);
         
         this.broadcast(data);

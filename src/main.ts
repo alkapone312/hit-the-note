@@ -13,6 +13,7 @@ import AmplitudeThresholdFilter from "@/audio/filter/AmplitudeThresholdFilter.js
 import VisualiseNode from "@/browser/audio/VisualiseNode.js";
 import PitchRecognition from "@/audio/pitch/PitchRecognition.js";
 import FFTNode from "@/audio/node/FFTNode";
+import PitchDetectionPipeline from "@/audio/PitchDetectionPipeline";
 
 (async () => {
     if(typeof window === 'undefined') {
@@ -22,45 +23,44 @@ import FFTNode from "@/audio/node/FFTNode";
     // set up
     Log.setUp(new ConsoleLogger());
     Log.setDebug(true);
-    const settings = await new BrowserSettingsLoader().load();
+    // const settings = await new BrowserSettingsLoader().load();
 
-    // set up recognition
-    const sampleRate = settings.sampleRate;
-    // const windowSize = settings.get('windowSize').getValue() as number;
-    const windowSize = 4096;
+    const recorder = new MediaStreamAnalyserAudioStream(10);
+    const fftNode = new FFTNode();
+    const hammingWindow = new HammingWindowNode();
+
+    const pitchDetectionPipeline = new PitchDetectionPipeline({
+        sampleRate: 44100,
+        sampleSize: 16,
+        windowSize: 4096,
+        channelCount: 2,
+        recorder: recorder,
+        filterChain: [
+            new AmplitudeThresholdFilter(0.025),
+            new HighPassFilter(900),
+            new MovingAverageLowPassFilter(500),
+            hammingWindow
+        ],
+        pitchRecognition: new AutoCorrelationPitchRecognition()
+    });
+
+    await recorder.setUp();
+
     const audioCtx = new AudioContext();
     const osc = audioCtx.createOscillator();
     osc.connect(audioCtx.destination);
     osc.start();
     
-    const stream = new MediaStreamAnalyserAudioStream(10, windowSize, sampleRate);
-    await stream.setUp();
-    const fftNode = new FFTNode();
-
-    // const recognition = new FFTPitchRecognition(fftNode, sampleRate)
-    // const recognition = new ZeroCrossingRecognition(sampleRate)
-    const recognition = new AutoCorrelationPitchRecognition(sampleRate);
-    
-    const hammingWindow = new HammingWindowNode();
-    const amplitudeThresholdFilter = new AmplitudeThresholdFilter(0.025);
-    const highPassFilter = new HighPassFilter(900, sampleRate);
-    const movingAverageLowPassFilter = new MovingAverageLowPassFilter(500);
-    stream.connect(amplitudeThresholdFilter);
-    amplitudeThresholdFilter.connect(movingAverageLowPassFilter);
-    movingAverageLowPassFilter.connect(highPassFilter);
-    highPassFilter.connect(hammingWindow);
-    hammingWindow.connect(recognition);
-    stream.startRecording();
-
+    pitchDetectionPipeline.startDetection();
     let recording = true;
     document.addEventListener('keydown', (e) => {
         if(e.key == " ") {
             if(recording) {
-                stream.stopRecording();
+                pitchDetectionPipeline.stopDetection();
                 osc.frequency.setValueAtTime(0, audioCtx.currentTime);
                 recording = false;
             } else {
-                stream.startRecording();
+                pitchDetectionPipeline.startDetection();
                 recording = true;
             }
         }
@@ -77,17 +77,14 @@ import FFTNode from "@/audio/node/FFTNode";
     const visualise2 = new VisualiseNode(canvas2.width, canvas2.height, ctx2);
     const visualise3 = new VisualiseNode(canvas3.width, canvas3.height, ctx3);
     const frequency = new Array(canvas2.width).fill(0) as number[];
-    const pitchCb = (pitch) => {
-        osc.frequency.setValueAtTime(frequency.shift(), audioCtx.currentTime);
-        frequency.push(pitch);
-    };
-    recognition.onPitchDetected(pitchCb);
     hammingWindow.connect(visualise1);
     hammingWindow.connect(fftNode);
     fftNode.onSpectrum(spectrum => {
         visualise2.accept(spectrum);
     });
-    recognition.onPitchDetected(() => {
+    pitchDetectionPipeline.onPitchDetected((pitch) => {
+        osc.frequency.setValueAtTime(frequency.shift(), audioCtx.currentTime);
+        frequency.push(pitch);
         visualise3.accept(new Float32Array(frequency));
     })
     document.body.addEventListener('keydown', (e) => {

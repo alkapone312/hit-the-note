@@ -4,10 +4,9 @@ import FFTNode from "@/audio/node/FFTNode.js";
 class FFTPitchRecognition extends PitchRecognition {
     
     public constructor(
-        private readonly fftNode: FFTNode,
-        sampleRate: number
+        private readonly fftNode: FFTNode
     ) {
-        super(sampleRate);
+        super();
         this.fftNode.onSpectrum((spectrum) => {
             this.recognizePeak(spectrum);
         });
@@ -27,7 +26,7 @@ class FFTPitchRecognition extends PitchRecognition {
                 index = i;
             }
         }
-        const frequency = index / spectrum.length * this.getSampleRate() / 2;
+        const frequency = index / spectrum.length * this.settings.sampleRate / 2;
         this.pitchDetected(frequency);
     }
 }

@@ -1,7 +1,8 @@
-import AudioStream from "@/audio/AudioStream.js";
+import RecordingInterface from "@/audio/RecordingInterface";
 import StreamException from "@/audio/StreamException.js";
+import StreamNode from "@/audio/StreamNode";
 
-class MediaRecorderAudioStream extends AudioStream {
+class MediaRecorderAudioStream extends StreamNode<Float32Array, Float32Array> implements RecordingInterface {
     private analyser: AnalyserNode;
     
     private requestDataInterval = 0;
@@ -9,18 +10,16 @@ class MediaRecorderAudioStream extends AudioStream {
     private getDataFunction: () => void;
     
     public constructor(
-        private readonly timeslice: number, 
-        private readonly windowSize: number,
-        sampleRate: number
+        private readonly timeslice: number
     ) {
-        super(sampleRate);
+        super();
     }
 
     public async setUp(): Promise<void> {
         const stream = await navigator.mediaDevices.getUserMedia({audio: true})
-        const audioCtx = new AudioContext({sampleRate: this.getSampleRate()});
+        const audioCtx = new AudioContext({sampleRate: this.settings.sampleRate});
         this.analyser = audioCtx.createAnalyser();
-        this.analyser.fftSize = this.windowSize;
+        this.analyser.fftSize = this.settings.windowSize;
         audioCtx.createMediaStreamSource(stream).connect(this.analyser);
         this.getDataFunction = () => {
             const data = new Float32Array(this.analyser.frequencyBinCount);
@@ -29,7 +28,7 @@ class MediaRecorderAudioStream extends AudioStream {
         }
     }
     
-    public accept(data: Float32Array) {
+    public accept() {
         throw new StreamException("This node cannot accept data.");
     }
 

@@ -22,8 +22,8 @@ class AutoCorrelationPitchRecognition extends PitchRecognition {
         let peakValue = -Infinity;
         
         // Start searching for a peak after some initial lag to avoid the zero lag peak
-        const minLag = Math.floor(this.getSampleRate() / 900);  // Consider frequencies up to x Hz
-        const maxLag = Math.floor(this.getSampleRate() / 50);   // Ignore unrealistic low frequencies below 50 Hz
+        const minLag = Math.floor(this.settings.sampleRate / 900);  // Consider frequencies up to x Hz
+        const maxLag = Math.floor(this.settings.sampleRate / 50);   // Ignore unrealistic low frequencies below 50 Hz
         
         for (let lag = minLag; lag < maxLag; lag++) {
             if (autocorrelation[lag] > peakValue) {
@@ -33,7 +33,7 @@ class AutoCorrelationPitchRecognition extends PitchRecognition {
         }
 
         if (peakIndex > 0) {
-            const estimatedFrequency = this.getSampleRate() / peakIndex;
+            const estimatedFrequency = this.settings.sampleRate / peakIndex;
             
             if(estimatedFrequency < 900) {
                 this.pitchDetected(estimatedFrequency);

@@ -1,55 +1,34 @@
-import MediaPlayerInterface from '../../note/MediaPlayerInterface';
+import type MediaPlayerInterface from '../../note/MediaPlayerInterface';
 
 class BrowserWavMediaPlayer implements MediaPlayerInterface {
     private audioContext: AudioContext | null = null;
+
     private sourceNode: AudioBufferSourceNode | null = null;
+
     private audioBuffer: AudioBuffer | null = null;
-    private isPlaying: boolean = false;
-    private startTime: number = 0;
-    private elapsedTime: number = 0;
 
-    constructor(private wavFile: File) {}
+    private isPlaying = false;
 
-    // Load the WAV file and decode it
-    private async loadWavFile(): Promise<void> {
-        this.audioContext = new AudioContext();
-        const fileReader = new FileReader();
+    private startTime = 0;
 
-        // Load the file as an ArrayBuffer
-        const arrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
-            fileReader.onload = () => {
-                resolve(fileReader.result as ArrayBuffer);
-            };
-            fileReader.onerror = () => {
-                reject(fileReader.error);
-            };
-            fileReader.readAsArrayBuffer(this.wavFile);
-        });
+    private elapsedTime = 0;
 
-        // Decode the WAV file data into an AudioBuffer
-        this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-    }
+    public constructor(private readonly wavFile: File) {}
 
-    // Play the audio
-    public async play(): Promise<void> {
+    public play(): void {
         if (!this.audioContext) {
-            await this.loadWavFile(); // Load and decode the file if not already loaded
-        }
-
-        if (this.audioContext && this.audioBuffer && !this.isPlaying) {
-            this.sourceNode = this.audioContext.createBufferSource();
-            this.sourceNode.buffer = this.audioBuffer;
-            this.sourceNode.connect(this.audioContext.destination);
-
-            const offset = (this.elapsedTime ? this.elapsedTime : 0)/1000;
-            this.startTime = new Date().getTime();
-            this.sourceNode.start(0, offset);
-
-            this.isPlaying = true;
+            this.audioContext = new AudioContext();
+            this.wavFile.arrayBuffer().then(b => {
+                this.audioContext!.decodeAudioData(b).then(buffer => {
+                    this.audioBuffer = buffer;
+                    this.playTrack();
+                });
+            });
+        } else {
+            this.playTrack();
         }
     }
 
-    // Stop the audio
     public stop(): void {
         if (this.isPlaying && this.sourceNode && this.audioContext) {
             this.sourceNode.stop();
@@ -58,7 +37,6 @@ class BrowserWavMediaPlayer implements MediaPlayerInterface {
         }
     }
 
-    // Get the current time of the playback
     public getCurrentTime(): number {
         if (this.isPlaying && this.audioContext) {
             return this.audioContext.currentTime - this.startTime;
@@ -66,6 +44,20 @@ class BrowserWavMediaPlayer implements MediaPlayerInterface {
             return this.elapsedTime;
         }
         return 0;
+    }
+
+    private playTrack(): void {
+        if (!this.isPlaying) {
+            this.sourceNode = this.audioContext!.createBufferSource();
+            this.sourceNode.buffer = this.audioBuffer;
+            this.sourceNode.connect(this.audioContext!.destination);
+
+            const offset = (this.elapsedTime ? this.elapsedTime : 0) / 1000;
+            this.startTime = new Date().getTime();
+            this.sourceNode.start(0, offset);
+
+            this.isPlaying = true;
+        }
     }
 }
 

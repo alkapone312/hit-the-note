@@ -1,5 +1,5 @@
-import ConsoleLogger from "@/utils/ConsoleLogger.js";
-import Logger from "@/utils/Logger.js";
+import ConsoleLogger from '@/utils/ConsoleLogger.js';
+import type Logger from '@/utils/Logger.js';
 
 /**
  * Application facade for logging functionality
@@ -10,32 +10,32 @@ class Log {
     private static shouldDebug = false;
 
     private constructor() {
-        throw new Error("Log class is not instantiable");
+        throw new Error('Log class is not instantiable');
     }
 
-    static error(msg: string): void {
+    public static error(msg: string): void {
         this.logger.error(msg);
     }
 
-    static warn(msg: string): void {
+    public static warn(msg: string): void {
         this.logger.warn(msg);
     }
 
-    static info(msg: string): void {
+    public static info(msg: string): void {
         this.logger.info(msg);
     }
 
-    static debug(msg: string): void {
-        if(this.shouldDebug) {
+    public static debug(msg: string): void {
+        if (this.shouldDebug) {
             this.logger.debug(msg);
         }
     }
 
-    static setUp(logger: Logger) {
+    public static setUp(logger: Logger): void {
         this.logger = logger;
     }
 
-    static setDebug(debug: boolean): void {
+    public static setDebug(debug: boolean): void {
         this.shouldDebug = debug;
     }
 }

@@ -1,10 +1,11 @@
-import StreamNode from "../StreamNode";
-
+/* eslint-disable @typescript-eslint/prefer-destructuring */
+import StreamNode from '../StreamNode';
 
 /**
  * Apply a high-pass filter to a signal.
  */
 class HighPassFilter extends StreamNode {
+
     /**
      * @param cutoffFrequency - The cutoff frequency of the high-pass filter (in Hz).
      */
@@ -12,7 +13,7 @@ class HighPassFilter extends StreamNode {
         super();
     }
 
-    public accept(data: Float32Array) {
+    public accept(data: Float32Array): void {
         const outputSignal = new Float32Array(data.length);
     
         // Time step based on sample rate

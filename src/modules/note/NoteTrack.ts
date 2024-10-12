@@ -1,9 +1,9 @@
-import MediaPlayerInterface from "./MediaPlayerInterface";
-import Note from "./Note";
+import type MediaPlayerInterface from './MediaPlayerInterface';
+import type Note from './Note';
 
 class NoteTrack {
     
-    constructor(
+    public constructor(
         private readonly notes: Note[], 
         private readonly soundtrack: File,
         private readonly player: MediaPlayerInterface
@@ -20,12 +20,14 @@ class NoteTrack {
 
     public getCurrentNote(): Note | null {
         return this.notes.find(note => {
-            if(
+            if (
                 note.getStartTime() >= this.player.getCurrentTime() &&
                 note.getEndTime() <= this.player.getCurrentTime()
             ) {
                 return note;
             }
+
+            return undefined;
         }) ?? null;
     }
 
@@ -37,3 +39,5 @@ class NoteTrack {
         return this.soundtrack;
     }
 }
+
+export default NoteTrack;

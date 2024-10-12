@@ -1,4 +1,5 @@
-import StreamNode from "@/audio/StreamNode.js";
+ 
+import StreamNode from '@/audio/StreamNode.js';
 
 class VisualiseNode extends StreamNode {
     public constructor(
@@ -9,9 +10,9 @@ class VisualiseNode extends StreamNode {
         super();
     }
 
-    public accept(data: Float32Array) {
-        const width = this.width;
-        const height = this.height;
+    public accept(data: Float32Array): void {
+        const {width} = this;
+        const {height} = this;
         const centerY = height / 2;  // Center line (y-axis) for drawing the waveform
         const step = width / data.length;  // Horizontal step between data points
         const maxData = Math.max(...data);
@@ -26,7 +27,7 @@ class VisualiseNode extends StreamNode {
         this.ctx.beginPath();
         for (let i = 0; i < data.length; i++) {
             const x = i * step;
-            const y = centerY - (data[i]/(maxData != 0 ? maxData : 1)) * centerY;  // Scale data to canvas height
+            const y = centerY - data[i] / (maxData != 0 ? maxData : 1) * centerY;  // Scale data to canvas height
 
             // Move to the first point, then draw lines
             if (i === 0) {

@@ -1,16 +1,18 @@
-import StreamNode from "../StreamNode";
+import StreamNode from '../StreamNode';
 
 type PitchDetectedCallback = (frequency: number) => void;
 
 abstract class PitchRecognition extends StreamNode {
-    callbacks: PitchDetectedCallback[] = []
+    protected callbacks: PitchDetectedCallback[] = [];
     
-    public onPitchDetected(callback: PitchDetectedCallback) {
-        this.callbacks.push(callback)
+    public onPitchDetected(callback: PitchDetectedCallback): void {
+        this.callbacks.push(callback);
     }
     
-    protected pitchDetected(pitch: number) {
-        this.callbacks.forEach(cb => { cb(pitch); });
+    protected pitchDetected(pitch: number): void {
+        this.callbacks.forEach(cb => {
+            cb(pitch); 
+        });
     }
 }
 

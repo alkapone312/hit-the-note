@@ -1,14 +1,14 @@
-import StreamNode from "@/audio/StreamNode.js";
+import StreamNode from '@/audio/StreamNode.js';
 
 class HammingWindowNode extends StreamNode {
-    public accept(data: Float32Array) {
+    public accept(data: Float32Array): void {
         const N = data.length;
         const windowedSignal = new Float32Array(N);
         for (let i = 0; i < N; i++) {
-            const hammingFactor = 0.54 - 0.46 * Math.cos((2 * Math.PI * i) / (N - 1));
+            const hammingFactor = 0.54 - 0.46 * Math.cos(2 * Math.PI * i / (N - 1));
             windowedSignal[i] = data[i] * hammingFactor;
         }
-        this.broadcast(windowedSignal)
+        this.broadcast(windowedSignal);
     }
 }
 

@@ -1,15 +1,15 @@
-import StreamNode from "@/audio/StreamNode.js";
+import StreamNode from '@/audio/StreamNode.js';
 
 type SpectrumCallback = (spectrum: Float32Array) => void;
 
 class FFTNode extends StreamNode {
-    private callbacks: SpectrumCallback[] = []
+    private readonly callbacks: SpectrumCallback[] = [];
 
-    public accept(data: Float32Array) {
+    public accept(data: Float32Array): void {
         const spectrum = this.computeFFT(data);
         this.callbacks.forEach(cb => {
             cb(spectrum);
-        })
+        });
         this.broadcast(data);
     }
 
@@ -42,7 +42,7 @@ class FFTNode extends StreamNode {
     
         // Combine the results using the butterfly operation
         for (let k = 0; k < halfSize; k++) {
-            const angle = (-2 * Math.PI * k) / N;
+            const angle = -2 * Math.PI * k / N;
             const cos = Math.cos(angle);
             const sin = Math.sin(angle);
     
@@ -58,7 +58,7 @@ class FFTNode extends StreamNode {
         }
     }
 
-    private computeFFT(data: Float32Array) {
+    private computeFFT(data: Float32Array): Float32Array {
         const N = data.length;
     
         // Create arrays for the real and imaginary parts

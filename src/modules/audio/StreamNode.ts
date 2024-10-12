@@ -1,23 +1,25 @@
-import { PipelineSettings } from "./Settings";
+import type {PipelineSettings} from './Settings';
 
 abstract class StreamNode {
-    private nodes: StreamNode[] = [];
-
     protected settings: PipelineSettings;
+    
+    private readonly nodes: StreamNode[] = [];
 
-    public connect(node: StreamNode) {
+    public connect(node: StreamNode): void {
         this.nodes.push(node);
     }
-
-    public abstract accept(data: Float32Array);
     
-    protected broadcast(data: Float32Array): void {
-        this.nodes.forEach(node => {node.accept(data)});
-    }
-
     public setSettings(settings: PipelineSettings): void {
         this.settings = settings;
     }
+    
+    protected broadcast(data: Float32Array): void {
+        this.nodes.forEach(node => {
+            node.accept(data); 
+        });
+    }
+
+    public abstract accept(data: Float32Array): void;
 }
 
 export default StreamNode;

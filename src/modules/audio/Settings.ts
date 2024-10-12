@@ -1,6 +1,6 @@
-import PitchRecognition from "@/audio/pitch/PitchRecognition";
-import StreamNode from "@/audio/StreamNode";
-import RecordingInterface from "./RecordingInterface";
+import type PitchRecognition from '@/audio/pitch/PitchRecognition';
+import type StreamNode from '@/audio/StreamNode';
+import type RecordingInterface from './RecordingInterface';
 
 interface PipelineSettings {
     sampleRate: number;
@@ -15,4 +15,4 @@ interface Settings extends PipelineSettings {
     pitchRecognition: PitchRecognition;
 }
 
-export { Settings, PipelineSettings };
+export type {Settings, PipelineSettings};

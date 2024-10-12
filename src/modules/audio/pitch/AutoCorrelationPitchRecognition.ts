@@ -1,7 +1,7 @@
-import PitchRecognition from "@/audio/pitch/PitchRecognition.js";
+import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 
 class AutoCorrelationPitchRecognition extends PitchRecognition {
-    public accept(data: Float32Array) {
+    public accept(data: Float32Array): void {
         const N = data.length;
         // Step 1: Normalize the input signal to have zero mean (remove DC offset)
         const mean = data.reduce((acc, val) => acc + val, 0) / N;
@@ -35,7 +35,7 @@ class AutoCorrelationPitchRecognition extends PitchRecognition {
         if (peakIndex > 0) {
             const estimatedFrequency = this.settings.sampleRate / peakIndex;
             
-            if(estimatedFrequency < 900) {
+            if (estimatedFrequency < 900) {
                 this.pitchDetected(estimatedFrequency);
             } else {
                 this.pitchDetected(0);

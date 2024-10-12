@@ -1,4 +1,4 @@
-import Logger from "@/utils/Logger";
+import type Logger from '@/utils/Logger';
 
 /**
  * Logger that outputs information to console.

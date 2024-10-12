@@ -1,5 +1,5 @@
-import PitchRecognition from "@/audio/pitch/PitchRecognition.js";
-import FFTNode from "@/audio/node/FFTNode.js";
+import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
+import type FFTNode from '@/audio/node/FFTNode.js';
 
 class FFTPitchRecognition extends PitchRecognition {
     
@@ -12,16 +12,16 @@ class FFTPitchRecognition extends PitchRecognition {
         });
     }
 
-    public accept(data: Float32Array) {
+    public accept(data: Float32Array): void {
         this.fftNode.accept(data);
         this.broadcast(data);
     }
 
-    private recognizePeak(spectrum: Float32Array) {
+    private recognizePeak(spectrum: Float32Array): void {
         let index = 0;
         let max = 0;
-        for(let i = 0 ; i < spectrum.length; i++) {
-            if(spectrum[i] > max) {
+        for (let i = 0 ; i < spectrum.length; i++) {
+            if (spectrum[i] > max) {
                 max = spectrum[i];
                 index = i;
             }

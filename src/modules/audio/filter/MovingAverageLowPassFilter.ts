@@ -1,15 +1,15 @@
-import StreamNode from "@/audio/StreamNode.js";
+import StreamNode from '@/audio/StreamNode.js';
 
 /**
  * Simple low-pass filter (moving average) to smooth the signal.
  */
 class MovingAverageLowPassFilter extends StreamNode {
 
-    constructor(private readonly windowSize: number) {
+    public constructor(private readonly windowSize: number) {
         super();
     }
 
-    public accept(data: Float32Array) {
+    public accept(data: Float32Array): void {
         const filteredSignal = new Float32Array(data.length);
         for (let i = 0; i < data.length; i++) {
             let sum = 0;

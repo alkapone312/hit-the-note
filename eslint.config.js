@@ -2,8 +2,25 @@ import tseslint from 'typescript-eslint';
 import eslint from '@eslint/js';
 import tsdoc from 'eslint-plugin-tsdoc';
 import stylistic from '@stylistic/eslint-plugin-ts'
+import pluginVue from 'eslint-plugin-vue'
+import vueTsEslintConfig from '@vue/eslint-config-typescript'
+import pluginVitest from '@vitest/eslint-plugin'
+import pluginCypress from 'eslint-plugin-cypress/flat'
 
 export default tseslint.config(
+  ...pluginVue.configs['flat/essential'],
+  ...vueTsEslintConfig(),
+  {
+    ...pluginVitest.configs.recommended,
+    files: ['tests'],
+  },
+  {
+    ...pluginCypress.configs.recommended,
+    files: [
+      'cypress/e2e/**/*.{cy,spec}.{js,ts,jsx,tsx}',
+      'cypress/support/**/*.{js,ts,jsx,tsx}' // use single quotes as in the other configs
+    ],
+  },
   {
     ignores: ['dist/*'],
   },

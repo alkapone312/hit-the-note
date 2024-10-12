@@ -1,6 +1,6 @@
-import type PitchRecognition from '@/audio/pitch/PitchRecognition';
-import type StreamNode from '@/audio/StreamNode';
-import type RecordingInterface from './RecordingInterface';
+import type PitchRecognition from '@/audio/pitch/PitchRecognition.js';
+import type StreamNode from '@/audio/StreamNode.js';
+import type RecordingInterface from './RecordingInterface.js';
 
 interface PipelineSettings {
     sampleRate: number;

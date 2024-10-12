@@ -1,4 +1,4 @@
-import type {PipelineSettings} from './Settings';
+import type {PipelineSettings} from './Settings.js';
 
 abstract class StreamNode {
     protected settings: PipelineSettings;

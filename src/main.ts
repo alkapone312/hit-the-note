@@ -8,10 +8,10 @@ import MovingAverageLowPassFilter from "@/audio/filter/MovingAverageLowPassFilte
 import HighPassFilter from "@/audio/filter/HighPassFilter.js";
 import AmplitudeThresholdFilter from "@/audio/filter/AmplitudeThresholdFilter.js";
 import VisualiseNode from "@/browser/audio/VisualiseNode.js";
-import FFTNode from "@/audio/node/FFTNode";
-import PitchDetectionPipeline from "@/audio/PitchDetectionPipeline";
-import BrowserWavMediaPlayer from "@/browser/audio/BrowserWavMediaPlayer";
-import NoteFactory from "@/note/NoteFactory";
+import FFTNode from "@/audio/node/FFTNode.js";
+import PitchDetectionPipeline from "@/audio/PitchDetectionPipeline.js";
+import BrowserWavMediaPlayer from "@/browser/audio/BrowserWavMediaPlayer.js";
+import NoteFactory from "@/note/NoteFactory.js";
 
 (async () => {
     if(typeof window === 'undefined') {

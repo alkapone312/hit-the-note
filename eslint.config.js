@@ -11,6 +11,12 @@ export default tseslint.config(
   ...pluginVue.configs['flat/essential'],
   ...vueTsEslintConfig(),
   {
+    ignores: [
+      'dist/*',
+      'docs/*'
+    ],
+  },
+  {
     ...pluginVitest.configs.recommended,
     files: ['tests'],
   },
@@ -20,9 +26,6 @@ export default tseslint.config(
       'cypress/e2e/**/*.{cy,spec}.{js,ts,jsx,tsx}',
       'cypress/support/**/*.{js,ts,jsx,tsx}' // use single quotes as in the other configs
     ],
-  },
-  {
-    ignores: ['dist/*'],
   },
   {
     plugins: {

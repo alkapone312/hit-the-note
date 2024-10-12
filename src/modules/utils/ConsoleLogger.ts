@@ -1,4 +1,4 @@
-import type Logger from '@/utils/Logger';
+import type Logger from '@/utils/Logger.js';
 
 /**
  * Logger that outputs information to console.

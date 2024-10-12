@@ -1,9 +1,9 @@
  
 
 import Log from '@/utils/Log.js';
-import type {Settings} from '@/audio/Settings';
-import AutoCorrelationPitchRecognition from '@/audio/pitch/AutoCorrelationPitchRecognition';
-import MediaStreamAnalyserAudioStream from '../audio/MediaStreamAnalyserAudioStream';
+import type {Settings} from '@/audio/Settings.js';
+import AutoCorrelationPitchRecognition from '@/audio/pitch/AutoCorrelationPitchRecognition.js';
+import MediaStreamAnalyserAudioStream from '../audio/MediaStreamAnalyserAudioStream.js';
 
 /**
  * Settings loader for browser environment.

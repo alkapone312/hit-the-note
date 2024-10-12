@@ -1,4 +1,4 @@
-import StreamNode from '../StreamNode';
+import StreamNode from '../StreamNode.js';
 
 type PitchDetectedCallback = (frequency: number) => void;
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-destructuring */
-import StreamNode from '../StreamNode';
+import StreamNode from '../StreamNode.js';
 
 /**
  * Apply a high-pass filter to a signal.

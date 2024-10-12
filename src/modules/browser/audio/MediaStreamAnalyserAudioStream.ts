@@ -1,13 +1,11 @@
-import type RecordingInterface from '@/audio/RecordingInterface';
+import type RecordingInterface from '@/audio/RecordingInterface.js';
 import StreamException from '@/audio/StreamException.js';
-import StreamNode from '@/audio/StreamNode';
+import StreamNode from '@/audio/StreamNode.js';
 
 class MediaRecorderAudioStream extends StreamNode implements RecordingInterface {
-    private static readonly noInterval = 0;
-
     private analyser: AnalyserNode;
 
-    private requestDataInterval = 0;
+    private requestDataInterval: string | number | NodeJS.Timeout | undefined = 0;
     
     private getDataFunction: () => void;
     

@@ -1,5 +1,5 @@
-import type MediaPlayerInterface from './MediaPlayerInterface';
-import type Note from './Note';
+import type MediaPlayerInterface from './MediaPlayerInterface.js';
+import type Note from './Note.js';
 
 class NoteTrack {
     

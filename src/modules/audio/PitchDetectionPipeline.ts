@@ -1,8 +1,8 @@
-import type {Settings} from '@/audio/Settings';
-import type {PitchDetectedCallback} from './pitch/PitchRecognition';
-import type PitchRecognition from './pitch/PitchRecognition';
-import type RecordingInterface from './RecordingInterface';
-import type StreamNode from './StreamNode';
+import type {Settings} from '@/audio/Settings.js';
+import type {PitchDetectedCallback} from './pitch/PitchRecognition.js';
+import type PitchRecognition from './pitch/PitchRecognition.js';
+import type RecordingInterface from './RecordingInterface.js';
+import type StreamNode from './StreamNode.js';
 
 class PitchDetectionPipeline {
 

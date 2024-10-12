@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import Note from './Note';
+import Note from './Note.js';
 
 class NoteFactory {
     protected readonly notes = {

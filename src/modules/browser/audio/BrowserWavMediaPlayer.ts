@@ -1,4 +1,4 @@
-import type MediaPlayerInterface from '../../note/MediaPlayerInterface';
+import type MediaPlayerInterface from '../../note/MediaPlayerInterface.js';
 
 class BrowserWavMediaPlayer implements MediaPlayerInterface {
     private audioContext: AudioContext | null = null;

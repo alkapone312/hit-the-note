@@ -1,25 +1,35 @@
 /* eslint-disable */
-import BrowserSettingsLoader from "@/browser/settings/BrowserSettingsLoader.js";
 import ConsoleLogger from "@/utils/ConsoleLogger.js";
 import Log from "@/utils/Log.js";
 import MediaStreamAnalyserAudioStream from "@/browser/audio/MediaStreamAnalyserAudioStream.js";
-import FFTPitchRecognition from "@/audio/pitch/FFTPitchRecognition.js";
-import ZeroCrossingRecognition from "@/audio/pitch/ZeroCrossingRecognition.js";
 import AutoCorrelationPitchRecognition from "@/audio/pitch/AutoCorrelationPitchRecognition.js";
 import HammingWindowNode from "@/audio/filter/HammingWindowNode.js";
 import MovingAverageLowPassFilter from "@/audio/filter/MovingAverageLowPassFilter.js";
 import HighPassFilter from "@/audio/filter/HighPassFilter.js";
 import AmplitudeThresholdFilter from "@/audio/filter/AmplitudeThresholdFilter.js";
 import VisualiseNode from "@/browser/audio/VisualiseNode.js";
-import PitchRecognition from "@/audio/pitch/PitchRecognition.js";
 import FFTNode from "@/audio/node/FFTNode";
 import PitchDetectionPipeline from "@/audio/PitchDetectionPipeline";
+import BrowserWavMediaPlayer from "@/browser/audio/BrowserWavMediaPlayer";
+import NoteFactory from "@/note/NoteFactory";
 
 (async () => {
     if(typeof window === 'undefined') {
         throw new Error('Application is meant to run in browser!');
     }
 
+
+    const f = await fetch('Dont-stop-me-now-lead-vocal-only.wav');
+    const file = new File([await f.blob()], 'Dont-stop-me-now-lead-vocal-only.wav');
+    const player = new BrowserWavMediaPlayer(file);
+    const factory = new NoteFactory();
+    document.addEventListener('keydown', (event) => {
+        if(event.key == 's') {
+            player.play();
+        } else {
+            player.stop();
+        }
+    })
     // set up
     Log.setUp(new ConsoleLogger());
     Log.setDebug(true);
@@ -73,6 +83,9 @@ import PitchDetectionPipeline from "@/audio/PitchDetectionPipeline";
     const ctx2 = canvas2.getContext('2d');
     const canvas3 = (document.getElementById('canvas3') as HTMLCanvasElement)
     const ctx3 = canvas3.getContext('2d');
+    if(!ctx1 || !ctx2 || !ctx3) {
+        return;
+    }
     const visualise1 = new VisualiseNode(canvas1.width, canvas1.height, ctx1);
     const visualise2 = new VisualiseNode(canvas2.width, canvas2.height, ctx2);
     const visualise3 = new VisualiseNode(canvas3.width, canvas3.height, ctx3);
@@ -83,7 +96,9 @@ import PitchDetectionPipeline from "@/audio/PitchDetectionPipeline";
         visualise2.accept(spectrum);
     });
     pitchDetectionPipeline.onPitchDetected((pitch) => {
-        osc.frequency.setValueAtTime(frequency.shift(), audioCtx.currentTime);
+        const freq = frequency.shift() ?? 0;
+        const note = factory.createClosestNoteForFrequency(freq, 0, 0);
+        osc.frequency.setValueAtTime(note.getFrequency(), audioCtx.currentTime);
         frequency.push(pitch);
         visualise3.accept(new Float32Array(frequency));
     })

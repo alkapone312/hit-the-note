@@ -2,7 +2,7 @@
 
 import Log from '@/utils/Log.js';
 import type {Settings} from '@/audio/Settings.js';
-import AutoCorrelationPitchRecognition from '@/audio/pitch/AutoCorrelationPitchRecognition.js';
+import AutoCorrelationPitchRecognition from '@/audio/pitch/ACFPitchRecognition.js';
 import MediaStreamAnalyserAudioStream from '../audio/MediaStreamAnalyserAudioStream.js';
 
 /**

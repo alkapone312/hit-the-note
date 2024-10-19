@@ -5,6 +5,8 @@
   "typings": "./dist",
   "type": "module",
   "scripts": {
+    "watch:lib": "rollup -c rollup.config.js -w",
+    "build:lib": "rollup -c rollup.config.js",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

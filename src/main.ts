@@ -2,7 +2,9 @@
 import ConsoleLogger from "@/utils/ConsoleLogger.js";
 import Log from "@/utils/Log.js";
 import MediaStreamAnalyserAudioStream from "@/browser/audio/MediaStreamAnalyserAudioStream.js";
-import AutoCorrelationPitchRecognition from "@/audio/pitch/AutoCorrelationPitchRecognition.js";
+import ACFRecognition from "@/audio/pitch/ACFPitchRecognition.js";
+import AMDFPitchRecognition from "@/audio/pitch/AMDFPitchRecognition.js";
+import ACFAndAMDFPitchRecognition from "@/audio/pitch/ACFAndAMDFPitchRecognition.js";
 import HammingWindowNode from "@/audio/filter/HammingWindowNode.js";
 import MovingAverageLowPassFilter from "@/audio/filter/MovingAverageLowPassFilter.js";
 import HighPassFilter from "@/audio/filter/HighPassFilter.js";
@@ -51,7 +53,9 @@ import NoteFactory from "@/note/NoteFactory.js";
             new MovingAverageLowPassFilter(500),
             hammingWindow
         ],
-        pitchRecognition: new AutoCorrelationPitchRecognition()
+        // pitchRecognition: new ACFRecognition(),
+        // pitchRecognition: new AMDFPitchRecognition()
+        pitchRecognition: new ACFAndAMDFPitchRecognition()
     });
 
     await recorder.setUp();

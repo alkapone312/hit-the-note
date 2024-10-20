@@ -1,10 +1,8 @@
 import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 import FFT from '../FFT.js';
-import { log } from 'console';
-import { av } from 'vitest/dist/chunks/reporters.DAfKSDh5.js';
 
 /**
- * Zalecane window size >= 8192
+ * Zalecane window size \>= 8192
  */
 class CBHPSPitchRecognition extends PitchRecognition {
     
@@ -42,17 +40,17 @@ class CBHPSPitchRecognition extends PitchRecognition {
         const cepstrum = this.fft.getSpectrum().reverse();
 
         // Convert Cepstrum to Frequency-Indexed Cepstrum (FIC)
-        const fic = new Float32Array(spectrum.length/2);  // Frequency-indexed cepstrum
-        for (let k = 1; k < cepstrum.length/2; k++) {
-            const ficIndex = Math.floor(spectrum.length/2 / k);
+        const fic = new Float32Array(spectrum.length / 2);  // Frequency-indexed cepstrum
+        for (let k = 1; k < cepstrum.length / 2; k++) {
+            const ficIndex = Math.floor(spectrum.length / 2 / k);
             if (ficIndex < fic.length) {
                 fic[ficIndex] = cepstrum[k];
             }
         }
         
         // Multiply FIC with HPS to get Cepstrum-Biased HPS (CBHPS)
-        const cbhps = new Float32Array(hps.length/2);
-        for (let i = 0; i < hps.length/2; i++) {
+        const cbhps = new Float32Array(hps.length / 2);
+        for (let i = 0; i < hps.length / 2; i++) {
             cbhps[i] = fic[i] * hps[i];  // Element-wise multiplication
         }
         

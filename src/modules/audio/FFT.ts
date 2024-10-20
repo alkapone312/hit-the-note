@@ -1,15 +1,17 @@
 
 class FFT {
     private real: Float32Array;
+
     private imag: Float32Array;
+
     private spectrum: Float32Array;
 
     public compute(data: Float32Array): void {
         const N = data.length;
     
         // Create arrays for the real and imaginary parts
-        this.real = data.slice()
-        this.imag = new Float32Array(N)
+        this.real = data.slice();
+        this.imag = new Float32Array(N);
     
         // Perform FFT on the data
         this.fft(this.real, this.imag);

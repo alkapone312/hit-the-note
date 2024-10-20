@@ -2,7 +2,7 @@ import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 import FFT from '../FFT.js';
 
 /**
- * Zalecane window size >= 8192
+ * Zalecane window size \>= 8192
  */
 class HPSPitchRecognition extends PitchRecognition {
     private readonly fft = new FFT();

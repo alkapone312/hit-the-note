@@ -1,12 +1,12 @@
 <template>
     <nav class="menu">
-        <Button>Play!</Button>
-        <Button>Settings</Button>
+        <VButton>Play!</VButton>
+        <VButton>Settings</VButton>
     </nav>
 </template>
 
 <script lang="ts" setup>
-    import Button from './shared/Button.vue';
+    import VButton from './shared/Button.vue';
 </script>
 
 <style>

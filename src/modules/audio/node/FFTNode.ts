@@ -3,8 +3,6 @@ import FFT from '../FFT.js';
 
 type SpectrumCallback = (spectrum: Float32Array) => void;
 
-type FFTCallback = (real: Float32Array, imag: Float32Array) => void;
-
 class FFTNode extends StreamNode {
     private readonly spectrumCallbacks: SpectrumCallback[] = [];
 

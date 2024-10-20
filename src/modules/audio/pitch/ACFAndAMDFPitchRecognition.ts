@@ -27,8 +27,8 @@ class ACFAndAMDFPitchRecognition extends PitchRecognition {
         }
 
         const product = new Float32Array(N);
-        for(let lag = 0 ; lag < N; lag++) {
-            product[lag] = acf[lag]/(amdf[lag] + 1);
+        for (let lag = 0 ; lag < N; lag++) {
+            product[lag] = acf[lag] / (amdf[lag] + 1);
         }
 
         // Step 3: Find the first significant peak in the autocorrelation function

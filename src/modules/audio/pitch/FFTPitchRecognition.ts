@@ -1,5 +1,4 @@
 import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
-import type FFTNode from '@/audio/node/FFTNode.js';
 import FFT from '../FFT.js';
 
 class FFTPitchRecognition extends PitchRecognition {

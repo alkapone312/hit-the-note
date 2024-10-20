@@ -14,6 +14,9 @@ import FFTNode from "@/audio/node/FFTNode.js";
 import PitchDetectionPipeline from "@/audio/PitchDetectionPipeline.js";
 import BrowserWavMediaPlayer from "@/browser/audio/BrowserWavMediaPlayer.js";
 import NoteFactory from "@/note/NoteFactory.js";
+import HPSPitchRecognition from "@/audio/pitch/HPSPitchRecognition.js";
+import CBHPSPitchRecognition from "@/audio/pitch/CBHPSPitchRecognition.js";
+import FFTPitchRecognition from "@/audio/pitch/FFTPitchRecognition.js";
 
 (async () => {
     if(typeof window === 'undefined') {
@@ -54,8 +57,11 @@ import NoteFactory from "@/note/NoteFactory.js";
             hammingWindow
         ],
         // pitchRecognition: new ACFRecognition(),
-        // pitchRecognition: new AMDFPitchRecognition()
-        pitchRecognition: new ACFAndAMDFPitchRecognition()
+        pitchRecognition: new AMDFPitchRecognition()
+        // pitchRecognition: new ACFAndAMDFPitchRecognition()
+        // pitchRecognition: new FFTPitchRecognition()
+        // pitchRecognition: new HPSPitchRecognition()
+        // pitchRecognition: new CBHPSPitchRecognition()
     });
 
     await recorder.setUp();

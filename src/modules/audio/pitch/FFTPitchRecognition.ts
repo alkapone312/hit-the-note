@@ -1,26 +1,23 @@
 import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 import type FFTNode from '@/audio/node/FFTNode.js';
+import FFT from '../FFT.js';
 
 class FFTPitchRecognition extends PitchRecognition {
     
-    public constructor(
-        private readonly fftNode: FFTNode
-    ) {
+    private readonly fft = new FFT();
+
+    public constructor() {
         super();
-        this.fftNode.onSpectrum((spectrum) => {
-            this.recognizePeak(spectrum);
-        });
     }
 
     public accept(data: Float32Array): void {
-        this.fftNode.accept(data);
-        this.broadcast(data);
-    }
-
-    private recognizePeak(spectrum: Float32Array): void {
         let index = 0;
         let max = 0;
-        for (let i = 0 ; i < spectrum.length; i++) {
+        this.fft.compute(data);
+        const spectrum = this.fft.getSpectrum();
+        const minHzIndex = Math.floor(2 * 50 * spectrum.length / this.settings.sampleRate);
+        const maxHzIndex = Math.floor(2 * 900 * spectrum.length / this.settings.sampleRate);
+        for (let i = minHzIndex ; i < maxHzIndex; i++) {
             if (spectrum[i] > max) {
                 max = spectrum[i];
                 index = i;
@@ -28,6 +25,7 @@ class FFTPitchRecognition extends PitchRecognition {
         }
         const frequency = index / spectrum.length * this.settings.sampleRate / 2;
         this.pitchDetected(frequency);
+        this.broadcast(data);
     }
 }
 

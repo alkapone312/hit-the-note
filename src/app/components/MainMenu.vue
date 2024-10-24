@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-    import VButton from './shared/Button.vue';
+    import VButton from './shared/VButton.vue';
 </script>
 
 <style>

@@ -1,7 +1,7 @@
 import typescript from '@rollup/plugin-typescript';
 
 export default {
-    input: 'src/main.ts',
+    input: 'src/playground.ts',
     output: {
         sourcemap: true,
         dir: 'dist',

@@ -35,7 +35,15 @@ const noteRange = [
   1046.50, 1108.73, 1174.66, 1244.51, 1318.51, 1396.91, 1479.98, 1567.98
 ];
 
-const { currentFrequency, currentTime, notes } = defineProps<{
+const { 
+  snapToCurrentTime = true, 
+  snapToFrequency = true, 
+  currentFrequency, 
+  currentTime, 
+  notes 
+} = defineProps<{
+  snapToCurrentTime?: boolean,
+  snapToFrequency?: boolean,
   currentFrequency: number,
   currentTime: number,
   notes: { time: number, pitch: number, name: string }[],
@@ -50,8 +58,6 @@ let lastMouseY = 0;
 let noteScale = 400;
 let timeScale = 200;
 let container = useTemplateRef('scale-container');
-let snapToCurrentTime = true;
-let snapToFrequency = true;
 let lazyFollowThreshold = 100;
 let followSpeed = 0.02;
 

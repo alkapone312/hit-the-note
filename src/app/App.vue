@@ -27,8 +27,8 @@ pitchRecognition?.onPitchDetected(pitch => {
   frequency.value = pitch;
 })
 
-document.addEventListener('click', (e) => {
-  console.log("Start!")
+document.addEventListener('keydown', (e) => {
+  if(e.key != 's') return;
   pitchRecognition?.startDetection();
   setInterval(() => {
     time.value += 30/1000

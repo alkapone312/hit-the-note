@@ -2,8 +2,14 @@
 
 import Log from '@/utils/Log.js';
 import type {Settings} from '@/audio/Settings.js';
-import AutoCorrelationPitchRecognition from '@/audio/pitch/ACFPitchRecognition.js';
-import MediaStreamAnalyserAudioStream from '../audio/MediaRecorderAudioStream.js';
+import MediaRecorderAudioStream from '../audio/MediaRecorderAudioStream.js';
+import AmplitudeThresholdFilter from '@/audio/filter/AmplitudeThresholdFilter.js';
+import HighPassFilter from '@/audio/filter/HighPassFilter.js';
+import MovingAverageLowPassFilter from '@/audio/filter/MovingAverageLowPassFilter.js';
+import HammingWindowNode from '@/audio/filter/HammingWindowNode.js';
+import FrequencySmootherDecorator from '@/audio/FrequenySmootherDecorator.js';
+import AMDFPitchRecognition from '@/audio/pitch/AMDFPitchRecognition.js';
+import { ACFRecognition } from '../../../main.js';
 
 /**
  * Settings loader for browser environment.
@@ -24,14 +30,19 @@ class BrowserSettingsLoader {
             .getAudioTracks();
         this.settings = this.audioTrack.getSettings();
 
-        const sampleRate = this.getSampleRate();
         return {
-            sampleRate: sampleRate,
+            sampleRate: this.getSampleRate(),
             sampleSize: this.getSampleSize(),
             channelCount: this.getChannelCount(),
             windowSize: this.getWindowSize(),
-            recorder: new MediaStreamAnalyserAudioStream(10),
-            pitchRecognition: new AutoCorrelationPitchRecognition()
+            recorder: new MediaRecorderAudioStream(1000/30),
+            filterChain: [
+                new AmplitudeThresholdFilter(0.025),
+                new HighPassFilter(900),
+                new MovingAverageLowPassFilter(500),
+                new HammingWindowNode()
+            ],
+            pitchRecognition: new FrequencySmootherDecorator(new ACFRecognition())
         };
     }
 
@@ -76,7 +87,7 @@ class BrowserSettingsLoader {
     }
 
     private getWindowSize(): number {
-        return 2 ** 15;
+        return 2 ** 12;
     }
 }
 

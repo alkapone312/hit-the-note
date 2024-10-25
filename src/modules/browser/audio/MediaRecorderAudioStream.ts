@@ -16,9 +16,11 @@ class MediaRecorderAudioStream extends StreamNode implements RecordingInterface 
     }
 
     public async setUp(): Promise<void> {
-        const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+        const stream = await navigator.mediaDevices.getUserMedia({audio: {
+            sampleRate: this.settings.sampleRate
+        }});
         const audioCtx = new AudioContext({sampleRate: this.settings.sampleRate});
-        this.analyser = audioCtx.createAnalyser();
+        this.analyser = new AnalyserNode(audioCtx);
         this.analyser.fftSize = this.settings.windowSize;
         audioCtx.createMediaStreamSource(stream).connect(this.analyser);
         this.getDataFunction = (): void => {

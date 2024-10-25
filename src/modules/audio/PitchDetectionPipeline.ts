@@ -38,6 +38,18 @@ class PitchDetectionPipeline {
     public stopDetection(): void {
         this.recorder.stopRecording();
     }
+
+    public getRecorder(): RecordingInterface {
+        return this.recorder;
+    }
+
+    public getFilterPipeline(): StreamNode[] {
+        return this.filterPipeline;
+    }
+
+    public getPitchRecognition() : PitchRecognition {
+        return this.pitchRecognition;
+    }
 }
 
 export default PitchDetectionPipeline;

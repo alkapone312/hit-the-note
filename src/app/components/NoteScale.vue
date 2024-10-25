@@ -51,16 +51,21 @@ let noteScale = 400;
 let timeScale = 200;
 let container = useTemplateRef('scale-container');
 let snapToCurrentTime = true;
+let snapToFrequency = true;
+let lazyFollowThreshold = 100;
+let followSpeed = 0.02;
 
 frequencyPath.value.push({ pitch: currentFrequency, time: currentTime });
 watch(() => currentTime, () => {
   frequencyPath.value.push({ pitch: currentFrequency, time: currentTime });
+  lazyFollowFrequency(currentFrequency);
 });
+
 
 const segmentedFrequencyPoints = computed(() => {
   let segments: string[] = [];
   let currentSegment: string[] = [];
-
+  
   frequencyPath.value.forEach((point, index) => {
     if (point.pitch === 0 || (index > 0 && frequencyPath.value[index - 1].pitch === 0)) {
       if (currentSegment.length > 0) {
@@ -137,15 +142,28 @@ function centerNoteAtValue(hertz: number) {
   const containerHeight = getContainerHeight();
   const middleContainerPosition = containerHeight / 2;
 
-  // Obliczamy aktualną pozycję dla danej częstotliwości
   const positionOfValue = notePosition(targetFrequency);
 
-  // Ustawiamy offset, aby nuta 120 Hz była na środku ekranu
   offsetY.value = middleContainerPosition - positionOfValue;
 }
 
 function centerTimeAtValue(time: number) {
   offsetX.value = getContainerWidth() / 3 - currentTime * timeScale;
+}
+
+function lazyFollowFrequency(frequency: number) {
+  if(frequency == 0) return;
+  const containerHeight = getContainerHeight();
+  const middlePositionY = containerHeight / 2;
+
+  if (snapToFrequency) {
+    const positionY = -(Math.log2(frequency) * noteScale - offsetY.value) + containerHeight;
+
+    if (Math.abs(positionY - middlePositionY) > lazyFollowThreshold) {
+      const directionY = positionY > middlePositionY ? 1 : -1;
+      offsetY.value -= directionY * followSpeed * Math.abs(positionY - middlePositionY);
+    }
+  }
 }
 
 function noteNameAtIndex(index: number) {
@@ -157,6 +175,7 @@ function noteNameAtIndex(index: number) {
 
 onMounted(() => {
   centerNoteAtValue(200);
+  lazyFollowThreshold = getContainerHeight() / 4;
 });
 </script>
 
@@ -202,6 +221,7 @@ onMounted(() => {
   border: 2px solid white;
   outline: 2px solid rgb(255, 216, 100);
   border-radius: 50%;
+  transition: top 0.05s ease;
 }
 
 .frequency-path {
@@ -216,7 +236,7 @@ onMounted(() => {
   height: 100%;
 }
 
-  .svg-note-name {
-    fill: black;
-  }
+.svg-note-name {
+  fill: black;
+}
 </style>

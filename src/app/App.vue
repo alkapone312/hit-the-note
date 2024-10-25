@@ -24,11 +24,10 @@ const frequency = ref(50);
 
 const pitchRecognition = inject<PitchDetectionPipeline>("pitchRecognition");
 pitchRecognition?.onPitchDetected(pitch => {
-  console.log(pitch);
   frequency.value = pitch;
 })
-document.addEventListener('keydown', (e) => {
-  if(e.key != 's') return;
+
+document.addEventListener('click', (e) => {
   console.log("Start!")
   pitchRecognition?.startDetection();
   setInterval(() => {

@@ -4,6 +4,7 @@ import {createApp} from 'vue';
 import {createPinia} from 'pinia';
 import App from './App.vue';
 import { AMDFPitchRecognition, AmplitudeThresholdFilter, HammingWindowNode, HighPassFilter, MovingAverageLowPassFilter, PitchDetectionPipeline, MediaRecorderAudioStream } from '../main.js';
+import FrequencySmootherDecorator from '@/audio/FrequenySmootherDecorator.js';
 
 // pitch recognition service
 const recorder = new MediaRecorderAudioStream(1000/30);
@@ -20,7 +21,7 @@ const pitchDetectionPipeline = new PitchDetectionPipeline({
         new MovingAverageLowPassFilter(500),
         new HammingWindowNode()
     ],
-    pitchRecognition: new AMDFPitchRecognition()
+    pitchRecognition: new FrequencySmootherDecorator(new AMDFPitchRecognition())
 });
 
 const app = createApp(App);

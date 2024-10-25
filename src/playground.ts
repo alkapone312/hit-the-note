@@ -17,6 +17,7 @@ import NoteFactory from "@/note/NoteFactory.js";
 import HPSPitchRecognition from "@/audio/pitch/HPSPitchRecognition.js";
 import CBHPSPitchRecognition from "@/audio/pitch/CBHPSPitchRecognition.js";
 import FFTPitchRecognition from "@/audio/pitch/FFTPitchRecognition.js";
+import FrequencySmootherDecorator from "@/audio/FrequenySmootherDecorator.js";
 
 (async () => {
     if(typeof window === 'undefined') {
@@ -54,14 +55,9 @@ import FFTPitchRecognition from "@/audio/pitch/FFTPitchRecognition.js";
             new AmplitudeThresholdFilter(0.025),
             new HighPassFilter(900),
             new MovingAverageLowPassFilter(500),
-            hammingWindow
+            new HammingWindowNode()
         ],
-        // pitchRecognition: new ACFRecognition(),
-        pitchRecognition: new AMDFPitchRecognition()
-        // pitchRecognition: new ACFAndAMDFPitchRecognition()
-        // pitchRecognition: new FFTPitchRecognition()
-        // pitchRecognition: new HPSPitchRecognition()
-        // pitchRecognition: new CBHPSPitchRecognition()
+        pitchRecognition: new FrequencySmootherDecorator(new ACFRecognition(), 5)
     });
 
     await recorder.setUp();
@@ -100,11 +96,11 @@ import FFTPitchRecognition from "@/audio/pitch/FFTPitchRecognition.js";
     const visualise2 = new VisualiseNode(canvas2.width, canvas2.height, ctx2);
     const visualise3 = new VisualiseNode(canvas3.width, canvas3.height, ctx3);
     const frequency = new Array(canvas2.width).fill(0) as number[];
-    hammingWindow.connect(visualise1);
-    hammingWindow.connect(fftNode);
-    fftNode.onSpectrum(spectrum => {
-        visualise2.accept(spectrum);
-    });
+    // hammingWindow.connect(visualise1);
+    // hammingWindow.connect(fftNode);
+    // fftNode.onSpectrum(spectrum => {
+    //     visualise2.accept(spectrum);
+    // });
     pitchDetectionPipeline.onPitchDetected((pitch) => {
         const freq = frequency.shift() ?? 0;
         const note = factory.createClosestNoteForFrequency(freq, 0, 0);

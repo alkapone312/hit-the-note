@@ -15,6 +15,14 @@
 
     <svg class="frequency-path">
       <polyline v-for="(segment, index) in segmentedFrequencyPoints" :key="index" :points="segment" fill="none" stroke="yellow" stroke-width="2" />
+      <line 
+        :x1="currentTimePosition" 
+        :x2="currentTimePosition" 
+        y1="0" 
+        :y2="getContainerHeight()" 
+        stroke="rgb(255, 216, 100)"
+        stroke-width="2" 
+      />
     </svg>
 
     <div class="current-frequency" :style="{ top: notePosition(currentFrequency) + 'px', left: currentTimePosition + 'px' }"></div>
@@ -116,7 +124,7 @@ function startDrag(event) {
 
 function onDrag(event) {
   if (isDragging) {
-    if (offsetX.value + event.clientX - lastMouseX < 0) {
+    if (offsetX.value + event.clientX - lastMouseX < getContainerWidth() / 3) {
       offsetX.value += event.clientX - lastMouseX;
       lastMouseX = event.clientX;
     }
@@ -182,6 +190,7 @@ function noteNameAtIndex(index: number) {
 onMounted(() => {
   centerNoteAtValue(200);
   lazyFollowThreshold = getContainerHeight() / 4;
+  offsetX.value = getContainerWidth() / 3
 });
 </script>
 

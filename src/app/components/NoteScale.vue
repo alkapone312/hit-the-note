@@ -57,7 +57,10 @@ const {
   notes: { time: number, pitch: number, name: string }[],
 }>();
 
-const frequencyPath = ref<{ time: number, pitch: number }[]>([]);
+const frequencyPath: { time: number, pitch: number }[] = [];
+const frequencyWindow = ref<{ time: number, pitch: number }[]>([]);
+let windowLeftIndex = 0;
+let windowRightIndex = 0;
 const offsetX = ref(0);
 const offsetY = ref(0);
 let isDragging = false;
@@ -69,9 +72,15 @@ let container = useTemplateRef('scale-container');
 let lazyFollowThreshold = 100;
 let followSpeed = 0.02;
 
-frequencyPath.value.push({ pitch: currentFrequency, time: currentTime });
+frequencyWindow.value.push({ pitch: currentFrequency, time: currentTime });
 watch(() => currentTime, () => {
-  frequencyPath.value.push({ pitch: currentFrequency, time: currentTime });
+  let i = frequencyPath.length - 1;
+  while (i >= 0 && frequencyPath[i].time > currentTime) {
+    frequencyPath.pop();
+    i--;
+  }
+  frequencyWindow.value.push({ pitch: currentFrequency, time: currentTime });
+  frequencyPath.push({ pitch: currentFrequency, time: currentTime });
   lazyFollowFrequency(currentFrequency);
 });
 
@@ -80,8 +89,10 @@ const segmentedFrequencyPoints = computed(() => {
   let segments: string[] = [];
   let currentSegment: string[] = [];
   
-  frequencyPath.value.forEach((point, index) => {
-    if (point.pitch === 0 || (index > 0 && frequencyPath.value[index - 1].pitch === 0)) {
+  updateWindowIndices();
+  frequencyWindow.value = frequencyPath.slice(windowLeftIndex, windowRightIndex);
+  frequencyWindow.value.forEach((point, index) => {
+    if (point.pitch === 0 || (index > 0 && frequencyWindow.value[index - 1].pitch === 0)) {
       if (currentSegment.length > 0) {
         segments.push(currentSegment.join(' '));
         currentSegment = [];
@@ -92,6 +103,7 @@ const segmentedFrequencyPoints = computed(() => {
       currentSegment.push(`${timePosition(point.time)},${notePosition(point.pitch)}`);
     }
   });
+
 
   if (currentSegment.length > 0) {
     segments.push(currentSegment.join(' '));
@@ -115,6 +127,28 @@ function notePosition(pitch) {
   const position = -(Math.log2(pitch) * noteScale - offsetY.value) + offset;
   return position;
 }
+
+function updateWindowIndices() {
+  if(windowRightIndex > frequencyPath.length) {
+    windowLeftIndex = frequencyPath.length;
+    windowRightIndex = frequencyPath.length;
+  }
+  while (windowLeftIndex < frequencyPath.length && timePosition(frequencyPath[windowLeftIndex].time) < 0) {
+    windowLeftIndex++;
+  }
+  while (windowLeftIndex > 0 && timePosition(frequencyPath[windowLeftIndex - 1].time) >= 0) {
+    windowLeftIndex--;
+  }
+
+  const containerWidth = getContainerWidth();
+  while (windowRightIndex < frequencyPath.length && timePosition(frequencyPath[windowRightIndex].time) <= containerWidth) {
+    windowRightIndex++;
+  }
+  while (windowRightIndex > 0 && timePosition(frequencyPath[windowRightIndex - 1].time) > containerWidth) {
+    windowRightIndex--;
+  }
+}
+
 
 function startDrag(event) {
   isDragging = true;

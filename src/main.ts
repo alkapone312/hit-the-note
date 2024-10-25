@@ -26,9 +26,11 @@ import NoteFactory from "@/note/NoteFactory.js";
 import StreamNode from "@/audio/StreamNode.js";
 import StreamException from "@/audio/StreamException.js";
 import { Settings, PipelineSettings } from "@/audio/Settings.js";
+import BrowserSettingsLoader from "@/browser/settings/BrowserSettingsLoader.js";
 
 import RecordingInterface from "@/audio/RecordingInterface.js";
 import MediaPlayerInterface from "@/note/MediaPlayerInterface.js";
+import MediaPlayerFactory from "@/note/MediaPlayerFactory.js";
 import Logger from "@/utils/Logger.js";
 
 export {
@@ -65,6 +67,7 @@ export {
     Log,
     ConsoleLogger,
     VisualiseNode,
+    BrowserSettingsLoader,
 }
 
 export type {
@@ -74,6 +77,7 @@ export type {
 
     RecordingInterface, 
     MediaPlayerInterface, 
+    MediaPlayerFactory,
 
     PitchRecognition,
 

@@ -3,8 +3,7 @@ import './assets/main.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
-import { PitchDetectionPipeline } from '../main.js';
-import BrowserSettingsLoader from '@/browser/settings/BrowserSettingsLoader.js';
+import { BrowserWavMediaPlayer, PitchDetectionPipeline, BrowserSettingsLoader, MediaPlayerFactory, MediaPlayerInterface } from '../main.js';
 
 // pitch recognition service
 (async () => {
@@ -16,6 +15,16 @@ import BrowserSettingsLoader from '@/browser/settings/BrowserSettingsLoader.js';
     app.use(createPinia());
 
     app.provide<PitchDetectionPipeline>('pitchRecognition', pitchDetectionPipeline);
+    app.provide<MediaPlayerFactory>('mediaPlayerFactory', new class implements MediaPlayerFactory {
+        createForFile(file: File): MediaPlayerInterface {
+            if([ "audio/vnd.wav", "audio/vnd.wave", "audio/wave", "audio/x-pn-wav", "audio/x-wav", "audio/wav"].includes(file.type)) {
+                return new BrowserWavMediaPlayer(file);
+            }
+    
+            throw new Error("Unsupported file type");
+        }
+
+    })
 
     app.mount('#app');
 })()

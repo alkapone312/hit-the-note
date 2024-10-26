@@ -12,7 +12,7 @@
         </div>
         <div class="current-note-info"></div>
         <div class="timeline">
-            <VCheckbox @change="value => pinToDot = value">Follow</VCheckbox>
+            <VCheckbox v-model="pinToDot">Snap to </VCheckbox>
             <MediaPlayer
                 v-if="file !== null"
                 :file="file"

@@ -9,11 +9,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, getCurrentInstance } from 'vue';
+import { ref, getCurrentInstance, defineProps } from 'vue';
 
 const { uid } = getCurrentInstance()!; 
-const emit = defineEmits(['change']);
-const checked = ref(false);
+const checked = defineModel();
 
 function checkboxClick() {
     emit('change', checked.value);

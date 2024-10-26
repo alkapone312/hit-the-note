@@ -1,19 +1,25 @@
 <template>
     <div class="media-player">
       <div class="controls">
-        <VButton @click="resetToStart">⏮️ Do zera</VButton>
-        <VButton @click="rewind10Seconds">⏪ -10s</VButton>
-        <VButton @click="togglePlay">{{ isPlaying ? '⏸️ Stop' : '▶️ Play' }}</VButton>
-        <VButton @click="forward10Seconds">⏩ +10s</VButton>
-        <VButton @click="skipToEnd">⏭️ Do końca</VButton>
+        <VButton class="media-player-button" @click="resetToStart"><MediaPlayerStart/></VButton>
+        <VButton class="media-player-button" @click="rewind10Seconds"><MediaPlayerPrevious/></VButton>
+        <VButton class="media-player-button" @click="togglePlay"><MediaPlayerPause v-if="isPlaying"/><MediaPlayerPlay v-else/></VButton>
+        <VButton class="media-player-button" @click="forward10Seconds"><MediaPlayerNext/></VButton>
+        <VButton class="media-player-button" @click="skipToEnd"><MediaPlayerEnd/></VButton>
       </div>
     </div>
   </template>
   
   <script setup lang="ts">
   import MediaPlayerFactory from '@/note/MediaPlayerFactory';
-import { ref, defineProps, defineModel, inject } from 'vue';
-import VButton from './shared/VButton.vue';
+  import MediaPlayerStart from './icons/MediaPlayerStart.vue';
+  import MediaPlayerPrevious from './icons/MediaPlayerPrevious.vue';
+  import MediaPlayerPause from './icons/MediaPlayerPause.vue';
+  import MediaPlayerPlay from './icons/MediaPlayerPlay.vue';
+  import MediaPlayerNext from './icons/MediaPlayerNext.vue';
+  import MediaPlayerEnd from './icons/MediaPlayerEnd.vue';
+  import { ref, defineProps, defineModel, inject } from 'vue';
+  import VButton from './shared/VButton.vue';
   const {file} = defineProps<{file: File}>()
   const mediaPlayer = inject<MediaPlayerFactory>('mediaPlayerFactory')!.createForFile(file);
   const isPlaying = ref(false);
@@ -90,9 +96,16 @@ import VButton from './shared/VButton.vue';
     gap: 20px;
     margin: 20px 0;
   }
-  
-  button {
-    font-size: 2rem;
+
+  .media-player-button {
+    display: flex;
+    align-items: center;
+  }
+
+  svg {
+    width: 3rem;
+    height: 3rem;
+    fill: white;;
   }
   </style>
   

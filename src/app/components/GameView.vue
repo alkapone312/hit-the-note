@@ -33,6 +33,7 @@
                 <VButton class="control-button" @click="toneUp">Tone up</VButton>
             </div>
         </div>
+        <VButton class="close-button" @click="$emit('close')"><Close/></VButton>
     </div>
 </template>
 
@@ -41,6 +42,7 @@ import PitchDetectionPipeline from '@/audio/PitchDetectionPipeline';
 import NoteScale from './NoteScale.vue';
 import { inject, ref, defineProps, watch } from 'vue';
 import MediaPlayer from './MediaPlayer.vue';
+import Close from './icons/Close.vue';
 import CurrentNoteInfo from './CurrentNoteInfo.vue'
 import VCheckbox from './shared/VCheckbox.vue';
 import { NoteFactory, NoteTrack } from '../../main.js'
@@ -130,5 +132,12 @@ function toneDown() {
 
     .current-tone {
         font-size: 2rem;
+    }
+    
+    .close-button {
+        display: flex;
+        position: absolute;
+        left: 50px; 
+        top: 50px;
     }
 </style>

@@ -1,12 +1,14 @@
 <template>
     <nav class="menu">
-        <VButton>Play!</VButton>
-        <VButton>Settings</VButton>
+        <VButton @click="$emit('load', 'game')">Play!</VButton>
+        <VButton @click="$emit('load', 'settings')">Settings</VButton>
     </nav>
 </template>
 
 <script lang="ts" setup>
+    import { defineEmits } from 'vue';
     import VButton from './shared/VButton.vue';
+
 </script>
 
 <style>

@@ -1,6 +1,11 @@
 <template>
   <main>
-    <GameView v-if="noteTrack" :note-track="noteTrack"/>
+    <MainMenu v-if="panel == 'menu'" @load="loadPanel"></MainMenu>
+    <GameView 
+      v-if="panel == 'game' && noteTrack" 
+      :note-track="noteTrack"
+      @close="() => panel = 'menu'"
+    />
   </main>
 </template>
 
@@ -8,6 +13,12 @@
 import GameView from './components/GameView.vue';
 import { inject, ref } from 'vue';
 import {NoteFactory, NoteTrack} from '../main.js';
+import MainMenu from './components/MainMenu.vue';
+const panel = ref('menu');
+
+function loadPanel(newPanel: string) {
+  panel.value = newPanel;
+}
 
 const noteFactory = inject<NoteFactory>('noteFactory')!
 let file: File | null = null;

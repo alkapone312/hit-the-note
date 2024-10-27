@@ -5,10 +5,12 @@
 </template>
 
 <script lang="ts" setup>
+    import Sounds from '@App/Sounds';
+
     const emit = defineEmits(['click']);
     
     function buttonClick() {
-        
+        Sounds.play('button_click');
         emit('click')
     }
 </script>

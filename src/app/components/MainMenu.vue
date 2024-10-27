@@ -1,19 +1,19 @@
 <template>
     <nav class="menu">
         <VButton @click="$emit('load', 'game')">Play!</VButton>
+        <VButton @click="$emit('load', 'create')">Create</VButton>
         <VButton @click="$emit('load', 'settings')">Settings</VButton>
     </nav>
 </template>
 
 <script lang="ts" setup>
-    import { defineEmits } from 'vue';
     import VButton from './shared/VButton.vue';
-
 </script>
 
 <style>
 .menu {
   display: flex;
+  gap: 30px;
   flex-direction: column;
   justify-content: space-around;
   padding: 20px;

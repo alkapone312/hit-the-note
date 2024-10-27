@@ -61,8 +61,6 @@ const { noteTrack } = defineProps<{noteTrack: NoteTrack}>();
 
 watch(time, (newTime: number) => {
     const note = noteTrack.getNote(newTime);
-    console.log(newTime);
-    console.log(note);
     if(note == null) return;
     expectedNote.value = note.getNote().getName();
     expectedFrequency.value = note.getNote().getFrequency();
@@ -71,7 +69,7 @@ watch(time, (newTime: number) => {
 const file = noteTrack.getSoundtrack();
 
 pitchRecognition?.onPitchDetected((pitch) => {
-    frequency.value = parseFloat(pitch.toFixed(2));
+    frequency.value = pitch;
     note.value = noteFactory!.createClosestNoteForFrequency(pitch).getName();
 });
 

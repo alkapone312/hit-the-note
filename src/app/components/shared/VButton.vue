@@ -10,7 +10,7 @@
     const emit = defineEmits(['click']);
     
     function buttonClick() {
-        Sounds.play('button_click');
+        Sounds.play('click');
         emit('click')
     }
 </script>

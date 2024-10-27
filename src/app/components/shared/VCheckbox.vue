@@ -1,5 +1,5 @@
 <template>
-    <label class="checkbox-container">
+    <label class="checkbox-container" @click="playSound">
         <input :id="'a' + uid" class="checkbox" type="checkbox" style="display: none;" v-model="checked" />
         <label :for="'a' + uid" class="checkbox-label">
             <span class="checkbox-button" :class="{ checked: checked }"></span>
@@ -9,18 +9,27 @@
 </template>
 
 <script lang="ts" setup>
+import Sounds from '@App/Sounds';
 import { getCurrentInstance } from 'vue';
 
 const { uid } = getCurrentInstance()!; 
 const checked = defineModel();
+
+function playSound() {
+    Sounds.play('click')
+}
 </script>
 
 <style scoped>
+.checkbox-container {
+}
+
 .checkbox-label {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 1.8rem
+    font-size: 1.8rem;
+    cursor: pointer;
 }
 
 .checkbox-button {

@@ -3,7 +3,7 @@ class Sounds {
 
     static {
         this.sounds = {
-            "button_click": new Audio('sounds/button_click.wav'),
+            "click": new Audio('sounds/click.wav'),
         }
     }
 

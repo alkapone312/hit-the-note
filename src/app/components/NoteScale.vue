@@ -8,7 +8,16 @@
     </svg>
 
     <div class="notes">
-      <div v-for="(note, index) in notes" :key="index" :style="{ top: notePosition(note.getNote().getFrequency()) + 'px', left: timePosition(note.getStartTime()) + 'px' }" class="note">
+      <div 
+        v-for="(note, index) in notes" 
+        :key="index" 
+        :style="{ 
+          top: notePosition(note.getNote().getFrequency()) + 'px', 
+          left: timePosition(note.getStartTime()) + 'px', 
+          width: noteWidth(note) + 'px' 
+        }" 
+        class="note"
+        >
         {{ note.getNote().getName() }}
       </div>
     </div>
@@ -25,7 +34,7 @@
       />
     </svg>
 
-    <div class="current-frequency" :style="{ top: notePosition(currentFrequency) + 'px', left: currentTimePosition + 'px' }"></div>
+    <div class="current-frequency" v-if="currentFrequency" :style="{ top: notePosition(currentFrequency) + 'px', left: currentTimePosition + 'px' }"></div>
   </div>
 </template>
 
@@ -128,6 +137,10 @@ function notePosition(pitch) {
   return position;
 }
 
+function noteWidth(note: NoteInTime): number {
+  return timePosition(note.getEndTime()) - timePosition(note.getStartTime())
+}
+
 function updateWindowIndices() {
   if(windowRightIndex > frequencyPath.length) {
     windowLeftIndex = frequencyPath.length;
@@ -177,6 +190,8 @@ function stopDrag() {
 
 function zoom(event) {
     noteScale -= event.deltaY * 0.05;
+    offsetX.value += 0; // reload component
+    offsetX.value -= 1;
 }
 
 function getContainerHeight(): number {

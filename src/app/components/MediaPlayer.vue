@@ -1,25 +1,19 @@
 <template>
-    <div class="media-player">
-      <div class="controls">
-        <VButton class="media-player-button" @click="resetToStart"><MediaPlayerStart/></VButton>
-        <VButton class="media-player-button" @click="rewind10Seconds"><MediaPlayerPrevious/></VButton>
-        <VButton class="media-player-button" @click="togglePlay"><MediaPlayerPause v-if="isPlaying"/><MediaPlayerPlay v-else/></VButton>
-        <VButton class="media-player-button" @click="forward10Seconds"><MediaPlayerNext/></VButton>
-        <VButton class="media-player-button" @click="skipToEnd"><MediaPlayerEnd/></VButton>
-      </div>
-    </div>
+    <MediaPlayerControls
+    @to-start="resetToStart()"
+    @rewind="rewind10Seconds()"  
+    @play="play()"
+    @pause="pause()"
+    @forward="forward10Seconds()"
+    @to-stop="skipToEnd()"
+    />
   </template>
   
   <script setup lang="ts">
   import MediaPlayerFactory from '@/note/MediaPlayerFactory';
-  import MediaPlayerStart from './icons/MediaPlayerStart.vue';
-  import MediaPlayerPrevious from './icons/MediaPlayerPrevious.vue';
-  import MediaPlayerPause from './icons/MediaPlayerPause.vue';
-  import MediaPlayerPlay from './icons/MediaPlayerPlay.vue';
-  import MediaPlayerNext from './icons/MediaPlayerNext.vue';
-  import MediaPlayerEnd from './icons/MediaPlayerEnd.vue';
   import { ref, defineProps, defineModel, inject } from 'vue';
-  import VButton from './shared/VButton.vue';
+  import MediaPlayerControls from './MediaPlayerControls.vue';
+  
   const {file} = defineProps<{file: File}>()
   const mediaPlayer = inject<MediaPlayerFactory>('mediaPlayerFactory')!.createForFile(file);
   const isPlaying = ref(false);
@@ -29,22 +23,22 @@
   let timeInterval: unknown;
 
   const emit = defineEmits(['play', 'pause'])
-  
-  function togglePlay() {
-    if (isPlaying.value) {
-        mediaPlayer.stop();
-        isPlaying.value = false;
-        setCurrentTime(mediaPlayer.getCurrentTime())
-        stopTimeMeasure();
-        emit('pause')
-    } else {
-        lastTime = new Date().getTime()!;
-        mediaPlayer.play();
-        isPlaying.value = true;
-        setCurrentTime(mediaPlayer.getCurrentTime())
-        measureTime();
-        emit('play')
-    }
+
+  function play() {
+    lastTime = new Date().getTime()!;
+    mediaPlayer.play();
+    isPlaying.value = true;
+    setCurrentTime(mediaPlayer.getCurrentTime())
+    measureTime();
+    emit('play')
+  }
+
+  function pause() {
+    mediaPlayer.stop();
+    isPlaying.value = false;
+    setCurrentTime(mediaPlayer.getCurrentTime())
+    stopTimeMeasure();
+    emit('pause')
   }
 
   function measureTime() {

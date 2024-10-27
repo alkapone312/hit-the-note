@@ -4,13 +4,13 @@
             <span class="note-info-description">Current</span>
             <span class="current-note">{{ currentNote }}</span>
             <div class="divider"></div>
-            <span class="current-hertz">{{ currentHertz }} Hz</span>
+            <span class="current-hertz">{{ currentHertz.toFixed(2) }} Hz</span>
         </div>
         <div class="expected-note">
             <span class="note-info-description">Expected</span>
             <span class="current-note">{{ expectedNote }}</span>
             <div class="divider"></div>
-            <span class="current-hertz">{{ expectedHertz }} Hz</span>
+            <span class="current-hertz">{{ expectedHertz.toFixed(2) }} Hz</span>
         </div>
     </div>
 </template>

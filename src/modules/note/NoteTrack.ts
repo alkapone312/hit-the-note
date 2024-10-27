@@ -9,9 +9,13 @@ class NoteTrack {
 
     public constructor(
         private notes: NoteInTime[], 
-        private readonly soundtrack: File
+        private soundtrack: File | null = null
     ) {
         this.noteFactory = new NoteFactory();
+    }
+
+    public setSoundtrack(file: File) {
+        this.soundtrack = file;
     }
 
     public addNote(newNote: NoteInTime): void {
@@ -45,7 +49,7 @@ class NoteTrack {
         return this.notes;
     }
 
-    public getSoundtrack(): File {
+    public getSoundtrack(): File | null {
         return this.soundtrack;
     }
 

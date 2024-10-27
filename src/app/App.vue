@@ -6,6 +6,10 @@
       :note-track="noteTrack"
       @close="() => panel = 'menu'"
     />
+    <NoteCreator
+      v-if="panel == 'create'"
+      @close="() => panel = 'menu'"
+    ></NoteCreator>
   </main>
 </template>
 
@@ -14,6 +18,7 @@ import GameView from './components/GameView.vue';
 import { inject, ref } from 'vue';
 import {NoteFactory, NoteTrack} from '../main.js';
 import MainMenu from './components/MainMenu.vue';
+import NoteCreator from './components/NoteCreator.vue';
 const panel = ref('menu');
 
 function loadPanel(newPanel: string) {

@@ -1,5 +1,11 @@
 <template>
-  <div class="score-container" @wheel="zoom" @mousedown="startDrag" @mousemove="onDrag" @mouseup="stopDrag" ref="scale-container">
+  <div class="score-container" 
+  @wheel="zoom" 
+  @mousedown="mouseDown" 
+  @mousemove="onDrag" 
+  @mouseup="mouseUp"
+  ref="scale-container" 
+  >
     <svg class="grid-lines">
       <line v-for="note in noteRange" :key="note" :y1="notePosition(note)" :y2="notePosition(note)" x1="0" x2="100%" stroke="lightgray" stroke-width="1" />
       <text v-for="noteFreq, noteKey in noteRange" :key="`label-${noteFreq}`" :y="notePosition(noteFreq + noteFreq * 0.01)" x="5" fill="gray" font-size="16">
@@ -8,18 +14,14 @@
     </svg>
 
     <div class="notes">
-      <div 
+      <VNote
         v-for="(note, index) in notes" 
         :key="index" 
-        :style="{ 
-          top: notePosition(note.getNote().getFrequency()) + 'px', 
-          left: timePosition(note.getStartTime()) + 'px', 
-          width: noteWidth(note) + 'px' 
-        }" 
-        class="note"
-        >
-        {{ note.getNote().getName() }}
-      </div>
+        :left="timePosition(note.getStartTime())"
+        :top="notePosition(note.getNote().getFrequency())"
+        :width="noteWidth(note)"
+        :note="note.getNote()"
+      />
     </div>
 
     <svg class="frequency-path">
@@ -41,7 +43,8 @@
 
 <script setup lang="ts">
 import NoteInTime from '@/note/NoteInTime';
-import { computed, ref, watch, defineProps, useTemplateRef, onMounted } from 'vue';
+import { computed, ref, watch, defineProps, useTemplateRef, onMounted, defineEmits } from 'vue';
+import VNote from './VNote.vue';
 
 const noteRange = [
   16.35, 17.32, 18.35, 19.45, 20.60, 21.83, 23.12, 24.50, 25.96, 27.50, 29.14, 30.87,
@@ -67,6 +70,7 @@ const {
   notes: NoteInTime[],
 }>();
 
+const emit = defineEmits(['action']);
 const frequencyPath: { time: number, pitch: number }[] = [];
 const frequencyWindow = ref<{ time: number, pitch: number }[]>([]);
 let windowLeftIndex = 0;
@@ -164,15 +168,17 @@ function updateWindowIndices() {
   frequencyWindow.value = frequencyPath.slice(windowLeftIndex, windowRightIndex);
 }
 
-
-function startDrag(event) {
+let wasMove = false;
+function mouseDown(event) {
   isDragging = true;
+  wasMove = false;
   lastMouseX = event.clientX;
   lastMouseY = event.clientY;
 }
 
 function onDrag(event) {
   if (isDragging) {
+    wasMove = true;
     if (offsetX.value + event.clientX - lastMouseX < getContainerWidth() / 3) {
       offsetX.value += event.clientX - lastMouseX;
       lastMouseX = event.clientX;
@@ -184,8 +190,24 @@ function onDrag(event) {
   }
 }
 
-function stopDrag() {
+function mouseUp(event) {
+  if(!wasMove) {
+    scaleAction(event);
+  }
   isDragging = false;
+}
+
+function scaleAction(event: MouseEvent) {
+  const containerRect = container.value?.getBoundingClientRect();
+  if (!containerRect) return;
+
+  const clickX = event.clientX - containerRect.left;
+  const clickY = event.clientY - containerRect.top;
+
+  const time = (clickX - offsetX.value) / timeScale;
+  const frequency = Math.pow(2, (getContainerHeight() - clickY + offsetY.value) / noteScale);
+
+  emit("action", event, time, frequency);
 }
 
 function zoom(event) {
@@ -261,14 +283,6 @@ onMounted(() => {
 
 .notes {
   position: absolute;
-}
-
-.note {
-  position: absolute;
-  background-color: lightblue;
-  padding: 5px;
-  border-radius: 5px;
-  transform: translateY(-50%);
 }
 
 .current-time {

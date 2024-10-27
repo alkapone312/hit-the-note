@@ -47,7 +47,7 @@ class PitchDetectionPipeline {
         return this.filterPipeline;
     }
 
-    public getPitchRecognition() : PitchRecognition {
+    public getPitchRecognition(): PitchRecognition {
         return this.pitchRecognition;
     }
 }

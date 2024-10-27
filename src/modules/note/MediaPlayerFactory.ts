@@ -1,4 +1,4 @@
-import MediaPlayerInterface from "./MediaPlayerInterface.js";
+import type MediaPlayerInterface from './MediaPlayerInterface.js';
 
 interface MediaPlayerFactory {
     createForFile(file: File): MediaPlayerInterface;

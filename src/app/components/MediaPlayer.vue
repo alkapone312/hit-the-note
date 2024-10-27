@@ -26,7 +26,7 @@
   const currentTime = defineModel<number>();
   currentTime.value = 0;
   let lastTime = new Date().getTime()!;
-  let timeInterval: any;
+  let timeInterval: unknown;
 
   const emit = defineEmits(['play', 'pause'])
   
@@ -56,7 +56,7 @@
   }
 
   function stopTimeMeasure() {
-    clearInterval(timeInterval);
+    clearInterval(timeInterval as number);
   }
 
   function resetToStart() {

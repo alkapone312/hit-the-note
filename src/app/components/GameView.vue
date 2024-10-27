@@ -66,7 +66,7 @@ watch(time, (newTime: number) => {
     expectedFrequency.value = note.getNote().getFrequency();
 });
 
-let file = noteTrack.getSoundtrack();
+const file = noteTrack.getSoundtrack();
 
 pitchRecognition?.onPitchDetected((pitch) => {
     frequency.value = parseFloat(pitch.toFixed(2));

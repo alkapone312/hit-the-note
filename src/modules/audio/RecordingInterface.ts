@@ -3,7 +3,7 @@ interface RecordingInterface {
 
     stopRecording(): void;
 
-    setUp(): void;
+    setUp(): Promise<void>;
 }
 
 export default RecordingInterface;

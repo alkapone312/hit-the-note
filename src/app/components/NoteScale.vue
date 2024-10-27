@@ -16,9 +16,9 @@
     <svg class="frequency-path">
       <polyline v-for="(segment, index) in segmentedFrequencyPoints" :key="index" :points="segment" fill="none" stroke="yellow" stroke-width="2" />
       <line 
-        :x1="currentTimePosition" 
-        :x2="currentTimePosition" 
-        y1="0" 
+        :x1="currentTimePosition"
+        :x2="currentTimePosition"
+        y1="0"
         :y2="getContainerHeight()" 
         stroke="rgb(255, 216, 100)"
         stroke-width="2" 
@@ -68,10 +68,10 @@ let isDragging = false;
 let lastMouseX = 0;
 let lastMouseY = 0;
 let noteScale = 400;
-let timeScale = 200;
-let container = useTemplateRef('scale-container');
+const timeScale = 200;
+const container = useTemplateRef('scale-container');
 let lazyFollowThreshold = 100;
-let followSpeed = 0.02;
+const followSpeed = 0.02;
 
 frequencyWindow.value.push({ pitch: currentFrequency, time: currentTime });
 watch(() => currentTime, () => {
@@ -87,11 +87,10 @@ watch(() => currentTime, () => {
 
 
 const segmentedFrequencyPoints = computed(() => {
-  let segments: string[] = [];
+  const segments: string[] = [];
   let currentSegment: string[] = [];
   
   updateWindowIndices();
-  frequencyWindow.value = frequencyPath.slice(windowLeftIndex, windowRightIndex);
   frequencyWindow.value.forEach((point, index) => {
     if (point.pitch === 0 || (index > 0 && frequencyWindow.value[index - 1].pitch === 0)) {
       if (currentSegment.length > 0) {
@@ -117,7 +116,7 @@ const currentTimePosition = computed(() => timePosition(currentTime));
 
 function timePosition(time) {
   if (snapToCurrentTime) {
-    centerTimeAtValue(time);
+    centerTimeAtValue(currentTime);
   }
   return time * timeScale + offsetX.value;
 }
@@ -148,6 +147,8 @@ function updateWindowIndices() {
   while (windowRightIndex > 0 && timePosition(frequencyPath[windowRightIndex - 1].time) > containerWidth) {
     windowRightIndex--;
   }
+
+  frequencyWindow.value = frequencyPath.slice(windowLeftIndex, windowRightIndex);
 }
 
 
@@ -197,7 +198,7 @@ function centerNoteAtValue(hertz: number) {
 }
 
 function centerTimeAtValue(time: number) {
-  offsetX.value = getContainerWidth() / 3 - currentTime * timeScale;
+  offsetX.value = getContainerWidth() / 3 - time * timeScale;
 }
 
 function lazyFollowFrequency(frequency: number) {

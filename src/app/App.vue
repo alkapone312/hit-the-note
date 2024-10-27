@@ -11,7 +11,7 @@ import {NoteFactory, NoteTrack} from '../main.js';
 
 const noteFactory = inject<NoteFactory>('noteFactory')!
 let file: File | null = null;
-let noteTrack = ref<NoteTrack | null>(null);
+const noteTrack = ref<NoteTrack | null>(null);
   (async () => {
       const blob = await (await fetch('Dont-stop-me-now-lead-vocal-only.wav')).blob();
       file = new File([blob], 'Dont-stop-me-now-lead-vocal-only.wav', {type: blob.type})

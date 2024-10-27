@@ -1,6 +1,6 @@
 <template>
     <label class="checkbox-container">
-        <input :id="'a' + uid" class="checkbox" type="checkbox" style="display: none;" v-model="checked" @change="checkboxClick" />
+        <input :id="'a' + uid" class="checkbox" type="checkbox" style="display: none;" v-model="checked" />
         <label :for="'a' + uid" class="checkbox-label">
             <span class="checkbox-button" :class="{ checked: checked }"></span>
             <slot></slot>
@@ -9,14 +9,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, getCurrentInstance, defineProps } from 'vue';
+import { getCurrentInstance } from 'vue';
 
 const { uid } = getCurrentInstance()!; 
 const checked = defineModel();
-
-function checkboxClick() {
-    emit('change', checked.value);
-}
 </script>
 
 <style scoped>

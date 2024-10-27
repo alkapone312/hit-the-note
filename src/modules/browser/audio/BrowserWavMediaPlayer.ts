@@ -1,11 +1,16 @@
 import type MediaPlayerInterface from '../../note/MediaPlayerInterface.js';
 
 class BrowserWavMediaPlayer implements MediaPlayerInterface {
-    private audioContext: AudioContext | null = null;
+    private readonly audioContext: AudioContext | null = null;
+
     private sourceNode: AudioBufferSourceNode | null = null;
+
     private audioBuffer: AudioBuffer | null = null;
+
     private isPlaying = false;
+
     private startTime = 0;
+
     private elapsedTime = 0;
 
     public constructor(private readonly wavFile: File) {
@@ -23,7 +28,7 @@ class BrowserWavMediaPlayer implements MediaPlayerInterface {
             this.sourceNode.buffer = this.audioBuffer;
             this.sourceNode.connect(this.audioContext!.destination);
             
-            const offset = (this.elapsedTime ? this.elapsedTime : 0);
+            const offset = this.elapsedTime ? this.elapsedTime : 0;
             this.startTime = new Date().getTime();
             this.sourceNode.start(0, offset);
             
@@ -55,26 +60,26 @@ class BrowserWavMediaPlayer implements MediaPlayerInterface {
     }
 
     public setCurrentTime(time: number): void {
-        if(time < 0) {
+        if (time < 0) {
             time = 0;
         }
-        if(time > this.getTimeLength()) {
+        if (time > this.getTimeLength()) {
             time = this.getTimeLength();
         }
         const wasPlaying = this.isPlaying;
-        if(this.isPlaying) {
+        if (this.isPlaying) {
             this.stop();
         }
     
         this.elapsedTime = time;
 
-        if(wasPlaying) {
+        if (wasPlaying) {
             this.play();
         }
     }
 
     public getTimeLength(): number {
-        return (this.audioBuffer ? this.audioBuffer.duration : 0);
+        return this.audioBuffer ? this.audioBuffer.duration : 0;
     }
 }
 

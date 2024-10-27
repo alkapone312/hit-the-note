@@ -8,8 +8,7 @@ import HighPassFilter from '@/audio/filter/HighPassFilter.js';
 import MovingAverageLowPassFilter from '@/audio/filter/MovingAverageLowPassFilter.js';
 import HammingWindowNode from '@/audio/filter/HammingWindowNode.js';
 import FrequencySmootherDecorator from '@/audio/FrequenySmootherDecorator.js';
-import AMDFPitchRecognition from '@/audio/pitch/AMDFPitchRecognition.js';
-import { ACFRecognition } from '../../../main.js';
+import {ACFRecognition} from '../../../main.js';
 
 /**
  * Settings loader for browser environment.
@@ -35,7 +34,7 @@ class BrowserSettingsLoader {
             sampleSize: this.getSampleSize(),
             channelCount: this.getChannelCount(),
             windowSize: this.getWindowSize(),
-            recorder: new MediaRecorderAudioStream(1000/30),
+            recorder: new MediaRecorderAudioStream(1000 / 30),
             filterChain: [
                 new AmplitudeThresholdFilter(0.025),
                 new HighPassFilter(900),

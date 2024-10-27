@@ -4,7 +4,7 @@ import Note from './Note.js';
 import NoteInTime from './NoteInTime.js';
 
 class NoteFactory {
-    protected readonly notes = {
+    protected readonly notes: Record<string, number> = {
         'C0': 16.35,
         'C0#': 17.32,
         'D0': 18.35,
@@ -103,7 +103,7 @@ class NoteFactory {
         'B7': 3951.07
     };
     
-    public createClosestNoteForFrequency(frequency): Note {
+    public createClosestNoteForFrequency(frequency: number): Note {
         type Notes = keyof typeof this.notes;
         let closestNote: Notes = 'C0';
         let smallestDifference = Infinity;
@@ -112,7 +112,7 @@ class NoteFactory {
             const difference = Math.abs(frequency - freq);
             if (difference < smallestDifference) {
                 smallestDifference = difference;
-                closestNote = note as Notes;
+                closestNote = note;
             }
         }
 
@@ -128,21 +128,22 @@ class NoteFactory {
             throw new Error(`No such a note ${noteName}`);
         }
 
-        return new Note(noteName, this.notes[noteName as keyof typeof this.notes]);
+        return new Note(noteName, this.notes[noteName]);
     }
 
     public createNoteInTimeForName(noteName: string, startTime: number, endTime: number): NoteInTime {
         return new NoteInTime(this.createNoteForName(noteName), startTime, endTime);
     }
 
-    public createNoteInDifferentTone(note: Note, toneChange: number) {
+    public createNoteInDifferentTone(note: Note, toneChange: number): Note {
         const notes = Object.keys(this.notes);
         const changedNoteName = notes[notes.indexOf(note.getName()) + toneChange];
-        
-        return new Note(changedNoteName, this.notes[changedNoteName]);
+        const frequency = this.notes[changedNoteName];
+
+        return new Note(changedNoteName, frequency);
     }
 
-    public createNoteInTimeInDifferentTone(note: NoteInTime, toneChange: number) {
+    public createNoteInTimeInDifferentTone(note: NoteInTime, toneChange: number): NoteInTime {
         return new NoteInTime(this.createNoteInDifferentTone(note.getNote(), toneChange), note.getStartTime(), note.getEndTime());
     } 
 }

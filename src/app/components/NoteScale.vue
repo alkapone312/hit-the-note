@@ -8,8 +8,8 @@
     </svg>
 
     <div class="notes">
-      <div v-for="(note, index) in notes" :key="index" :style="{ top: notePosition(note.pitch) + 'px', left: timePosition(note.time) + 'px' }" class="note">
-        {{ note.name }}
+      <div v-for="(note, index) in notes" :key="index" :style="{ top: notePosition(note.getNote().getFrequency()) + 'px', left: timePosition(note.getStartTime()) + 'px' }" class="note">
+        {{ note.getNote().getName() }}
       </div>
     </div>
 
@@ -31,6 +31,7 @@
 
 
 <script setup lang="ts">
+import NoteInTime from '@/note/NoteInTime';
 import { computed, ref, watch, defineProps, useTemplateRef, onMounted } from 'vue';
 
 const noteRange = [
@@ -54,7 +55,7 @@ const {
   snapToFrequency?: boolean,
   currentFrequency: number,
   currentTime: number,
-  notes: { time: number, pitch: number, name: string }[],
+  notes: NoteInTime[],
 }>();
 
 const frequencyPath: { time: number, pitch: number }[] = [];
@@ -251,6 +252,7 @@ onMounted(() => {
   background-color: lightblue;
   padding: 5px;
   border-radius: 5px;
+  transform: translateY(-50%);
 }
 
 .current-time {

@@ -94,7 +94,6 @@
   .controls {
     display: flex;
     gap: 20px;
-    margin: 20px 0;
   }
 
   .media-player-button {

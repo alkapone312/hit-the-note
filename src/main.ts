@@ -22,6 +22,7 @@ import FFTPitchRecognition from "@/audio/pitch/FFTPitchRecognition.js";
 import Note from "@/note/Note.js";
 import NoteTrack from "@/note/NoteTrack.js";
 import NoteFactory from "@/note/NoteFactory.js";
+import NoteInTime from "@/note/NoteInTime.js";
 
 import StreamNode from "@/audio/StreamNode.js";
 import StreamException from "@/audio/StreamException.js";
@@ -58,6 +59,7 @@ export {
     NoteFactory,
     Note,
     NoteTrack,
+    NoteInTime,
 
     // Utils
     StreamNode,

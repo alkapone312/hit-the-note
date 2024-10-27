@@ -17,8 +17,8 @@ class BrowserWavMediaPlayer implements MediaPlayerInterface {
         });
     }
 
-    public play(): void {
-        if (!this.isPlaying) {
+    public play(): boolean {
+        if (!this.isPlaying && this.audioBuffer) {
             this.sourceNode = this.audioContext!.createBufferSource();
             this.sourceNode.buffer = this.audioBuffer;
             this.sourceNode.connect(this.audioContext!.destination);
@@ -29,14 +29,18 @@ class BrowserWavMediaPlayer implements MediaPlayerInterface {
             
             this.isPlaying = true;
         }
+
+        return this.isPlaying;
     }
 
-    public stop(): void {
+    public stop(): boolean {
         if (this.isPlaying && this.sourceNode && this.audioContext) {
             this.sourceNode.stop();
             this.elapsedTime += (new Date().getTime() - this.startTime) / 1000;
             this.isPlaying = false;
         }
+
+        return this.isPlaying;
     }
 
     public getCurrentTime(): number {

@@ -3,7 +3,7 @@ import './assets/main.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
-import { BrowserWavMediaPlayer, PitchDetectionPipeline, BrowserSettingsLoader, MediaPlayerFactory, MediaPlayerInterface } from '../main.js';
+import { BrowserWavMediaPlayer, PitchDetectionPipeline, BrowserSettingsLoader, MediaPlayerFactory, MediaPlayerInterface, NoteFactory } from '../main.js';
 
 // pitch recognition service
 (async () => {
@@ -15,6 +15,7 @@ import { BrowserWavMediaPlayer, PitchDetectionPipeline, BrowserSettingsLoader, M
     app.use(createPinia());
 
     app.provide<PitchDetectionPipeline>('pitchRecognition', pitchDetectionPipeline);
+    app.provide<NoteFactory>('noteFactory', new NoteFactory());
     app.provide<MediaPlayerFactory>('mediaPlayerFactory', new class implements MediaPlayerFactory {
         createForFile(file: File): MediaPlayerInterface {
             if([ "audio/vnd.wav", "audio/vnd.wave", "audio/wave", "audio/x-pn-wav", "audio/x-wav", "audio/wav"].includes(file.type)) {

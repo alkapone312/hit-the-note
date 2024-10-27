@@ -1,42 +1,60 @@
-import type MediaPlayerInterface from './MediaPlayerInterface.js';
-import type Note from './Note.js';
+import NoteFactory from './NoteFactory.js';
+import NoteInTime from './NoteInTime.js';
 
 class NoteTrack {
     
+    private readonly noteFactory: NoteFactory;
+    private toneChange = 0;
+
     public constructor(
-        private readonly notes: Note[], 
+        private notes: NoteInTime[], 
         private readonly soundtrack: File,
-        private readonly player: MediaPlayerInterface
     ) {
+        this.noteFactory = new NoteFactory();
     }
 
-    public play(): void {
-        this.player.play();
+    public addNote(newNote: NoteInTime) {
+        this.notes.forEach(note => {
+            if(
+                (newNote.getStartTime() > note.getStartTime() && newNote.getStartTime() < note.getEndTime()) ||
+                (newNote.getEndTime() > note.getStartTime() && newNote.getEndTime() < note.getEndTime()) ||
+                (newNote.getStartTime() < note.getStartTime() && newNote.getEndTime() > note.getEndTime()) 
+            ) {
+                throw new Error("Cannot have two same notes at one time");
+            }
+        })
+
+        this.notes.push(newNote);
     }
 
-    public stop(): void {
-        this.player.stop();
-    }
-
-    public getCurrentNote(): Note | null {
+    public getNote(time: number): NoteInTime | null {
         return this.notes.find(note => {
             if (
-                note.getStartTime() >= this.player.getCurrentTime() &&
-                note.getEndTime() <= this.player.getCurrentTime()
+                note.getStartTime() <= time &&
+                note.getEndTime() >= time
             ) {
-                return note;
+                return true;
             }
 
-            return undefined;
+            return false;
         }) ?? null;
     }
 
-    public getNotes(): Note[] {
+    public getNotes(): NoteInTime[] {
         return this.notes;
     }
 
     public getSoundtrack(): File {
         return this.soundtrack;
+    }
+
+    public getToneChange(): number {
+        return this.toneChange;
+    }
+
+    public changeTone(numberOfSemitones: number) {
+        this.toneChange = numberOfSemitones;
+        this.notes = this.notes.map(note => this.noteFactory.createNoteInTimeInDifferentTone(note, numberOfSemitones))
     }
 }
 

@@ -1,18 +1,27 @@
 <template>
         <div class="creator-container">
+                <NoteEditor
+                    v-if="editingNote"
+                    :note="editingNote"
+                    @close="editingNote = null" 
+                    class="note-editor"
+                ></NoteEditor>
                 <NoteScale
                     :snap-to-current-time="pinToDot"
                     :snap-to-frequency="pinToDot"
-                    :notes="noteTrack.getNotes()"
+                    :notes="notes"
                     :current-time="time"
-                    :current-frequency="frequency"
+                    :current-frequency="0"
+                    @action="addNote"
+                    @note-click="editNote"
                     class="note-scale"
+                    ref="note-scale"
                 ></NoteScale>
             <div class="controls">
                 <MediaPlayerControls
                     @to-start="time = 0"
                     @forward="time += 10"
-                    @rewind="time -= 10"
+                    @rewind="time = Math.max(time - 10, 0)"
                     @play="play()"
                     @pause="pause()"
                     class="media-player"
@@ -23,41 +32,33 @@
                     <VCheckbox v-model="playSoundtrack">Play soundtrack</VCheckbox>
                 </div>
             </div>
-            <VButton class="close-button" @click="$emit('close')"><Close/></VButton>
+            <VButton class="close-button" @click="$emit('close')"><VClose/></VButton>
     </div>
 </template>
 
 <script setup lang="ts">
 import NoteScale from './NoteScale.vue';
-import { ref, onMounted, onUnmounted, inject, watch } from 'vue';
-import Close from './icons/Close.vue';
+import { ref, onMounted, onUnmounted, inject, watch, computed, useTemplateRef, Ref } from 'vue';
+import VClose from './icons/VClose.vue';
 import VCheckbox from './shared/VCheckbox.vue';
-import { NoteFactory, NoteTrack } from '../../main.js'
+import { NoteFactory, NoteInTime, NoteTrack } from '../../main.js'
 import VButton from './shared/VButton.vue';
 import MediaPlayerControls from './MediaPlayerControls.vue';
 import OscillatorController from '@App/utils/OscillatorController';
+import NoteEditor from './NoteEditor.vue';
 
+const noteScale = useTemplateRef('note-scale')
 const pinToDot = ref(true);
 const playSoundtrack = ref(true);
 const playNotes = ref(true);
 const time = ref(0);
 const noteFactory = inject<NoteFactory>('noteFactory')!;
-const noteTrack = new NoteTrack([
-    noteFactory.createNoteInTimeForName('G3', 0, 1),
-    noteFactory.createNoteInTimeForName('G3', 1, 2),
-    noteFactory.createNoteInTimeForName('A3', 2, 3),
-    noteFactory.createNoteInTimeForName('G3', 3, 4),
-    noteFactory.createNoteInTimeForName('C4', 4, 5),
-    noteFactory.createNoteInTimeForName('B3', 5, 6),
-    
-    noteFactory.createNoteInTimeForName('G3', 7, 8),
-    noteFactory.createNoteInTimeForName('G3', 8, 9),
-    noteFactory.createNoteInTimeForName('A3', 9, 10),
-    noteFactory.createNoteInTimeForName('G3', 10, 11),
-    noteFactory.createNoteInTimeForName('D4', 11, 12),
-    noteFactory.createNoteInTimeForName('C4', 12, 13)
-]);
+const noteTrack = new NoteTrack([]);
 let file = ref(noteTrack.getSoundtrack());
+const notes = computed(() => {
+    return noteTrack.getNotes();
+})
+const editingNote: Ref<NoteInTime | null> = ref(null);
 
 const oscillator = new OscillatorController();
 watch([time, playNotes], ([newTime]) => {
@@ -70,6 +71,10 @@ watch([time, playNotes], ([newTime]) => {
     oscillator.start(note.getNote().getFrequency());
 });
 
+function editNote(note: NoteInTime) {
+    console.log(note)
+    editingNote.value = note;
+}
 
 function play() {
     isPlaying = true;
@@ -78,6 +83,15 @@ function play() {
 function pause() {
     isPlaying = false;
     oscillator.stop();
+}
+
+function addNote(event: MouseEvent, time: number, frequency: number) {
+    try {
+        noteTrack.addNote(noteFactory.createClosestNoteInTimeForFrequency(frequency, time, time + 1))
+        noteScale.value?.$forceUpdate()
+    } catch(e) {
+
+    }
 }
 
 function loadSoundtrack() {
@@ -112,6 +126,10 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+    .note-editor {
+        position: absolute;
+    }
+
     .creator-container {
         display: grid;
         grid-template-rows: 75% 25%;

@@ -33,7 +33,7 @@
                 <VButton class="control-button" @click="toneUp">Tone up</VButton>
             </div>
         </div>
-        <VButton class="close-button" @click="$emit('close')"><Close/></VButton>
+        <VButton class="close-button" @click="$emit('close')"><VClose/></VButton>
     </div>
 </template>
 
@@ -42,7 +42,7 @@ import PitchDetectionPipeline from '@/audio/PitchDetectionPipeline';
 import NoteScale from './NoteScale.vue';
 import { inject, ref, defineProps, watch } from 'vue';
 import MediaPlayer from './MediaPlayer.vue';
-import Close from './icons/Close.vue';
+import VClose from './icons/VClose.vue';
 import CurrentNoteInfo from './CurrentNoteInfo.vue'
 import VCheckbox from './shared/VCheckbox.vue';
 import { NoteFactory, NoteTrack } from '../../main.js'

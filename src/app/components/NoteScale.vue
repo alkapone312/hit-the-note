@@ -21,6 +21,7 @@
         :top="notePosition(note.getNote().getFrequency())"
         :width="noteWidth(note)"
         :note="note.getNote()"
+        @click="$emit('noteClick', note)"
       />
     </div>
 
@@ -70,7 +71,7 @@ const {
   notes: NoteInTime[],
 }>();
 
-const emit = defineEmits(['action']);
+const emit = defineEmits(['action', 'noteClick']);
 const frequencyPath: { time: number, pitch: number }[] = [];
 const frequencyWindow = ref<{ time: number, pitch: number }[]>([]);
 let windowLeftIndex = 0;
@@ -283,6 +284,7 @@ onMounted(() => {
 
 .notes {
   position: absolute;
+  z-index: 1;
 }
 
 .current-time {

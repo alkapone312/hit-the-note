@@ -14,7 +14,6 @@ import {BrowserWavMediaPlayer, PitchDetectionPipeline, BrowserSettingsLoader, No
     const app = createApp(App);
 
     app.use(createPinia());
-
     app.provide<PitchDetectionPipeline>('pitchRecognition', pitchDetectionPipeline);
     app.provide<NoteFactory>('noteFactory', new NoteFactory());
     app.provide<MediaPlayerFactory>('mediaPlayerFactory', new class implements MediaPlayerFactory {

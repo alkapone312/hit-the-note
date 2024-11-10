@@ -38,6 +38,9 @@ class NoteInTrack extends NoteInTime {
     }
 
     private validate(startTime: number, endTime: number) {
+        if(endTime < startTime) {
+            throw new Error("Start time cannot be higher than end time");
+        }
         this.track.getNotes().forEach(note => {
             if(note === this) return;
             if (

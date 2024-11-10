@@ -1,85 +1,55 @@
 import type MediaPlayerInterface from '../../note/MediaPlayerInterface.js';
 
 class BrowserWavMediaPlayer implements MediaPlayerInterface {
-    private readonly audioContext: AudioContext | null = null;
-
-    private sourceNode: AudioBufferSourceNode | null = null;
-
-    private audioBuffer: AudioBuffer | null = null;
-
+    private audioElement: HTMLAudioElement;
     private isPlaying = false;
-
-    private startTime = 0;
-
     private elapsedTime = 0;
 
     public constructor(private readonly wavFile: File) {
-        this.audioContext = new AudioContext();
-        this.wavFile.arrayBuffer().then(b => {
-            this.audioContext!.decodeAudioData(b).then(buffer => {
-                this.audioBuffer = buffer;
-            });
-        });
+        this.audioElement = new Audio();
+        this.loadAudioFile(wavFile);
+    }
+
+    private loadAudioFile(file: File): void {
+        const fileURL = URL.createObjectURL(file);
+        this.audioElement.src = fileURL;
+        this.audioElement.onloadeddata = () => {
+            this.audioElement.currentTime = this.elapsedTime;
+        };
     }
 
     public play(): boolean {
-        if (!this.isPlaying && this.audioBuffer) {
-            this.sourceNode = this.audioContext!.createBufferSource();
-            this.sourceNode.buffer = this.audioBuffer;
-            this.sourceNode.connect(this.audioContext!.destination);
-            
-            const offset = this.elapsedTime ? this.elapsedTime : 0;
-            this.startTime = new Date().getTime();
-            this.sourceNode.start(0, offset);
-            
+        if (!this.isPlaying) {
+            this.audioElement.currentTime = this.elapsedTime;
+            this.audioElement.play();
             this.isPlaying = true;
         }
-
         return this.isPlaying;
     }
 
     public stop(): boolean {
-        if (this.isPlaying && this.sourceNode && this.audioContext) {
-            this.sourceNode.stop();
-            this.elapsedTime += (new Date().getTime() - this.startTime) / 1000;
+        if (this.isPlaying) {
+            this.audioElement.pause();
+            this.elapsedTime = this.audioElement.currentTime;
             this.isPlaying = false;
         }
-
         return this.isPlaying;
     }
 
     public getCurrentTime(): number {
-        if (this.isPlaying && this.audioContext) {
-            this.stop();
-            this.play();
-            return this.elapsedTime;
-        } else if (this.elapsedTime) {
-            return this.elapsedTime;
-        }
-        return 0;
+        return this.isPlaying ? this.audioElement.currentTime : this.elapsedTime;
     }
 
     public setCurrentTime(time: number): void {
-        if (time < 0) {
-            time = 0;
-        }
-        if (time > this.getTimeLength()) {
-            time = this.getTimeLength();
-        }
-        const wasPlaying = this.isPlaying;
+        this.elapsedTime = Math.max(0, Math.min(time, this.getTimeLength()));
+        this.audioElement.currentTime = this.elapsedTime;
         if (this.isPlaying) {
-            this.stop();
-        }
-    
-        this.elapsedTime = time;
-
-        if (wasPlaying) {
             this.play();
         }
     }
 
     public getTimeLength(): number {
-        return this.audioBuffer ? this.audioBuffer.duration : 0;
+        return this.audioElement.duration || 0;
     }
 }
 

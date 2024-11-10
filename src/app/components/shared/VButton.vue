@@ -17,6 +17,8 @@
 
 <style scoped>
 button {
+    display: flex;
+    align-items: center;
     font-size: 3rem;
     background-color: rgb(255, 216, 100);
     padding: 15px;

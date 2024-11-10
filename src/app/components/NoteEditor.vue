@@ -92,11 +92,6 @@
         display: flex;
         width: 500px;
         height: 300px;
-        padding: 20px;
-        border: 5px solid rgb(255, 216, 100);
-        border-radius: 20px;
-        background-color: white;
-        z-index: 1;
     }
 
     .note-part, .time-part, .utils-part {

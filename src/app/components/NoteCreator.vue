@@ -1,13 +1,13 @@
 <template>
         <div class="creator-container">
-                <NoteEditor
-                    v-if="editingNote"
-                    :note="editingNote"
-                    @close="editingNote = null" 
-                    @update="refresh"
-                    @remove="removeNote"
-                    class="note-editor"
-                ></NoteEditor>
+                <VPopup v-if="editingNote" class="note-editor">
+                    <NoteEditor
+                        :note="editingNote"
+                        @close="editingNote = null" 
+                        @update="refresh"
+                        @remove="removeNote"
+                    ></NoteEditor>
+                </VPopup>
                 <NoteScale
                     :snap-to-current-time="pinToDot"
                     :snap-to-frequency="pinToDot"
@@ -21,9 +21,9 @@
                 ></NoteScale>
             <div class="controls">
                 <MediaPlayerControls
-                    @to-start="time = 0"
-                    @forward="time += 10"
-                    @rewind="time = Math.max(time - 10, 0)"
+                    @to-start="toStart"
+                    @forward="forward"
+                    @rewind="rewind"
                     @play="play()"
                     @pause="pause()"
                     class="media-player"
@@ -31,9 +31,17 @@
                 <div class="note-scale-controls">
                     <VCheckbox v-model="pinToDot">Snap to point</VCheckbox>
                     <VCheckbox v-model="playNotes">Play notes</VCheckbox>
-                    <VCheckbox v-model="playSoundtrack">Play soundtrack</VCheckbox>
+                    <VButton @click="openPopup"><VMore/></VButton>
                 </div>
             </div>
+            <VPopup v-if="isPopupOpen" class="more-popup">
+                <VButton @click="closePopup"><VClose/></VButton>
+                <VButton @click="loadHelperTrack">Load helper track</VButton>
+                <VButton @click="loadSoundTrack">Load soundtrack</VButton>
+
+                <VCheckbox v-model="playSoundtrack">Play soundtrack</VCheckbox>
+                <VCheckbox v-model="playHelperTrack">Play helper track</VCheckbox>
+            </VPopup>
             <VButton class="close-button" @click="$emit('close')"><VClose/></VButton>
     </div>
 </template>
@@ -43,21 +51,26 @@ import NoteScale from './NoteScale.vue';
 import { ref, onMounted, onUnmounted, inject, watch, computed, useTemplateRef, Ref, toRaw } from 'vue';
 import VClose from './icons/VClose.vue';
 import VCheckbox from './shared/VCheckbox.vue';
-import { NoteFactory, NoteInTime, NoteTrack } from '../../main.js'
+import { BrowserWavMediaPlayer, MediaPlayerInterface, NoteFactory, NoteInTime, NoteTrack } from '../../main.js'
 import VButton from './shared/VButton.vue';
 import MediaPlayerControls from './MediaPlayerControls.vue';
+import VMore from './icons/VMore.vue';
 import OscillatorController from '@App/utils/OscillatorController';
 import NoteEditor from './NoteEditor.vue';
+import VPopup from './VPopup.vue';
 
 const noteScale = useTemplateRef('note-scale')
 const pinToDot = ref(true);
 const playSoundtrack = ref(true);
+const playHelperTrack = ref(true);
 const playNotes = ref(true);
+const isPopupOpen = ref(false);
 const time = ref(0);
 const recomputeNotes = ref(0);
 const noteFactory = inject<NoteFactory>('noteFactory')!;
 const noteTrack = new NoteTrack([]);
-let file = ref(noteTrack.getSoundtrack());
+let soundTrackPlayer: MediaPlayerInterface | null = null;
+let helperTrackMediaPlayer: MediaPlayerInterface | null = null;
 const notes = computed(() => {
     const tmp = recomputeNotes.value;
     return noteTrack.getNotes();
@@ -65,7 +78,7 @@ const notes = computed(() => {
 const editingNote: Ref<NoteInTime | null> = ref(null);
 
 const oscillator = new OscillatorController();
-watch([time, playNotes], ([newTime]) => {
+watch([time, playNotes, playHelperTrack, playSoundtrack], ([newTime]) => {
     const note = noteTrack.getNote(newTime);
     if(!note || !playNotes.value || !isPlaying) {
         oscillator.stop();
@@ -85,13 +98,55 @@ function removeNote(note: NoteInTime) {
     recomputeNotes.value += 1;
 }
 
+let wasPlayingBeforePopup = false;
+function openPopup() {
+    wasPlayingBeforePopup = isPlaying;
+    isPopupOpen.value = true; 
+    pause()
+}
+
+function closePopup() {
+    isPopupOpen.value = false;
+    if(wasPlayingBeforePopup) { 
+        play();
+    }
+}
+
+function toStart() {
+    time.value = 0;
+    soundTrackPlayer?.setCurrentTime(time.value)
+    helperTrackMediaPlayer?.setCurrentTime(time.value)
+}
+
+function forward() {
+    time.value += 10
+    soundTrackPlayer?.setCurrentTime(time.value)
+    helperTrackMediaPlayer?.setCurrentTime(time.value)
+}
+
+function rewind() {
+    time.value = Math.max(time.value - 10, 0)
+    soundTrackPlayer?.setCurrentTime(time.value)
+    helperTrackMediaPlayer?.setCurrentTime(time.value)
+}
+
 function play() {
+    soundTrackPlayer?.setCurrentTime(time.value)
+    helperTrackMediaPlayer?.setCurrentTime(time.value)
     isPlaying = true;
+    if(playSoundtrack.value) {
+        soundTrackPlayer?.play()
+    }
+    if(playHelperTrack.value) {
+        helperTrackMediaPlayer?.play()
+    }
 }
 
 function pause() {
     isPlaying = false;
     oscillator.stop();
+    soundTrackPlayer?.stop()
+    helperTrackMediaPlayer?.stop()
 }
 
 function addNote(event: MouseEvent, time: number, frequency: number) {
@@ -102,17 +157,32 @@ function addNote(event: MouseEvent, time: number, frequency: number) {
     }
 }
 
-function loadSoundtrack() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".wav";
+function loadHelperTrack() {
+    loadMedia().then(player => helperTrackMediaPlayer = player).catch(e => console.error(e));
+}
 
-    input.onchange = (event: Event) => {
-      const target = event.target as HTMLInputElement;
-      file.value = target.files![0] ?? null;
-    }
+function loadSoundTrack() {
+    loadMedia().then(player => soundTrackPlayer = player).catch(e => console.error(e));
+}
 
-    input.click();
+
+function loadMedia(): Promise<MediaPlayerInterface> {
+    return new Promise((resolve, reject) => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".wav";
+
+        input.onchange = (event: Event) => {
+            const target = event.target as HTMLInputElement;
+            let file = target.files![0]
+            if(!file) {
+                reject("No file")
+            }
+            resolve(new BrowserWavMediaPlayer(file));
+        }
+
+        input.click();
+    })
 }
 
 function refresh() {
@@ -178,5 +248,23 @@ onUnmounted(() => {
         flex-direction: column;
         justify-content: center;
         gap: 30px;
+    }
+
+    .more-popup {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        gap: 50px;
+        transform: translate(-50%, -50%);
+        background: url('imgs/background.png');
+    }
+
+    .more-popup button {
+        text-wrap: nowrap;
+        font-size: 2rem;
     }
 </style>

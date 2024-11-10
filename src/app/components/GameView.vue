@@ -38,14 +38,13 @@
 </template>
 
 <script setup lang="ts">
-import PitchDetectionPipeline from '@/audio/PitchDetectionPipeline';
 import NoteScale from './NoteScale.vue';
 import { inject, ref, defineProps, watch } from 'vue';
 import MediaPlayer from './MediaPlayer.vue';
 import VClose from './icons/VClose.vue';
 import CurrentNoteInfo from './CurrentNoteInfo.vue'
 import VCheckbox from './shared/VCheckbox.vue';
-import { NoteFactory, NoteTrack } from '../../main.js'
+import { NoteFactory, NoteTrack, PitchDetectionPipeline, PitchDetectionPipelineFactory, SettingsLoader } from '../../main.js'
 import VButton from './shared/VButton.vue';
 
 const pinToDot = ref(true);
@@ -55,7 +54,14 @@ const frequency = ref(0);
 const note = ref('C0');
 const expectedNote = ref('C0');
 const expectedFrequency = ref(0);
-const pitchRecognition = inject<PitchDetectionPipeline>("pitchRecognition");
+let pitchRecognition: PitchDetectionPipeline | null = null;
+(async () => {
+    pitchRecognition = await inject<PitchDetectionPipelineFactory>("pitchDetectionFactory")?.createFromLoader(inject<SettingsLoader>('settingsLoader')!) ?? null;
+    pitchRecognition?.onPitchDetected((pitch) => {
+        frequency.value = pitch;
+        note.value = noteFactory!.createClosestNoteForFrequency(pitch).getName();
+    });
+})()
 const noteFactory = inject<NoteFactory>('noteFactory');
 const { noteTrack } = defineProps<{noteTrack: NoteTrack}>();
 
@@ -67,11 +73,6 @@ watch(time, (newTime: number) => {
 });
 
 const file = noteTrack.getSoundtrack();
-
-pitchRecognition?.onPitchDetected((pitch) => {
-    frequency.value = pitch;
-    note.value = noteFactory!.createClosestNoteForFrequency(pitch).getName();
-});
 
 function play() {
     pitchRecognition?.startDetection();

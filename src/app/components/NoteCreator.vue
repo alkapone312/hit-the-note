@@ -13,7 +13,7 @@
                     :snap-to-frequency="pinToDot"
                     :notes="notes"
                     :current-time="time"
-                    :current-frequency="0"
+                    :current-frequency="frequency"
                     @action="addNote"
                     @note-click="editNote"
                     class="note-scale"
@@ -51,7 +51,7 @@ import NoteScale from './NoteScale.vue';
 import { ref, onMounted, onUnmounted, inject, watch, computed, useTemplateRef, Ref, toRaw } from 'vue';
 import VClose from './icons/VClose.vue';
 import VCheckbox from './shared/VCheckbox.vue';
-import { BrowserWavMediaPlayer, MediaPlayerInterface, NoteFactory, NoteInTime, NoteTrack } from '../../main.js'
+import { BrowserWavMediaPlayer, MediaPlayerFactory, MediaPlayerInterface, NoteFactory, NoteInTime, NoteTrack, PitchDetectionPipeline, PitchDetectionPipelineFactory, RecordingInterface, SettingsLoader, StreamNode } from '../../main.js'
 import VButton from './shared/VButton.vue';
 import MediaPlayerControls from './MediaPlayerControls.vue';
 import VMore from './icons/VMore.vue';
@@ -66,7 +66,12 @@ const playHelperTrack = ref(true);
 const playNotes = ref(true);
 const isPopupOpen = ref(false);
 const time = ref(0);
+const frequency = ref(0);
 const recomputeNotes = ref(0);
+const mediaPlayerFactory = inject<MediaPlayerFactory>('mediaPlayerFactory');
+let pitchRecognition: PitchDetectionPipeline | null = null;
+const pitchRecognitionFactory = inject<PitchDetectionPipelineFactory>("pitchDetectionFactory");
+const settingsLoader = inject<SettingsLoader>('settingsLoader'); 
 const noteFactory = inject<NoteFactory>('noteFactory')!;
 const noteTrack = new NoteTrack([]);
 let soundTrackPlayer: MediaPlayerInterface | null = null;
@@ -75,18 +80,19 @@ const notes = computed(() => {
     const tmp = recomputeNotes.value;
     return noteTrack.getNotes();
 })
+loadPitchRecognition()
 const editingNote: Ref<NoteInTime | null> = ref(null);
-
-const oscillator = new OscillatorController();
-watch([time, playNotes, playHelperTrack, playSoundtrack], ([newTime]) => {
-    const note = noteTrack.getNote(newTime);
-    if(!note || !playNotes.value || !isPlaying) {
-        oscillator.stop();
-        return;
-    }
-
-    oscillator.start(note.getNote().getFrequency());
-});
+    
+    const oscillator = new OscillatorController();
+    watch([time, playNotes, playHelperTrack, playSoundtrack], ([newTime]) => {
+        const note = noteTrack.getNote(newTime);
+        if(!note || !playNotes.value || !isPlaying) {
+            oscillator.stop();
+            return;
+        }
+        
+        oscillator.start(note.getNote().getFrequency());
+    });
 
 function editNote(note: NoteInTime) {
     editingNote.value = note;
@@ -138,11 +144,13 @@ function play() {
         soundTrackPlayer?.play()
     }
     if(playHelperTrack.value) {
+        pitchRecognition?.startDetection();
         helperTrackMediaPlayer?.play()
     }
 }
 
 function pause() {
+    pitchRecognition?.stopDetection();
     isPlaying = false;
     oscillator.stop();
     soundTrackPlayer?.stop()
@@ -151,14 +159,17 @@ function pause() {
 
 function addNote(event: MouseEvent, time: number, frequency: number) {
     try {
-        noteTrack.addNote(noteFactory.createClosestNoteInTimeForFrequency(frequency, time, time + 1))
+        noteTrack.addNote(noteFactory.createClosestNoteInTimeForFrequency(frequency, time, time + 0.3))
         refresh();
     } catch(e) {
     }
 }
 
 function loadHelperTrack() {
-    loadMedia().then(player => helperTrackMediaPlayer = player).catch(e => console.error(e));
+    loadMedia().then(player => {
+        helperTrackMediaPlayer = player
+        loadPitchRecognition()
+    }).catch(e => console.error(e));
 }
 
 function loadSoundTrack() {
@@ -178,11 +189,22 @@ function loadMedia(): Promise<MediaPlayerInterface> {
             if(!file) {
                 reject("No file")
             }
-            resolve(new BrowserWavMediaPlayer(file));
+            resolve(mediaPlayerFactory!.createForFile(file));
         }
 
         input.click();
     })
+}
+
+async function loadPitchRecognition() {
+    if(helperTrackMediaPlayer) {
+        pitchRecognition = await pitchRecognitionFactory?.createFromLoaderWithDifferentRecorder(settingsLoader!, (helperTrackMediaPlayer as unknown as RecordingInterface & StreamNode)) ?? null;
+    } else {
+        pitchRecognition = await pitchRecognitionFactory?.createFromLoader(settingsLoader!) ?? null;
+    }
+    pitchRecognition?.onPitchDetected((pitch) => {
+        frequency.value = pitch
+    });
 }
 
 function refresh() {

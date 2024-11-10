@@ -9,11 +9,12 @@ import MovingAverageLowPassFilter from '@/audio/filter/MovingAverageLowPassFilte
 import HammingWindowNode from '@/audio/filter/HammingWindowNode.js';
 import FrequencySmootherDecorator from '@/audio/FrequenySmootherDecorator.js';
 import {ACFRecognition} from '../../../main.js';
+import SettingsLoader from '@/audio/SettingsLoader.js';
 
 /**
  * Settings loader for browser environment.
  */
-class BrowserSettingsLoader {
+class BrowserSettingsLoader implements SettingsLoader {
     
     private audioTrack: MediaStreamTrack;
 

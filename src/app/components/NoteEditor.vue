@@ -47,19 +47,19 @@
     const noteFactory = inject<NoteFactory>("noteFactory")!;
 
     function decreaseStartTime() {
-        note.setStartTime(note.getStartTime() - 0.5);
+        note.setStartTime(note.getStartTime() - 0.1);
     }
 
     function increaseStartTime() {
-        note.setStartTime(note.getStartTime() + 0.5);
+        note.setStartTime(note.getStartTime() + 0.1);
     }
 
     function decreaseEndTime() {
-        note.setEndTime(note.getEndTime() - 0.5);    
+        note.setEndTime(note.getEndTime() - 0.1);    
     }
 
     function increaseEndTime() {
-        note.setEndTime(note.getEndTime() + 0.5);    
+        note.setEndTime(note.getEndTime() + 0.1);    
     }
 
     function increaseNote() {

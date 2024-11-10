@@ -33,6 +33,8 @@ import RecordingInterface from "@/audio/RecordingInterface.js";
 import MediaPlayerInterface from "@/note/MediaPlayerInterface.js";
 import MediaPlayerFactory from "@/note/MediaPlayerFactory.js";
 import Logger from "@/utils/Logger.js";
+import SettingsLoader from "@/audio/SettingsLoader.js";
+import PitchDetectionPipelineFactory from "@/audio/PitchDetectionPipelineFactory.js";
 
 export {
     // IO
@@ -41,6 +43,7 @@ export {
     
     // Pitch recognition
     PitchDetectionPipeline,
+    PitchDetectionPipelineFactory,
     ZeroCrossingRecognition,
     ACFRecognition,
     AMDFPitchRecognition,
@@ -75,6 +78,7 @@ export {
 export type {
     Settings, 
     PipelineSettings,
+    SettingsLoader,
 
 
     RecordingInterface, 

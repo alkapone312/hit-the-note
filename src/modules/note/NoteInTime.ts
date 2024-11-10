@@ -2,9 +2,9 @@ import type Note from './Note.js';
 
 class NoteInTime {
     public constructor(
-        private readonly note: Note, 
-        private readonly startTime: number, 
-        private readonly endTime: number
+        private note: Note, 
+        private startTime: number, 
+        private endTime: number
     ) {
         if (endTime <= startTime) {
             throw new Error('End time cannot be lower than start time!');
@@ -21,6 +21,18 @@ class NoteInTime {
 
     public getStartTime(): number {
         return this.startTime;
+    }
+
+    public setStartTime(startTime: number): void {
+        this.startTime = startTime;
+    }
+
+    public setEndTime(endTime: number): void {
+        this.endTime = endTime;
+    }
+
+    public setNote(note: Note): void {
+        this.note = note;
     }
 }
 

@@ -1,5 +1,6 @@
 import NoteFactory from './NoteFactory.js';
 import type NoteInTime from './NoteInTime.js';
+import NoteInTrack from './NoteInTrack.js';
 
 class NoteTrack {
     
@@ -8,9 +9,12 @@ class NoteTrack {
     private toneChange = 0;
 
     public constructor(
-        private notes: NoteInTime[], 
+        private notes: NoteInTime[],
         private soundtrack: File | null = null
     ) {
+        this.notes = this.notes.map(note => {
+            return new NoteInTrack(note, this);
+        })
         this.noteFactory = new NoteFactory();
     }
 
@@ -19,17 +23,11 @@ class NoteTrack {
     }
 
     public addNote(newNote: NoteInTime): void {
-        this.notes.forEach(note => {
-            if (
-                newNote.getStartTime() > note.getStartTime() && newNote.getStartTime() < note.getEndTime() ||
-                newNote.getEndTime() > note.getStartTime() && newNote.getEndTime() < note.getEndTime() ||
-                newNote.getStartTime() < note.getStartTime() && newNote.getEndTime() > note.getEndTime() 
-            ) {
-                throw new Error('Cannot have two same notes at one time');
-            }
-        });
+        this.notes.push(new NoteInTrack(newNote, this));
+    }
 
-        this.notes.push(newNote);
+    public removeNote(note: NoteInTime): void {
+        this.notes = this.notes.filter(item => item !== note);
     }
 
     public getNote(time: number): NoteInTime | null {
@@ -59,7 +57,12 @@ class NoteTrack {
 
     public changeTone(numberOfSemitones: number): void {
         this.toneChange = numberOfSemitones;
-        this.notes = this.notes.map(note => this.noteFactory.createNoteInTimeInDifferentTone(note, numberOfSemitones));
+        this.notes = this.notes.map(
+            note => new NoteInTrack(
+                this.noteFactory.createNoteInTimeInDifferentTone(note, numberOfSemitones), 
+                this
+            )
+        );
     }
 }
 

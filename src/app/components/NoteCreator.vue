@@ -4,6 +4,8 @@
                     v-if="editingNote"
                     :note="editingNote"
                     @close="editingNote = null" 
+                    @update="refresh"
+                    @remove="removeNote"
                     class="note-editor"
                 ></NoteEditor>
                 <NoteScale
@@ -38,7 +40,7 @@
 
 <script setup lang="ts">
 import NoteScale from './NoteScale.vue';
-import { ref, onMounted, onUnmounted, inject, watch, computed, useTemplateRef, Ref } from 'vue';
+import { ref, onMounted, onUnmounted, inject, watch, computed, useTemplateRef, Ref, toRaw } from 'vue';
 import VClose from './icons/VClose.vue';
 import VCheckbox from './shared/VCheckbox.vue';
 import { NoteFactory, NoteInTime, NoteTrack } from '../../main.js'
@@ -52,10 +54,12 @@ const pinToDot = ref(true);
 const playSoundtrack = ref(true);
 const playNotes = ref(true);
 const time = ref(0);
+const recomputeNotes = ref(0);
 const noteFactory = inject<NoteFactory>('noteFactory')!;
 const noteTrack = new NoteTrack([]);
 let file = ref(noteTrack.getSoundtrack());
 const notes = computed(() => {
+    const tmp = recomputeNotes.value;
     return noteTrack.getNotes();
 })
 const editingNote: Ref<NoteInTime | null> = ref(null);
@@ -72,8 +76,13 @@ watch([time, playNotes], ([newTime]) => {
 });
 
 function editNote(note: NoteInTime) {
-    console.log(note)
     editingNote.value = note;
+}
+
+function removeNote(note: NoteInTime) {
+    noteTrack.removeNote(toRaw(note))
+    editingNote.value = null;
+    recomputeNotes.value += 1;
 }
 
 function play() {
@@ -88,9 +97,8 @@ function pause() {
 function addNote(event: MouseEvent, time: number, frequency: number) {
     try {
         noteTrack.addNote(noteFactory.createClosestNoteInTimeForFrequency(frequency, time, time + 1))
-        noteScale.value?.$forceUpdate()
+        refresh();
     } catch(e) {
-
     }
 }
 
@@ -105,6 +113,10 @@ function loadSoundtrack() {
     }
 
     input.click();
+}
+
+function refresh() {
+    noteScale.value?.$forceUpdate()
 }
 
 let isPlaying: boolean = false;
@@ -128,6 +140,7 @@ onUnmounted(() => {
 <style scoped>
     .note-editor {
         position: absolute;
+        z-index: 2;
     }
 
     .creator-container {

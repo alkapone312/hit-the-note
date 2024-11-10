@@ -1,37 +1,37 @@
 <template>
-    <div class="editor-container">
+    <div class="editor-container" @click="$emit('update')">
         <div class="note-part">
             Note:
-            <VButton><VUp/></VButton>
-            {{ note.getNote().getName() }}
-            <VButton><VDown/></VButton>
+            <VButton @click="increaseNote"><VUp/></VButton>
+            <input class="input" type="text" @change="noteChange" :value="note.getNote().getName()"></input>
+            <VButton @click="decreaseNote"><VDown/></VButton>
         </div>
         <div class="time-part">
             Start time:
             <div class="time-settings">
-                <VButton><VLeft/></VButton>
-                {{ note.getStartTime().toFixed(2) }}
-                <VButton><VRight/></VButton>
+                <VButton @click="decreaseStartTime"><VLeft/></VButton>
+                <input class="input" type="text" @change="startTimeChange" :value="note.getStartTime().toFixed(2)"></input>
+                <VButton @click="increaseStartTime"><VRight/></VButton>
             </div>
             End time:
             <div class="time-settings">
-                <VButton><VLeft/></VButton>
-                {{ note.getEndTime().toFixed(2) }}
-                <VButton><VRight/></VButton>
+                <VButton @click="decreaseEndTime"><VLeft/></VButton>
+                <input class="input" type="text" @change="endTimeChange" :value="note.getEndTime().toFixed(2)"></input>
+                <VButton @click="increaseEndTime"><VRight/></VButton>
             </div>
         </div>
         <div class="utils-part">
             Close:
             <VButton @click="$emit('close')"><VClose/></VButton>
             Delete:
-            <VButton class="danger-button"><VDelete/></VButton>
+            <VButton @click="$emit('remove', note)" class="danger-button"><VDelete/></VButton>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
     import NoteInTime from '@/note/NoteInTime';
-    import { defineProps } from 'vue';
+    import { defineProps, inject } from 'vue';
     import VButton from './shared/VButton.vue';
     import VLeft from './icons/VLeft.vue';
     import VRight from './icons/VRight.vue';
@@ -39,10 +39,52 @@
     import VDown from './icons/VDown.vue';
     import VDelete from './icons/VDelete.vue';
     import VClose from './icons/VClose.vue';
+    import NoteFactory from '@/note/NoteFactory';
 
-    defineProps<{
+    const {note} = defineProps<{
         note: NoteInTime
     }>()
+    const noteFactory = inject<NoteFactory>("noteFactory")!;
+
+    function decreaseStartTime() {
+        note.setStartTime(note.getStartTime() - 0.5);
+    }
+
+    function increaseStartTime() {
+        note.setStartTime(note.getStartTime() + 0.5);
+    }
+
+    function decreaseEndTime() {
+        note.setEndTime(note.getEndTime() - 0.5);    
+    }
+
+    function increaseEndTime() {
+        note.setEndTime(note.getEndTime() + 0.5);    
+    }
+
+    function increaseNote() {
+        note.setNote(noteFactory.createNoteInDifferentTone(note.getNote(), 1))
+    }
+
+    function decreaseNote() {
+        note.setNote(noteFactory.createNoteInDifferentTone(note.getNote(), -1))
+    }
+
+    function noteChange(event: InputEvent) {
+        const target = event.target as HTMLInputElement;
+        note.setNote(noteFactory.createNoteForName(target.value));
+    }
+
+    function startTimeChange(event) {
+        const target = event.target as HTMLInputElement;
+        note.setStartTime(parseFloat(target.value));
+    }
+
+    function endTimeChange(event) {
+        const target = event.target as HTMLInputElement;
+        note.setEndTime(parseFloat(target.value));
+    }
+
 </script>
 
 <style scoped>
@@ -93,5 +135,21 @@
     .danger-button {
         background-color: red;
         outline-color: red;
+    }
+
+    .input {
+        border: 0;
+        outline: 0;
+        width: 90px;
+        height: 40px;
+        font-size: 1.5rem;
+        color: lightgray;
+        text-align: center;
+    }
+
+    .input:focus {
+        border: 1px solid lightgray;
+        border-radius: 10px;
+        padding: 10px;
     }
 </style>

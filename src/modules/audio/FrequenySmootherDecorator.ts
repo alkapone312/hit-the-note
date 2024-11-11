@@ -18,7 +18,7 @@ class FrequencySmootherDecorator extends PitchRecognition {
         this.recognition.accept(data);
     }
 
-    public smoothFrequency(newFrequency: number): number {
+    private smoothFrequency(newFrequency: number): number {
         this.buffer.push(newFrequency);
 
         if (this.buffer.length > this.bufferSize) {

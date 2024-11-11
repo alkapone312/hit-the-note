@@ -3,7 +3,7 @@ import StreamNode from '@/audio/StreamNode.js';
 /**
  * Simple low-pass filter (moving average) to smooth the signal.
  */
-class MovingAverageLowPassFilter extends StreamNode {
+class MovingAverageFilter extends StreamNode {
 
     public constructor(private readonly windowSize: number) {
         super();
@@ -26,4 +26,4 @@ class MovingAverageLowPassFilter extends StreamNode {
 
 }
 
-export default MovingAverageLowPassFilter;
+export default MovingAverageFilter;

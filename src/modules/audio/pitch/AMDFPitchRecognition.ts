@@ -16,7 +16,7 @@ class AMDFPitchRecognition extends PitchRecognition {
             }
             amdf[lag] = sum / (N - lag);
         }
-
+        
         // Step 3: Find the first minimum in the AMDF function
         let minIndex = -1;
         let minValue = Infinity;
@@ -31,7 +31,6 @@ class AMDFPitchRecognition extends PitchRecognition {
             }
         }
 
-        // Step 4: Estimate the pitch based on the minimum AMDF value
         if (minIndex > 0) {
             const estimatedFrequency = this.settings.sampleRate / minIndex;
 

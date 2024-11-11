@@ -6,7 +6,7 @@ import ACFRecognition from "@/audio/pitch/ACFPitchRecognition.js";
 import AMDFPitchRecognition from "@/audio/pitch/AMDFPitchRecognition.js";
 import ACFAndAMDFPitchRecognition from "@/audio/pitch/ACFAndAMDFPitchRecognition.js";
 import HammingWindowNode from "@/audio/filter/HammingWindowNode.js";
-import MovingAverageLowPassFilter from "@/audio/filter/MovingAverageLowPassFilter.js";
+import MovingAverageFilter from "@/audio/filter/MovingAverageFilter.js";
 import HighPassFilter from "@/audio/filter/HighPassFilter.js";
 import AmplitudeThresholdFilter from "@/audio/filter/AmplitudeThresholdFilter.js";
 import VisualiseNode from "@/browser/audio/VisualiseNode.js";
@@ -54,7 +54,7 @@ import FrequencySmootherDecorator from "@/audio/FrequenySmootherDecorator.js";
         filterChain: [
             new AmplitudeThresholdFilter(0.025),
             new HighPassFilter(900),
-            new MovingAverageLowPassFilter(500),
+            new MovingAverageFilter(500),
             new HammingWindowNode()
         ],
         pitchRecognition: new FrequencySmootherDecorator(new ACFRecognition(), 5)
@@ -103,7 +103,7 @@ import FrequencySmootherDecorator from "@/audio/FrequenySmootherDecorator.js";
     // });
     pitchDetectionPipeline.onPitchDetected((pitch) => {
         const freq = frequency.shift() ?? 0;
-        const note = factory.createClosestNoteForFrequency(freq, 0, 0);
+        const note = factory.createClosestNoteForFrequency(freq);
         osc.frequency.setValueAtTime(note.getFrequency(), audioCtx.currentTime);
         frequency.push(pitch);
         visualise3.accept(new Float32Array(frequency));

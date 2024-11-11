@@ -1,6 +1,8 @@
 import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 import FFT from '../FFT.js';
 
+const fs = require('node:fs');
+
 /**
  * Zalecane window size \>= 8192
  */
@@ -30,6 +32,8 @@ class HPSPitchRecognition extends PitchRecognition {
             }
         }
 
+        fs.writeFileSync('jps.json', JSON.stringify([...spectrum]))
+
         // Find the first maximum in the HPS spectrum
         let maxIndex = -1;
         let maxValue = -Infinity;
@@ -44,7 +48,6 @@ class HPSPitchRecognition extends PitchRecognition {
             }
         }
 
-        // Post-processing to correct octave errors
         if (maxIndex > 0) {
             const estimatedFrequency = maxIndex / spectrum.length * this.settings.sampleRate / 2;
             this.pitchDetected(estimatedFrequency);

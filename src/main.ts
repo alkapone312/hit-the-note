@@ -2,13 +2,13 @@
 import ConsoleLogger from "@/utils/ConsoleLogger.js";
 import Log from "@/utils/Log.js";
 import MediaRecorderAudioStream from "@/browser/audio/MediaRecorderAudioStream.js";
-import PitchRecognition from "@/audio/pitch/PitchRecognition.js";
+import PitchRecognition, { PitchDetectedCallback } from "@/audio/pitch/PitchRecognition.js";
 import ACFRecognition from "@/audio/pitch/ACFPitchRecognition.js";
 import AMDFPitchRecognition from "@/audio/pitch/AMDFPitchRecognition.js";
 import ACFAndAMDFPitchRecognition from "@/audio/pitch/ACFAndAMDFPitchRecognition.js";
 import ZeroCrossingRecognition from "@/audio/pitch/ZeroCrossingRecognition.js";
 import HammingWindowNode from "@/audio/filter/HammingWindowNode.js";
-import MovingAverageLowPassFilter from "@/audio/filter/MovingAverageLowPassFilter.js";
+import MovingAverageFilter from "@/audio/filter/MovingAverageFilter.js";
 import HighPassFilter from "@/audio/filter/HighPassFilter.js";
 import AmplitudeThresholdFilter from "@/audio/filter/AmplitudeThresholdFilter.js";
 import VisualiseNode from "@/browser/audio/VisualiseNode.js";
@@ -44,6 +44,7 @@ export {
     BrowserWavMediaPlayer,
     
     // Pitch recognition
+    PitchRecognition,
     PitchDetectionPipeline,
     PitchDetectionPipelineFactory,
     ZeroCrossingRecognition,
@@ -56,7 +57,7 @@ export {
 
     // Filters
     HammingWindowNode,
-    MovingAverageLowPassFilter,
+    MovingAverageFilter,
     HighPassFilter,
     AmplitudeThresholdFilter,
 
@@ -89,8 +90,7 @@ export type {
     MediaPlayerInterface, 
     MediaPlayerFactory,
 
-    PitchRecognition,
-
+    PitchDetectedCallback,
 
     Logger,
 }

@@ -5,7 +5,7 @@ import type {Settings} from '@/audio/Settings.js';
 import MediaRecorderAudioStream from '../audio/MediaRecorderAudioStream.js';
 import AmplitudeThresholdFilter from '@/audio/filter/AmplitudeThresholdFilter.js';
 import HighPassFilter from '@/audio/filter/HighPassFilter.js';
-import MovingAverageLowPassFilter from '@/audio/filter/MovingAverageLowPassFilter.js';
+import MovingAverageFilter from '@/audio/filter/MovingAverageFilter.js';
 import HammingWindowNode from '@/audio/filter/HammingWindowNode.js';
 import FrequencySmootherDecorator from '@/audio/FrequenySmootherDecorator.js';
 import {ACFRecognition} from '../../../main.js';
@@ -39,7 +39,7 @@ class BrowserSettingsLoader implements SettingsLoader {
             filterChain: [
                 new AmplitudeThresholdFilter(0.025),
                 new HighPassFilter(900),
-                new MovingAverageLowPassFilter(500),
+                new MovingAverageFilter(500),
                 new HammingWindowNode()
             ],
             pitchRecognition: new FrequencySmootherDecorator(new ACFRecognition())

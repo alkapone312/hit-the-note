@@ -1,6 +1,5 @@
 import JSZip from 'jszip';
 import type NoteTrack from './NoteTrack.js';
-import type NoteInTime from './NoteInTime.js';
 
 class NoteTrackExporter {
     public async export(noteTrack: NoteTrack): Promise<Blob> {

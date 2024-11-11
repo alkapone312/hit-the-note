@@ -8,6 +8,8 @@ class NoteTrack {
 
     private toneChange = 0;
 
+    private soundTrackShift = 0;
+
     public constructor(
         private notes: NoteInTime[],
         private soundtrack: File | null = null
@@ -53,6 +55,14 @@ class NoteTrack {
 
     public getToneChange(): number {
         return this.toneChange;
+    }
+
+    public getSoundTrackShift(): number {
+        return this.soundTrackShift;
+    }
+
+    public setSoundTrackShift(shift: number): void {
+        this.soundTrackShift = shift;
     }
 
     public changeTone(numberOfSemitones: number): void {

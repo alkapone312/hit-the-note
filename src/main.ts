@@ -35,6 +35,8 @@ import MediaPlayerFactory from "@/note/MediaPlayerFactory.js";
 import Logger from "@/utils/Logger.js";
 import SettingsLoader from "@/audio/SettingsLoader.js";
 import PitchDetectionPipelineFactory from "@/audio/PitchDetectionPipelineFactory.js";
+import NoteTrackExporter from "@/note/NoteTrackExporter.js";
+import NoteTrackImporter from "@/note/NoteTrackImporter.js";
 
 export {
     // IO
@@ -63,6 +65,8 @@ export {
     Note,
     NoteTrack,
     NoteInTime,
+    NoteTrackExporter,
+    NoteTrackImporter,
 
     // Utils
     StreamNode,

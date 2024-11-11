@@ -35,12 +35,21 @@
                 </div>
             </div>
             <VPopup v-if="isPopupOpen" class="more-popup">
-                <VButton @click="closePopup"><VClose/></VButton>
-                <VButton @click="loadHelperTrack">Load helper track</VButton>
-                <VButton @click="loadSoundTrack">Load soundtrack</VButton>
-
+                <VButton @click="closePopup" style="align-self: baseline;"><VClose/></VButton>
                 <VCheckbox v-model="playSoundtrack">Play soundtrack</VCheckbox>
                 <VCheckbox v-model="playHelperTrack">Play helper track</VCheckbox>
+                <div class="shift-change">
+                    <VButton @click="shiftMinus"><VLeft/></VButton>
+                    <div style="display: flex; flex-direction: column;">
+                        Shift change
+                        <VInput type="text" :value="shiftChange.toFixed(1)" readonly></VInput>
+                    </div>
+                    <VButton @click="shiftPlus"><VRight/></VButton>
+                </div>
+                <VButton @click="loadSoundTrack">Load soundtrack</VButton>
+                <VButton @click="loadHelperTrack">Load helper track</VButton>
+                <VButton @click="importTrack">Import</VButton>
+                <VButton @click="exportTrack">Export</VButton>
             </VPopup>
             <VButton class="close-button" @click="$emit('close')"><VClose/></VButton>
     </div>
@@ -51,13 +60,16 @@ import NoteScale from './NoteScale.vue';
 import { ref, onMounted, onUnmounted, inject, watch, computed, useTemplateRef, Ref, toRaw } from 'vue';
 import VClose from './icons/VClose.vue';
 import VCheckbox from './shared/VCheckbox.vue';
-import { BrowserWavMediaPlayer, MediaPlayerFactory, MediaPlayerInterface, NoteFactory, NoteInTime, NoteTrack, PitchDetectionPipeline, PitchDetectionPipelineFactory, RecordingInterface, SettingsLoader, StreamNode } from '../../main.js'
+import { MediaPlayerFactory, MediaPlayerInterface, NoteFactory, NoteInTime, NoteTrack, NoteTrackExporter, NoteTrackImporter, PitchDetectionPipeline, PitchDetectionPipelineFactory, RecordingInterface, SettingsLoader, StreamNode } from '../../main.js'
 import VButton from './shared/VButton.vue';
 import MediaPlayerControls from './MediaPlayerControls.vue';
 import VMore from './icons/VMore.vue';
 import OscillatorController from '@App/utils/OscillatorController';
 import NoteEditor from './NoteEditor.vue';
 import VPopup from './VPopup.vue';
+import VLeft from './icons/VLeft.vue';
+import VRight from './icons/VRight.vue';
+import VInput from './shared/VInput.vue';
 
 const noteScale = useTemplateRef('note-scale')
 const pinToDot = ref(true);
@@ -68,12 +80,13 @@ const isPopupOpen = ref(false);
 const time = ref(0);
 const frequency = ref(0);
 const recomputeNotes = ref(0);
+const shiftChange = ref(0);
 const mediaPlayerFactory = inject<MediaPlayerFactory>('mediaPlayerFactory');
 let pitchRecognition: PitchDetectionPipeline | null = null;
 const pitchRecognitionFactory = inject<PitchDetectionPipelineFactory>("pitchDetectionFactory");
 const settingsLoader = inject<SettingsLoader>('settingsLoader'); 
 const noteFactory = inject<NoteFactory>('noteFactory')!;
-const noteTrack = new NoteTrack([]);
+let noteTrack = new NoteTrack([]);
 let soundTrackPlayer: MediaPlayerInterface | null = null;
 let helperTrackMediaPlayer: MediaPlayerInterface | null = null;
 const notes = computed(() => {
@@ -125,19 +138,20 @@ function toStart() {
 }
 
 function forward() {
-    time.value += 10
+    time.value += 1
     soundTrackPlayer?.setCurrentTime(time.value)
     helperTrackMediaPlayer?.setCurrentTime(time.value)
 }
 
 function rewind() {
-    time.value = Math.max(time.value - 10, 0)
+    time.value = Math.max(time.value - 1, 0)
     soundTrackPlayer?.setCurrentTime(time.value)
     helperTrackMediaPlayer?.setCurrentTime(time.value)
 }
 
 function play() {
-    soundTrackPlayer?.setCurrentTime(time.value)
+    console.log(noteTrack.getSoundTrackShift());
+    soundTrackPlayer?.setCurrentTime(time.value + noteTrack.getSoundTrackShift())
     helperTrackMediaPlayer?.setCurrentTime(time.value)
     isPlaying = true;
     if(playSoundtrack.value) {
@@ -157,9 +171,24 @@ function pause() {
     helperTrackMediaPlayer?.stop()
 }
 
+function shiftMinus() {
+    shiftChange.value -= 0.1;
+    noteTrack.setSoundTrackShift(shiftChange.value)
+}
+
+function shiftPlus() {
+    shiftChange.value += 0.1;
+    noteTrack.setSoundTrackShift(shiftChange.value)
+}
+
 function addNote(event: MouseEvent, time: number, frequency: number) {
     try {
-        noteTrack.addNote(noteFactory.createClosestNoteInTimeForFrequency(frequency, time, time + 0.3))
+        const note = noteFactory.createClosestNoteInTimeForFrequency(frequency, time, time + 0.3);
+        noteTrack.addNote(note)
+        if(editingNote.value) {
+            editingNote.value = note;
+        }
+
         refresh();
     } catch(e) {
     }
@@ -173,15 +202,18 @@ function loadHelperTrack() {
 }
 
 function loadSoundTrack() {
-    loadMedia().then(player => soundTrackPlayer = player).catch(e => console.error(e));
+    loadMedia().then(player => {
+        soundTrackPlayer = player
+        noteTrack.setSoundtrack(player.getFile())
+    }
+    ).catch(e => console.error(e));
 }
-
 
 function loadMedia(): Promise<MediaPlayerInterface> {
     return new Promise((resolve, reject) => {
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = ".wav";
+        input.accept = ".mp3,.wav";
 
         input.onchange = (event: Event) => {
             const target = event.target as HTMLInputElement;
@@ -196,7 +228,7 @@ function loadMedia(): Promise<MediaPlayerInterface> {
     })
 }
 
-async function loadPitchRecognition() {
+async function loadPitchRecognition(): Promise<void> {
     if(helperTrackMediaPlayer) {
         pitchRecognition = await pitchRecognitionFactory?.createFromLoaderWithDifferentRecorder(settingsLoader!, (helperTrackMediaPlayer as unknown as RecordingInterface & StreamNode)) ?? null;
     } else {
@@ -207,6 +239,49 @@ async function loadPitchRecognition() {
     });
 }
 
+function importTrack(): void {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.htn';
+    const sc = shiftChange;
+    input.onchange = async (event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (!file) {
+            return;
+        }
+
+        try {
+            const noteTrackImporter = new NoteTrackImporter();
+            noteTrack = await noteTrackImporter.import(file);
+            const soundTrack = noteTrack.getSoundtrack();
+            console.log(noteTrack.getSoundTrackShift())
+            sc.value = noteTrack.getSoundTrackShift();
+            if(soundTrack) {
+                soundTrackPlayer = mediaPlayerFactory!.createForFile(soundTrack);
+            } else {
+                soundTrackPlayer = null;
+            }
+            refresh()
+            recomputeNotes.value++;
+        } catch (error) {
+            console.error('Failed to import NoteTrack:', error);
+        }
+    };
+
+    input.click();
+}
+
+async function exportTrack(): Promise<void> {
+    const exporter = new NoteTrackExporter();
+    const zipFile = await exporter.export(noteTrack);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(zipFile);
+    a.download = 'track.htn';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
 function refresh() {
     noteScale.value?.$forceUpdate()
 }
@@ -214,12 +289,18 @@ function refresh() {
 let isPlaying: boolean = false;
 let interval;
 onMounted(() => {
+    let lastTime = new Date().getTime();
     interval = setInterval(() => {
-        if(!isPlaying) return;
+        const thisTime = new Date().getTime();
+        if(!isPlaying) {
+            lastTime = thisTime;
+            return;
+        }
         if(time.value < 0) {
             time.value = 0;
         }
-        time.value += 1/30
+        time.value += (thisTime - lastTime) / 1000
+        lastTime = thisTime;
     }, 1000/30)
 })
 
@@ -275,18 +356,25 @@ onUnmounted(() => {
     .more-popup {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         position: absolute;
         left: 50%;
         top: 50%;
-        gap: 50px;
+        gap: 30px;
         transform: translate(-50%, -50%);
-        background: url('imgs/background.png');
+        background-color: #899cf4;
+        max-height: 60%;
+        overflow: scroll;
     }
 
     .more-popup button {
         text-wrap: nowrap;
         font-size: 2rem;
+    }
+
+    .shift-change {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
     }
 </style>

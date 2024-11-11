@@ -3,20 +3,20 @@
         <div class="note-part">
             Note:
             <VButton @click="increaseNote"><VUp/></VButton>
-            <input class="input" type="text" @change="noteChange" :value="note.getNote().getName()"></input>
+            <VInput type="text" @change="noteChange" :value="note.getNote().getName()"></VInput>
             <VButton @click="decreaseNote"><VDown/></VButton>
         </div>
         <div class="time-part">
             Start time:
             <div class="time-settings">
                 <VButton @click="decreaseStartTime"><VLeft/></VButton>
-                <input class="input" type="text" @change="startTimeChange" :value="note.getStartTime().toFixed(2)"></input>
+                <VInput type="text" @change="startTimeChange" :value="note.getStartTime().toFixed(2)"></VInput>
                 <VButton @click="increaseStartTime"><VRight/></VButton>
             </div>
             End time:
             <div class="time-settings">
                 <VButton @click="decreaseEndTime"><VLeft/></VButton>
-                <input class="input" type="text" @change="endTimeChange" :value="note.getEndTime().toFixed(2)"></input>
+                <VInput type="text" @change="endTimeChange" :value="note.getEndTime().toFixed(2)"></VInput>
                 <VButton @click="increaseEndTime"><VRight/></VButton>
             </div>
         </div>
@@ -39,6 +39,7 @@
     import VDown from './icons/VDown.vue';
     import VDelete from './icons/VDelete.vue';
     import VClose from './icons/VClose.vue';
+    import VInput from './shared/VInput.vue';
     import NoteFactory from '@/note/NoteFactory';
 
     const {note} = defineProps<{
@@ -130,21 +131,5 @@
     .danger-button {
         background-color: red;
         outline-color: red;
-    }
-
-    .input {
-        border: 0;
-        outline: 0;
-        width: 90px;
-        height: 40px;
-        font-size: 1.5rem;
-        color: lightgray;
-        text-align: center;
-    }
-
-    .input:focus {
-        border: 1px solid lightgray;
-        border-radius: 10px;
-        padding: 10px;
     }
 </style>

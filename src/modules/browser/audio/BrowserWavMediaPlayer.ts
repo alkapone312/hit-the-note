@@ -38,6 +38,9 @@ class BrowserWavMediaPlayer extends StreamNode implements MediaPlayerInterface, 
             });
         });
     }
+    getFile(): File {
+        return this.wavFile;
+    }
 
     startRecording(): void {
         this.play();

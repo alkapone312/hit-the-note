@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -18,7 +19,6 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
     ];
@@ -29,9 +29,28 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password'
     ];
+
+    /**
+     * Generate a session token for the user.
+     */
+    public function generateSessionToken()
+    {
+        $token = Str::random(60);
+        $this->auth_token = $token;
+        $this->save();
+        return $token;
+    }
+
+    /**
+     * Revoke the current session token.
+     */
+    public function revokeSessionToken()
+    {
+        $this->auth_token = null;
+        $this->save();
+    }
 
     /**
      * Get the attributes that should be cast.

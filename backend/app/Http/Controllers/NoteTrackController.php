@@ -16,7 +16,9 @@ class NoteTrackController extends Controller
 
     public function get(string $filename) {
         try {
-            return Storage::download("note_tracks/$filename");
+            return Storage::download("note_tracks/$filename", $filename, [
+                'Access-Control-Allow-Origin' => '*'
+            ]);
         } catch(Exception $e) {
             return response()->json(['error' => "Cannot get file $filename"]);
         }

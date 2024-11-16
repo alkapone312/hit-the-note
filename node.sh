@@ -1,0 +1,1 @@
+docker exec -it hit-the-note-app /bin/bash

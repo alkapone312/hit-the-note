@@ -1,4 +1,5 @@
-dist
-docs
-node_modules
+app/dist
+app/docs
+app/node_modules
 
+backend/database

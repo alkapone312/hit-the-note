@@ -1,8 +1,6 @@
 import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 import FFT from '../FFT.js';
 
-const fs = require('node:fs');
-
 /**
  * Zalecane window size \>= 8192
  */
@@ -31,8 +29,6 @@ class HPSPitchRecognition extends PitchRecognition {
                 hps[i] *= spectrum[i * k];  // Multiply by downsampled spectrum
             }
         }
-
-        fs.writeFileSync('jps.json', JSON.stringify([...spectrum]))
 
         // Find the first maximum in the HPS spectrum
         let maxIndex = -1;

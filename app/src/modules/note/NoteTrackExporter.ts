@@ -24,6 +24,9 @@ class NoteTrackExporter {
             toneChange: noteTrack.getToneChange(),
             soundTrackShift: noteTrack.getSoundTrackShift(),
             notes: notes,
+            name: noteTrack.getMetadata().getName(),
+            artist: noteTrack.getMetadata().getArtist(),
+            filename: noteTrack.getMetadata().getFilename()
         };
 
         zip.file('notes.json', JSON.stringify(noteTrackData, null, 2));

@@ -1,6 +1,6 @@
 import NoteTrackMetadata from "@/note/NoteTrackMetadata.js";
 
-class NoteTrackResponse {
+class NoteTracksResponse {
     public constructor(private readonly metadata: NoteTrackMetadata[]) {}
 
     public getMetadata(): NoteTrackMetadata[] {
@@ -8,4 +8,4 @@ class NoteTrackResponse {
     }
 }
 
-export default NoteTrackResponse;
+export default NoteTracksResponse;

@@ -1,6 +1,6 @@
 <template>
     <nav class="menu">
-        <VButton @click="$emit('load', 'game')">Play!</VButton>
+        <VButton @click="$emit('load', 'list')">Play!</VButton>
         <VButton @click="$emit('load', 'create')">Create</VButton>
         <VButton @click="$emit('load', 'settings')">Settings</VButton>
     </nav>

@@ -11,8 +11,6 @@ class NoteTrack {
 
     private soundTrackShift = 0;
 
-    private metadata: NoteTrackMetadata;
-
     public constructor(
         private notes: NoteInTime[],
         private soundtrack: File | null = null,

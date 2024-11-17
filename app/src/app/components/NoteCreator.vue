@@ -36,6 +36,12 @@
             </div>
             <VPopup v-if="isPopupOpen" class="more-popup">
                 <VButton @click="closePopup" style="align-self: baseline;"><VClose/></VButton>
+                <div class="settings-inputs">
+                    Track name:
+                    <VInput class="settings-input" type="text" :value="trackName" @change="trackNameChange"/>
+                    Artist:
+                    <VInput class="settings-input" type="text" :value="artist" @change="artistChange"/>
+                </div>
                 <VCheckbox v-model="playSoundtrack">Play soundtrack</VCheckbox>
                 <VCheckbox v-model="playHelperTrack">Play helper track</VCheckbox>
                 <div class="shift-change">
@@ -45,6 +51,14 @@
                         <VInput type="text" :value="shiftChange.toFixed(1)" readonly></VInput>
                     </div>
                     <VButton @click="shiftPlus"><VRight/></VButton>
+                </div>
+                <div class="shift-change">
+                    <VButton @click="helperShiftMinus"><VLeft/></VButton>
+                    <div style="display: flex; flex-direction: column;">
+                        Helper track <br> shift change
+                        <VInput type="text" :value="helperShiftChange.toFixed(1)" readonly></VInput>
+                    </div>
+                    <VButton @click="helperShiftPlus"><VRight/></VButton>
                 </div>
                 <VButton @click="loadSoundTrack">Load soundtrack</VButton>
                 <VButton @click="loadHelperTrack">Load helper track</VButton>
@@ -70,8 +84,11 @@ import VPopup from './VPopup.vue';
 import VLeft from './icons/VLeft.vue';
 import VRight from './icons/VRight.vue';
 import VInput from './shared/VInput.vue';
+import NoteTrackMetadata from '@/note/NoteTrackMetadata';
 
 const noteScale = useTemplateRef('note-scale')
+const trackName = ref('Track')
+const artist = ref('Artist')
 const pinToDot = ref(true);
 const playSoundtrack = ref(true);
 const playHelperTrack = ref(true);
@@ -81,12 +98,13 @@ const time = ref(0);
 const frequency = ref(0);
 const recomputeNotes = ref(0);
 const shiftChange = ref(0);
+const helperShiftChange = ref(0);
 const mediaPlayerFactory = inject<MediaPlayerFactory>('mediaPlayerFactory');
 let pitchRecognition: PitchDetectionPipeline | null = null;
 const pitchRecognitionFactory = inject<PitchDetectionPipelineFactory>("pitchDetectionFactory");
 const settingsLoader = inject<SettingsLoader>('settingsLoader'); 
 const noteFactory = inject<NoteFactory>('noteFactory')!;
-let noteTrack = new NoteTrack([]);
+let noteTrack = new NoteTrack([], null, new NoteTrackMetadata(trackName.value, artist.value, 'name.htn'));
 let soundTrackPlayer: MediaPlayerInterface | null = null;
 let helperTrackMediaPlayer: MediaPlayerInterface | null = null;
 const notes = computed(() => {
@@ -96,16 +114,16 @@ const notes = computed(() => {
 loadPitchRecognition()
 const editingNote: Ref<NoteInTime | null> = ref(null);
     
-    const oscillator = new OscillatorController();
-    watch([time, playNotes, playHelperTrack, playSoundtrack], ([newTime]) => {
-        const note = noteTrack.getNote(newTime);
-        if(!note || !playNotes.value || !isPlaying) {
-            oscillator.stop();
-            return;
-        }
-        
-        oscillator.start(note.getNote().getFrequency());
-    });
+const oscillator = new OscillatorController();
+watch([time, playNotes, playHelperTrack, playSoundtrack], ([newTime]) => {
+    const note = noteTrack.getNote(newTime);
+    if(!note || !playNotes.value || !isPlaying) {
+        oscillator.stop();
+        return;
+    }
+    
+    oscillator.start(note.getNote().getFrequency());
+});
 
 function editNote(note: NoteInTime) {
     editingNote.value = note;
@@ -131,28 +149,37 @@ function closePopup() {
     }
 }
 
+function trackNameChange(event: Event) {
+    trackName.value = (event.target as HTMLInputElement).value;
+    noteTrack.getMetadata().setName(trackName.value);
+}
+
+function artistChange(event: Event) {
+    artist.value = (event.target as HTMLInputElement).value;
+    noteTrack.getMetadata().setArtist(artist.value);
+}
+
 function toStart() {
     time.value = 0;
-    soundTrackPlayer?.setCurrentTime(time.value)
-    helperTrackMediaPlayer?.setCurrentTime(time.value)
+    soundTrackPlayer?.setCurrentTime(time.value + noteTrack.getSoundTrackShift())
+    helperTrackMediaPlayer?.setCurrentTime(time.value + helperShiftChange.value)
 }
 
 function forward() {
     time.value += 1
-    soundTrackPlayer?.setCurrentTime(time.value)
-    helperTrackMediaPlayer?.setCurrentTime(time.value)
+    soundTrackPlayer?.setCurrentTime(time.value + noteTrack.getSoundTrackShift())
+    helperTrackMediaPlayer?.setCurrentTime(time.value + helperShiftChange.value)
 }
 
 function rewind() {
     time.value = Math.max(time.value - 1, 0)
-    soundTrackPlayer?.setCurrentTime(time.value)
-    helperTrackMediaPlayer?.setCurrentTime(time.value)
+    soundTrackPlayer?.setCurrentTime(time.value + noteTrack.getSoundTrackShift())
+    helperTrackMediaPlayer?.setCurrentTime(time.value + helperShiftChange.value)
 }
 
 function play() {
-    console.log(noteTrack.getSoundTrackShift());
     soundTrackPlayer?.setCurrentTime(time.value + noteTrack.getSoundTrackShift())
-    helperTrackMediaPlayer?.setCurrentTime(time.value)
+    helperTrackMediaPlayer?.setCurrentTime(time.value + helperShiftChange.value)
     isPlaying = true;
     if(playSoundtrack.value) {
         soundTrackPlayer?.play()
@@ -178,6 +205,16 @@ function shiftMinus() {
 
 function shiftPlus() {
     shiftChange.value += 0.1;
+    noteTrack.setSoundTrackShift(shiftChange.value)
+}
+
+function helperShiftMinus() {
+    helperShiftChange.value -= 0.1;
+    noteTrack.setSoundTrackShift(shiftChange.value)
+}
+
+function helperShiftPlus() {
+    helperShiftChange.value += 0.1;
     noteTrack.setSoundTrackShift(shiftChange.value)
 }
 
@@ -254,13 +291,14 @@ function importTrack(): void {
             const noteTrackImporter = new NoteTrackImporter();
             noteTrack = await noteTrackImporter.import(file);
             const soundTrack = noteTrack.getSoundtrack();
-            console.log(noteTrack.getSoundTrackShift())
             sc.value = noteTrack.getSoundTrackShift();
             if(soundTrack) {
                 soundTrackPlayer = mediaPlayerFactory!.createForFile(soundTrack);
             } else {
                 soundTrackPlayer = null;
             }
+            trackName.value = noteTrack.getMetadata().getName();
+            artist.value = noteTrack.getMetadata().getArtist();
             refresh()
             recomputeNotes.value++;
         } catch (error) {
@@ -276,7 +314,7 @@ async function exportTrack(): Promise<void> {
     const zipFile = await exporter.export(noteTrack);
     const a = document.createElement('a');
     a.href = URL.createObjectURL(zipFile);
-    a.download = 'track.htn';
+    a.download = noteTrack.getMetadata().getFilename();
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -306,6 +344,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     clearInterval(interval);
+    oscillator.stop()
 })
 
 </script>
@@ -376,5 +415,16 @@ onUnmounted(() => {
         display: flex;
         justify-content: space-around;
         align-items: center;
+    }
+
+    .settings-inputs {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .settings-input {
+        width: 100%;
+        font-size: 2rem;
     }
 </style>

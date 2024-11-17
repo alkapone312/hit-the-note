@@ -1,8 +1,14 @@
 <template>
   <main>
     <MainMenu v-if="panel == 'menu'" @load="loadPanel"></MainMenu>
+    <ListView v-if="panel == 'list'" @play="loadGame" @training="loadTraining"></ListView>
     <GameView 
       v-if="panel == 'game' && noteTrack" 
+      :note-track="noteTrack"
+      @close="() => panel = 'menu'"
+    />
+    <TrainingView 
+      v-if="panel == 'training' && noteTrack" 
       :note-track="noteTrack"
       @close="() => panel = 'menu'"
     />
@@ -15,41 +21,32 @@
 
 <script setup lang="ts">
 import GameView from './components/GameView.vue';
-import { inject, ref } from 'vue';
-import {NoteFactory, NoteTrack} from '../main.js';
+import { ref } from 'vue';
+import {NoteTrack} from '../main.js';
 import MainMenu from './components/MainMenu.vue';
 import NoteCreator from './components/NoteCreator.vue';
+import ListView from './components/ListView.vue';
+import NoteTrackMetadata from '@/note/NoteTrackMetadata';
+import HtnRequestFactory from './services/api/htn/HtnRequestFactory';
+import TrainingView from './components/TrainingView.vue';
+
 const panel = ref('menu');
+const htn = new HtnRequestFactory();
+const noteTrack = ref<NoteTrack | null>(null);
 
 function loadPanel(newPanel: string) {
   panel.value = newPanel;
 }
 
-const noteFactory = inject<NoteFactory>('noteFactory')!
-let file: File | null = null;
-const noteTrack = ref<NoteTrack | null>(null);
-  (async () => {
-      const blob = await (await fetch('Dont-stop-me-now-lead-vocal-only.wav')).blob();
-      file = new File([blob], 'Dont-stop-me-now-lead-vocal-only.wav', {type: blob.type})
-      noteTrack.value = new NoteTrack(
-        [
-          noteFactory.createNoteInTimeForName('G3', 0, 1),
-          noteFactory.createNoteInTimeForName('G3', 1, 2),
-          noteFactory.createNoteInTimeForName('A3', 2, 3),
-          noteFactory.createNoteInTimeForName('G3', 3, 4),
-          noteFactory.createNoteInTimeForName('C4', 4, 5),
-          noteFactory.createNoteInTimeForName('B3', 5, 6),
+async function loadGame(metadata: NoteTrackMetadata) {
+  noteTrack.value = await (await htn.getNoteTrack(metadata.getFilename())).get().getNoteTrack()
+  panel.value = 'game';
+}
 
-          noteFactory.createNoteInTimeForName('G3', 7, 8),
-          noteFactory.createNoteInTimeForName('G3', 8, 9),
-          noteFactory.createNoteInTimeForName('A3', 9, 10),
-          noteFactory.createNoteInTimeForName('G3', 10, 11),
-          noteFactory.createNoteInTimeForName('D4', 11, 12),
-          noteFactory.createNoteInTimeForName('C4', 12, 13)
-        ],
-        file
-      );
-  })();
+async function loadTraining(metadata: NoteTrackMetadata) {
+  noteTrack.value = await (await htn.getNoteTrack(metadata.getFilename())).get().getNoteTrack()
+  panel.value = 'training';
+}
 
 </script>
 

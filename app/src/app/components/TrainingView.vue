@@ -18,6 +18,14 @@
             :expected-hertz="expectedFrequency"
         />
         <div class="controls">
+            <MediaPlayer
+            v-if="file !== null"
+            :file="file"
+            v-model="time"
+            @play="play"
+            @pause="pause"
+            class="media-player"
+            ></MediaPlayer>
             <div class="note-scale-controls">
                 <VCheckbox v-model="pinToDot">Snap to point</VCheckbox>
                 <VButton class="control-button" @click="toneDown">Tone Down</VButton>
@@ -32,11 +40,12 @@
 <script setup lang="ts">
 import NoteScale from './NoteScale.vue';
 import { inject, ref, defineProps, watch } from 'vue';
+import MediaPlayer from './MediaPlayer.vue';
 import VClose from './icons/VClose.vue';
-import CurrentNoteInfo from './CurrentNoteInfo.vue';
-import { MediaPlayerFactory, MediaPlayerInterface, NoteFactory, NoteTrack, PitchDetectionPipeline, PitchDetectionPipelineFactory, SettingsLoader } from '../../main.js'
-import VButton from './shared/VButton.vue';
+import CurrentNoteInfo from './CurrentNoteInfo.vue'
 import VCheckbox from './shared/VCheckbox.vue';
+import { NoteFactory, NoteTrack, PitchDetectionPipeline, PitchDetectionPipelineFactory, SettingsLoader } from '../../main.js'
+import VButton from './shared/VButton.vue';
 
 const pinToDot = ref(true);
 const currentTone = ref(0);
@@ -64,22 +73,14 @@ watch(time, (newTime: number) => {
 });
 
 const file = noteTrack.getSoundtrack();
-let mediaPlayer: MediaPlayerInterface | null = null;
-if(file) {
-    mediaPlayer = inject<MediaPlayerFactory>('mediaPlayerFactory')!.createForFile(file);
+
+function play() {
+    pitchRecognition?.startDetection();
 }
 
-let interval = 0;
-let timeout = setTimeout(() => {
-    mediaPlayer?.play();
-    pitchRecognition?.startDetection();
-    let lastTime = new Date().getTime();
-    interval = setInterval(() => {
-        const thisTime = new Date().getTime()
-        time.value += (new Date().getTime() - lastTime) / 1000;
-        lastTime = thisTime;
-    }, 1000/30)
-}, 5000);
+function pause() {
+    pitchRecognition?.stopDetection();
+}
 
 function toneUp() {
     currentTone.value += 1;
@@ -89,13 +90,6 @@ function toneUp() {
 function toneDown() {
     currentTone.value -= 1;
     noteTrack.changeTone(-1);
-}
-
-function close() {
-    mediaPlayer?.stop()
-    pitchRecognition?.stopDetection();
-    clearInterval(interval);
-    clearTimeout(timeout);
 }
 
 </script>

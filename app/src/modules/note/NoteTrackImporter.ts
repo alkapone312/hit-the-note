@@ -2,6 +2,7 @@ import JSZip from 'jszip';
 import NoteTrack from './NoteTrack.js';
 import NoteFactory from './NoteFactory.js';
 import NoteInTrack from './NoteInTrack.js';
+import NoteTrackMetadata from './NoteTrackMetadata.js';
 
 class NoteTrackImporter {
     private noteFactory: NoteFactory;
@@ -29,7 +30,7 @@ class NoteTrackImporter {
             );
         });
 
-        const noteTrack = new NoteTrack(notes);
+        const noteTrack = new NoteTrack(notes, null, new NoteTrackMetadata(noteTrackData.name, noteTrackData.artist, noteTrackData.filename));
 
         noteTrack.changeTone(noteTrackData.toneChange ?? 0);
         noteTrack.setSoundTrackShift(noteTrackData.soundTrackShift ?? 0);

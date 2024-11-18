@@ -21,7 +21,11 @@
     <NoteCreator
       v-if="panel == 'create'"
       @close="() => panel = 'menu'"
-    ></NoteCreator>
+    />
+    <VSettings
+      v-if="panel == 'settings'"
+      @close="() => panel = 'menu'"
+    />
   </main>
 </template>
 
@@ -37,6 +41,7 @@ import HtnRequestFactory from './services/api/htn/HtnRequestFactory';
 import TrainingView from './components/TrainingView.vue';
 import VLoading from './components/VLoading.vue';
 import Loading from './utils/Loading';
+import VSettings from './components/VSettings.vue';
 
 const panel = ref('menu');
 const htn = new HtnRequestFactory();

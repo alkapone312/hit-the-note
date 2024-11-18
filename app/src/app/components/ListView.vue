@@ -39,6 +39,6 @@ import Loading from '@App/utils/Loading';
     gap: 20px;
     background-color: #899cf4;
     border-radius: 20px;
-    border: 5px solid rgb(255, 216, 100);
+    outline: 5px solid #c9d3ff;
 }
 </style>

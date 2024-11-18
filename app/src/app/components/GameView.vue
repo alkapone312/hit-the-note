@@ -15,7 +15,19 @@
         <VPopup class="popup" v-if="countdown && !started">
             {{ countdownValue }}
         </VPopup>
-        <div class="something"></div>
+        <div class="popup-background" v-if="summary">
+        </div>
+        <VPopup class="popup" v-if="summary">
+            Zdobyte punkty: {{ points.toFixed(0) }}
+            <VButton @click="() => {$emit('close');close()}">Zamknij</VButton>
+        </VPopup>
+        <div class="metadata">
+            <VGameMetadata
+                :points="points.toFixed(0)"
+                :metadata="noteTrack.getMetadata()"
+                @close="() => {$emit('close'); close()}"
+            />
+        </div>
         <div class="note-scale-container">
             <NoteScale
                 :snap-to-current-time="true"
@@ -32,14 +44,12 @@
             :expected-note="expectedNote"
             :expected-hertz="expectedFrequency"
         />
-        <VButton class="close-button" @click="() => {$emit('close'); close()}"><VClose/></VButton>
     </div>
 </template>
 
 <script setup lang="ts">
 import NoteScale from './NoteScale.vue';
 import { inject, ref, defineProps, watch } from 'vue';
-import VClose from './icons/VClose.vue';
 import CurrentNoteInfo from './CurrentNoteInfo.vue';
 import { 
     MediaPlayerFactory, 
@@ -48,10 +58,12 @@ import {
     NoteTrack, 
     PitchDetectionPipeline, 
     PitchDetectionPipelineFactory, 
-    SettingsLoader 
+    SettingsLoader,
+    NotePoints
 } from '../../main.js'
 import VButton from './shared/VButton.vue';
 import VPopup from './VPopup.vue';
+import VGameMetadata from './VGameMetadata.vue';
 import Sounds from '@App/Sounds';
 
 const currentTone = ref(0);
@@ -60,6 +72,8 @@ const frequency = ref(0);
 const note = ref('C0');
 const expectedNote = ref('C0');
 const expectedFrequency = ref(0);
+const points = ref(0);
+const summary = ref(false);
 let pitchRecognition: PitchDetectionPipeline | null = null;
 (async () => {
     pitchRecognition = await inject<PitchDetectionPipelineFactory>("pitchDetectionFactory")?.createFromLoader(inject<SettingsLoader>('settingsLoader')!) ?? null;
@@ -70,12 +84,26 @@ let pitchRecognition: PitchDetectionPipeline | null = null;
 })()
 const noteFactory = inject<NoteFactory>('noteFactory');
 const { noteTrack } = defineProps<{noteTrack: NoteTrack}>();
+const notePoints = new NotePoints(noteTrack);
+
+let endTime = 0;
+noteTrack.getNotes().forEach(note => {
+    if(note.getEndTime() > endTime) {
+        endTime = note.getEndTime()
+    }
+})
 
 watch(time, (newTime: number) => {
+    if(time.value > endTime + 3) {
+        end();
+    }
+
     const note = noteTrack.getNote(newTime);
     if(note == null) return;
     expectedNote.value = note.getNote().getName();
     expectedFrequency.value = note.getNote().getFrequency();
+    notePoints.analyzeAndAddPoints(time.value, frequency.value);
+    points.value = notePoints.getTotalPoints()
 });
 
 const file = noteTrack.getSoundtrack();
@@ -90,7 +118,7 @@ let started = ref(false);
 let countdown = ref(false);
 let countdownValue = ref<string | number>(6);
 function start() {
-    function countdownFn() {
+    const countdownFn = () => {
         if(countdownValue.value != 'GO!') {
             (countdownValue.value as number) -= 1;
             if(countdownValue.value == 0) {
@@ -126,6 +154,14 @@ function toneDown() {
     noteTrack.changeTone(-1);
 }
 
+function end() {
+    mediaPlayer?.stop()
+    pitchRecognition?.stopDetection();
+    clearInterval(interval);
+    clearTimeout(timeout);
+    summary.value = true;
+}
+
 function close() {
     mediaPlayer?.stop()
     pitchRecognition?.stopDetection();
@@ -136,6 +172,14 @@ function close() {
 </script>
 
 <style scoped>
+    .metadata {
+        background-color: white;
+        border: 5px solid rgb(255, 216, 100);
+        outline: 5px solid white;
+        border-radius: 20px;
+        margin: 30px 30px 0 30px;
+    }
+
     .popup-background {
         display: flex;
         position: absolute;
@@ -148,6 +192,10 @@ function close() {
     }
 
     .popup {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
         font-size: 4rem;
         position: absolute;
         left: 50%;

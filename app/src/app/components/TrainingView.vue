@@ -2,7 +2,6 @@
     <div class="game-container">
         <div class="metadata">
             <VGameMetadata
-                :points="100"
                 :metadata="noteTrack.getMetadata()"
                 @close="() => {$emit('close');}"
             />

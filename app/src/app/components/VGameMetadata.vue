@@ -17,7 +17,7 @@
     import VClose from './icons/VClose.vue';
     
     const {metadata} = defineProps<{
-        points?: number,
+        points?: number | string,
         metadata: NoteTrackMetadata
     }>()
 </script>

@@ -37,6 +37,7 @@ import SettingsLoader from "@/audio/SettingsLoader.js";
 import PitchDetectionPipelineFactory from "@/audio/PitchDetectionPipelineFactory.js";
 import NoteTrackExporter from "@/note/NoteTrackExporter.js";
 import NoteTrackImporter from "@/note/NoteTrackImporter.js";
+import NotePoints from "@/note/NotePoints.js";
 
 export {
     // IO
@@ -68,6 +69,7 @@ export {
     NoteInTime,
     NoteTrackExporter,
     NoteTrackImporter,
+    NotePoints,
 
     // Utils
     StreamNode,

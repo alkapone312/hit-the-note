@@ -4,6 +4,8 @@ class Sounds {
     static {
         this.sounds = {
             "click": new Audio('sounds/click.wav'),
+            "beep": new Audio('sounds/beep.mp3'),
+            "long-beep": new Audio('sounds/long-beep.mp3')
         }
     }
 

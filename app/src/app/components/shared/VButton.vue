@@ -19,6 +19,7 @@
 button {
     display: flex;
     align-items: center;
+    justify-content: center;
     font-size: 3rem;
     background-color: rgb(255, 216, 100);
     padding: 15px;

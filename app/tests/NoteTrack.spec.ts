@@ -5,6 +5,7 @@ import NoteTrackImporter from '@/note/NoteTrackImporter.js';
 import JSZip from 'jszip';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import fs from "node:fs";
+import NoteTrackMetadata from '@/note/NoteTrackMetadata.js';
 
 let noteTrack;
 let noteFactory = new NoteFactory();
@@ -25,7 +26,7 @@ const defaultNotes = [
 ]
 
 beforeEach(() => {
-    noteTrack = new NoteTrack(defaultNotes);
+    noteTrack = new NoteTrack(defaultNotes, null, new NoteTrackMetadata('a', 'b', 'c'));
 })
 
 describe('NoteTrack', () => {

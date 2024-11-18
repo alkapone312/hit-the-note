@@ -1,10 +1,25 @@
 <template>
     <div class="game-container">
+        <div class="popup-background" v-if="!started">
+        </div>
+        <VPopup class="popup" v-if="!countdown && !started">
+            <div class="controls">
+                <div class="note-scale-controls">
+                    <VButton class="control-button" @click="toneDown">Tone Down</VButton>
+                    <span class="current-tone">{{ currentTone }}</span>
+                    <VButton class="control-button" @click="toneUp">Tone up</VButton>
+                </div>
+                <VButton @click="start">Start</VButton>
+            </div>
+        </VPopup>
+        <VPopup class="popup" v-if="countdown && !started">
+            {{ countdownValue }}
+        </VPopup>
         <div class="something"></div>
-        <div>
+        <div class="note-scale-container">
             <NoteScale
-                :snap-to-current-time="pinToDot"
-                :snap-to-frequency="pinToDot"
+                :snap-to-current-time="true"
+                :snap-to-frequency="true"
                 :notes="noteTrack.getNotes()"
                 :current-time="time"
                 :current-frequency="frequency"
@@ -17,14 +32,6 @@
             :expected-note="expectedNote"
             :expected-hertz="expectedFrequency"
         />
-        <div class="controls">
-            <div class="note-scale-controls">
-                <VCheckbox v-model="pinToDot">Snap to point</VCheckbox>
-                <VButton class="control-button" @click="toneDown">Tone Down</VButton>
-                <span class="current-tone">{{ currentTone }}</span>
-                <VButton class="control-button" @click="toneUp">Tone up</VButton>
-            </div>
-        </div>
         <VButton class="close-button" @click="() => {$emit('close'); close()}"><VClose/></VButton>
     </div>
 </template>
@@ -34,11 +41,19 @@ import NoteScale from './NoteScale.vue';
 import { inject, ref, defineProps, watch } from 'vue';
 import VClose from './icons/VClose.vue';
 import CurrentNoteInfo from './CurrentNoteInfo.vue';
-import { MediaPlayerFactory, MediaPlayerInterface, NoteFactory, NoteTrack, PitchDetectionPipeline, PitchDetectionPipelineFactory, SettingsLoader } from '../../main.js'
+import { 
+    MediaPlayerFactory, 
+    MediaPlayerInterface, 
+    NoteFactory, 
+    NoteTrack, 
+    PitchDetectionPipeline, 
+    PitchDetectionPipelineFactory, 
+    SettingsLoader 
+} from '../../main.js'
 import VButton from './shared/VButton.vue';
-import VCheckbox from './shared/VCheckbox.vue';
+import VPopup from './VPopup.vue';
+import Sounds from '@App/Sounds';
 
-const pinToDot = ref(true);
 const currentTone = ref(0);
 const time = ref(0);
 const frequency = ref(0);
@@ -69,17 +84,37 @@ if(file) {
     mediaPlayer = inject<MediaPlayerFactory>('mediaPlayerFactory')!.createForFile(file);
 }
 
-let interval = 0;
-let timeout = setTimeout(() => {
-    mediaPlayer?.play();
-    pitchRecognition?.startDetection();
-    let lastTime = new Date().getTime();
-    interval = setInterval(() => {
-        const thisTime = new Date().getTime()
-        time.value += (new Date().getTime() - lastTime) / 1000;
-        lastTime = thisTime;
-    }, 1000/30)
-}, 5000);
+let interval;
+let timeout;
+let started = ref(false);
+let countdown = ref(false);
+let countdownValue = ref<string | number>(6);
+function start() {
+    function countdownFn() {
+        if(countdownValue.value != 'GO!') {
+            (countdownValue.value as number) -= 1;
+            if(countdownValue.value == 0) {
+                countdownValue.value = 'GO!';
+                Sounds.play('long-beep')
+            } else {
+                Sounds.play('beep')
+            }
+            setTimeout(countdownFn, 1000)
+            return;
+        }
+        started.value = true;
+        mediaPlayer?.play();
+        pitchRecognition?.startDetection();
+        let lastTime = new Date().getTime();
+        interval = setInterval(() => {
+            const thisTime = new Date().getTime()
+            time.value += (new Date().getTime() - lastTime) / 1000;
+            lastTime = thisTime;
+        }, 1000/30)
+    }
+    countdown.value = true;
+    countdownFn();
+}
 
 function toneUp() {
     currentTone.value += 1;
@@ -101,12 +136,37 @@ function close() {
 </script>
 
 <style scoped>
+    .popup-background {
+        display: flex;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 2;
+    }
+
+    .popup {
+        font-size: 4rem;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+        background-color: #899cf4;
+    }
+
+    .note-scale-container {
+        grid-column-start: 2;
+        grid-row-start: 1;
+        grid-row-end: 3;
+    }
+
     .note-scale {
         box-sizing: content-box;
         border-left: 5px solid rgb(255, 216, 100);
-        border-bottom: 5px solid rgb(255, 216, 100);
         outline: 5px solid white;
-        border-bottom-left-radius: 20px;
     }
 
     .game-container {

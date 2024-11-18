@@ -1,7 +1,12 @@
 <template>
   <main>
     <MainMenu v-if="panel == 'menu'" @load="loadPanel"></MainMenu>
-    <ListView v-if="panel == 'list'" @play="loadGame" @training="loadTraining"></ListView>
+    <ListView 
+      v-if="panel == 'list'" 
+      @play="loadGame" 
+      @training="loadTraining"
+      @close="() => panel = 'menu'"
+    />
     <GameView 
       v-if="panel == 'game' && noteTrack" 
       :note-track="noteTrack"

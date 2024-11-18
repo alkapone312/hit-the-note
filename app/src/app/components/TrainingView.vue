@@ -1,6 +1,12 @@
 <template>
     <div class="game-container">
-        <div class="something"></div>
+        <div class="metadata">
+            <VGameMetadata
+                :points="100"
+                :metadata="noteTrack.getMetadata()"
+                @close="() => {$emit('close');}"
+            />
+        </div>
         <div>
             <NoteScale
                 :snap-to-current-time="pinToDot"
@@ -26,14 +32,25 @@
             @pause="pause"
             class="media-player"
             ></MediaPlayer>
+            <MediaPlayerControls
+                @play="play"
+                @pause="pause"
+                @forward="forward"
+                @rewind="rewind"
+                @to-start="toStart"
+                @to-stop="toStop"
+                v-else
+            >
+
+            </MediaPlayerControls>
             <div class="note-scale-controls">
                 <VCheckbox v-model="pinToDot">Snap to point</VCheckbox>
+                <VCheckbox v-model="playNotes">Play notes</VCheckbox>
                 <VButton class="control-button" @click="toneDown">Tone Down</VButton>
                 <span class="current-tone">{{ currentTone }}</span>
                 <VButton class="control-button" @click="toneUp">Tone up</VButton>
             </div>
         </div>
-        <VButton class="close-button" @click="() => {$emit('close'); close()}"><VClose/></VButton>
     </div>
 </template>
 
@@ -41,13 +58,17 @@
 import NoteScale from './NoteScale.vue';
 import { inject, ref, defineProps, watch } from 'vue';
 import MediaPlayer from './MediaPlayer.vue';
-import VClose from './icons/VClose.vue';
 import CurrentNoteInfo from './CurrentNoteInfo.vue'
 import VCheckbox from './shared/VCheckbox.vue';
 import { NoteFactory, NoteTrack, PitchDetectionPipeline, PitchDetectionPipelineFactory, SettingsLoader } from '../../main.js'
 import VButton from './shared/VButton.vue';
+import MediaPlayerControls from './MediaPlayerControls.vue';
+import VGameMetadata from './VGameMetadata.vue';
+import OscillatorController from '@App/utils/OscillatorController';
 
 const pinToDot = ref(true);
+const playNotes = ref(false);
+const isPlaying = ref(false);
 const currentTone = ref(0);
 const time = ref(0);
 const frequency = ref(0);
@@ -64,6 +85,17 @@ let pitchRecognition: PitchDetectionPipeline | null = null;
 })()
 const noteFactory = inject<NoteFactory>('noteFactory');
 const { noteTrack } = defineProps<{noteTrack: NoteTrack}>();
+let timeInterval: unknown;
+const oscillator = new OscillatorController();
+watch([time, playNotes, isPlaying], ([newTime]) => {
+    const note = noteTrack.getNote(newTime);
+    if(!note || !playNotes.value || !isPlaying) {
+        oscillator.stop();
+        return;
+    }
+    
+    oscillator.start(note.getNote().getFrequency());
+});
 
 watch(time, (newTime: number) => {
     const note = noteTrack.getNote(newTime);
@@ -75,11 +107,50 @@ watch(time, (newTime: number) => {
 const file = noteTrack.getSoundtrack();
 
 function play() {
+    isPlaying.value = true;
     pitchRecognition?.startDetection();
+    if(!file) {
+        lastTime = new Date().getTime()!;
+        measureTime()
+    }
 }
 
 function pause() {
+    isPlaying.value = false;
     pitchRecognition?.stopDetection();
+    if(!file) {
+        lastTime = new Date().getTime()!;
+        stopTimeMeasure()
+    }
+}
+
+function forward() {
+    time.value += 10
+}
+
+function rewind() {
+    time.value -= 10
+}
+
+function toStart() {
+    time.value = 0
+}
+
+function toStop() {
+    time.value = noteTrack.getNotes()[noteTrack.getNotes().length].getEndTime();
+}
+
+let lastTime = new Date().getTime()!;
+function measureTime() {
+    timeInterval = setInterval(() => {
+        const thisTime = new Date().getTime()!;
+        time.value! += (thisTime - lastTime) / 1000
+        lastTime = thisTime;
+    }, 1000/30);
+}
+
+function stopTimeMeasure() {
+    clearInterval(timeInterval as number);
 }
 
 function toneUp() {
@@ -95,6 +166,14 @@ function toneDown() {
 </script>
 
 <style scoped>
+    .metadata {
+        background-color: white;
+        border: 5px solid rgb(255, 216, 100);
+        outline: 5px solid white;
+        border-radius: 20px;
+        margin: 30px 30px 0 30px;
+    }
+
     .note-scale {
         box-sizing: content-box;
         border-left: 5px solid rgb(255, 216, 100);
@@ -131,12 +210,5 @@ function toneDown() {
 
     .current-tone {
         font-size: 2rem;
-    }
-    
-    .close-button {
-        display: flex;
-        position: absolute;
-        left: 50px; 
-        top: 50px;
     }
 </style>

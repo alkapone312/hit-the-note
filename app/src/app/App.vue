@@ -1,5 +1,6 @@
 <template>
   <main>
+    <VLoading v-if="loading"/>
     <MainMenu v-if="panel == 'menu'" @load="loadPanel"></MainMenu>
     <ListView 
       v-if="panel == 'list'" 
@@ -34,23 +35,33 @@ import ListView from './components/ListView.vue';
 import NoteTrackMetadata from '@/note/NoteTrackMetadata';
 import HtnRequestFactory from './services/api/htn/HtnRequestFactory';
 import TrainingView from './components/TrainingView.vue';
+import VLoading from './components/VLoading.vue';
+import Loading from './utils/Loading';
 
 const panel = ref('menu');
 const htn = new HtnRequestFactory();
 const noteTrack = ref<NoteTrack | null>(null);
+const loading = ref(false);
+
+Loading.onStartLoading(() => loading.value = true)
+Loading.onEndLoading(() => loading.value = false)
 
 function loadPanel(newPanel: string) {
   panel.value = newPanel;
 }
 
 async function loadGame(metadata: NoteTrackMetadata) {
-  noteTrack.value = await (await htn.getNoteTrack(metadata.getFilename())).get().getNoteTrack()
-  panel.value = 'game';
+  Loading.load(async () => {
+    noteTrack.value = await (await htn.getNoteTrack(metadata.getFilename())).get().getNoteTrack()
+    panel.value = 'game';
+  })
 }
 
-async function loadTraining(metadata: NoteTrackMetadata) {
-  noteTrack.value = await (await htn.getNoteTrack(metadata.getFilename())).get().getNoteTrack()
-  panel.value = 'training';
+function loadTraining(metadata: NoteTrackMetadata) {
+  Loading.load(async () => {
+    noteTrack.value = await (await htn.getNoteTrack(metadata.getFilename())).get().getNoteTrack()
+    panel.value = 'training';
+  })
 }
 
 </script>

@@ -11,7 +11,7 @@ interface PipelineSettings {
 
 interface Settings extends PipelineSettings {
     recorder: RecordingInterface & StreamNode;
-    filterChain?: StreamNode[];
+    filterChain: StreamNode[];
     pitchRecognition: PitchRecognition;
 }
 

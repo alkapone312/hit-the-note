@@ -1,10 +1,9 @@
 <template>
     <div class="custom-select">
-      <label v-if="label" :for="computedId">{{ label }}</label>
       <div class="select-container">
         <select :id="computedId" v-model="selectedOption" @change="emitSelection">
           <option v-for="option in options" :key="option.value" :value="option.value">
-            {{ option.label }}
+            {{ option.name }}
           </option>
         </select>
       </div>
@@ -13,21 +12,17 @@
   
   <script setup lang="ts">
   import { ref, defineProps, defineEmits } from 'vue';
+  import { EnumerateValuesType } from './FormTypes';
   
-  // Props for the component
   const {modelValue} = defineProps<{
-    label?: string; // Label for the select field (optional)
-    options: { value: string | number; label: string }[]; // Options for the select field
-    modelValue: string | number; // Selected value passed from parent
+    options: EnumerateValuesType;
+    modelValue: string | number;
   }>();
   
-  // Emits the updated value
   const emit = defineEmits(['update:modelValue']);
   
-  // Unique ID generation
   const computedId = `custom-select-${Math.random().toString(36).substr(2, 9)}`;
   
-  // Reactive state for the selected option
   const selectedOption = ref(modelValue);
   
   const emitSelection = () => {

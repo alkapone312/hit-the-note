@@ -1,16 +1,15 @@
 {
-  "name": "pitchdetecionplayground",
+  "name": "hit-the-note",
   "version": "1.0.0",
   "main": "index.js",
   "typings": "./dist",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "dev:playground": "vite --config vite-playground.config.ts --host",
     "build": "vite build",
     "preview": "vite preview",
     "test:unit": "vitest",
-    "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
+    "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e --headed'",
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
     "lint": "eslint",
     "lint:fix": "eslint --fix",

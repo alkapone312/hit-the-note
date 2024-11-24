@@ -3,6 +3,7 @@
   "include": ["./**/*", "../support/**/*"],
   "compilerOptions": {
     "isolatedModules": false,
-    "types": ["cypress"]
+    "types": ["cypress"],
+    "module": "ESNext"
   }
 }

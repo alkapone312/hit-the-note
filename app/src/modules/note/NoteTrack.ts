@@ -21,19 +21,15 @@ class NoteTrack {
         })
         this.noteFactory = new NoteFactory();
     }
-
-    public setSoundtrack(file: File) {
-        this.soundtrack = file;
-    }
-
+    
     public addNote(newNote: NoteInTime): void {
         this.notes.push(new NoteInTrack(newNote, this));
     }
-
+    
     public removeNote(note: NoteInTime): void {
         this.notes = this.notes.filter(item => item !== note);
     }
-
+    
     public getNote(time: number): NoteInTime | null {
         return this.notes.find(note => {
             if (
@@ -42,31 +38,39 @@ class NoteTrack {
             ) {
                 return true;
             }
-
+            
             return false;
         }) ?? null;
     }
-
+    
     public getNotes(): NoteInTime[] {
         return this.notes;
     }
-
-    public getSoundtrack(): File | null {
-        return this.soundtrack;
-    }
-
+    
     public getToneChange(): number {
         return this.toneChange;
     }
-
+    
+    public getSoundtrack(): File | null {
+        return this.soundtrack;
+    }
+    
     public getSoundTrackShift(): number {
         return this.soundTrackShift;
     }
+    
+    public getMetadata(): NoteTrackMetadata {
+        return this.metadata;
+    }
+
+    public setSoundtrack(file: File) {
+        this.soundtrack = file;
+    }    
 
     public setSoundTrackShift(shift: number): void {
         this.soundTrackShift = shift;
     }
-
+    
     public changeTone(numberOfSemitones: number): void {
         this.toneChange = numberOfSemitones;
         this.notes = this.notes.map(
@@ -75,10 +79,6 @@ class NoteTrack {
                 this
             )
         );
-    }
-
-    public getMetadata(): NoteTrackMetadata {
-        return this.metadata;
     }
 }
 

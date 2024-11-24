@@ -3,12 +3,6 @@
     "compilerOptions": {
         "lib": ["es5", "es2015.promise", "dom", "es2022"],
         "target": "es2015",
-        "outDir": "dist",
-        "module": "NodeNext",
-        "downlevelIteration": true,
-        "declaration": true,
-        "sourceMap": true,
-        "declarationMap": true,
         "paths": {
             "@/*" : ["./src/modules/*"],
             "@App/*": ["./src/app/*"],

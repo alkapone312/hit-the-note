@@ -67,6 +67,21 @@ class NotePoints {
         this.calculatePointsForCurrentNote();
     }
 
+    public getTotalPoints(): number {
+        return this.totalPoints + (this.getCurrentNoteAnalysis()?.currentNotePoints ?? 0);
+    }
+
+    public getCurrentNote(): NoteInTime | null {
+        return this.currentNote;
+    }
+
+    public reset(): void {
+        this.totalPoints = 0;
+        this.currentNote = null;
+        this.lastAnalyzedTime = 0;
+        this.noteAnalysis = [];
+    }
+
     private finalizeNoteAnalysis(note: NoteInTime): void {
         const noteAnalysis = this.noteAnalysis.find((n) => n.note === note);
         if (!noteAnalysis) return;
@@ -94,21 +109,6 @@ class NotePoints {
 
     private getCurrentNoteAnalysis(): NoteAnalysis | null {
         return this.noteAnalysis.find((n) => n.note === this.currentNote) || null;
-    }
-
-    public getTotalPoints(): number {
-        return this.totalPoints + (this.getCurrentNoteAnalysis()?.currentNotePoints ?? 0);
-    }
-
-    public getCurrentNote(): NoteInTime | null {
-        return this.currentNote;
-    }
-
-    public reset(): void {
-        this.totalPoints = 0;
-        this.currentNote = null;
-        this.lastAnalyzedTime = 0;
-        this.noteAnalysis = [];
     }
 }
 

@@ -20,10 +20,10 @@ import FFTPitchRecognition from "@/audio/pitch/FFTPitchRecognition.js";
 import FrequencySmootherDecorator from "@/audio/FrequenySmootherDecorator.js";
 
 (async () => {
+
     if(typeof window === 'undefined') {
         throw new Error('Application is meant to run in browser!');
     }
-
 
     const f = await fetch('Dont-stop-me-now-lead-vocal-only.wav');
     const file = new File([await f.blob()], 'Dont-stop-me-now-lead-vocal-only.wav');
@@ -55,7 +55,7 @@ import FrequencySmootherDecorator from "@/audio/FrequenySmootherDecorator.js";
             new AmplitudeThresholdFilter(0.025),
             new HighPassFilter(900),
             new MovingAverageFilter(500),
-            new HammingWindowNode()
+            hammingWindow
         ],
         pitchRecognition: new FrequencySmootherDecorator(new ACFRecognition(), 5)
     });
@@ -96,11 +96,11 @@ import FrequencySmootherDecorator from "@/audio/FrequenySmootherDecorator.js";
     const visualise2 = new VisualiseNode(canvas2.width, canvas2.height, ctx2);
     const visualise3 = new VisualiseNode(canvas3.width, canvas3.height, ctx3);
     const frequency = new Array(canvas2.width).fill(0) as number[];
-    // hammingWindow.connect(visualise1);
-    // hammingWindow.connect(fftNode);
-    // fftNode.onSpectrum(spectrum => {
-    //     visualise2.accept(spectrum);
-    // });
+    hammingWindow.connect(visualise1);
+    hammingWindow.connect(fftNode);
+    fftNode.onSpectrum(spectrum => {
+        visualise2.accept(spectrum);
+    });
     pitchDetectionPipeline.onPitchDetected((pitch) => {
         const freq = frequency.shift() ?? 0;
         const note = factory.createClosestNoteForFrequency(freq);

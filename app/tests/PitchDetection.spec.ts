@@ -88,7 +88,7 @@ const pitches = [
     800
 ]
 
-const ACCEPTABLE_ERROR_MARGIN = 0.05; // Allow 5 Hz error
+const ACCEPTABLE_ERROR_MARGIN = 0.05; // Allow 5% error
 
 describe('PitchRecognition subclasses', () => {
     pitches.forEach(pitch => {

@@ -46,20 +46,39 @@ const generateSineWave = (frequency, sampleRate, numSamples) => {
     return samples;
 };
 
+const generateHarmonicWave = (frequency, sampleRate, numSamples, numHarmonics) => {
+    const samples = new Float32Array(numSamples);
+    const angularFrequency = 2 * Math.PI * frequency / sampleRate;
+
+    for (let i = 0; i < numSamples; i++) {
+        let sample = 0;
+        for (let harmonic = 1; harmonic <= numHarmonics; harmonic++) {
+            const harmonicFrequency = frequency * harmonic;
+            const harmonicAngularFrequency = 2 * Math.PI * harmonicFrequency / sampleRate;
+            sample += Math.sin(harmonicAngularFrequency * i);
+        }
+        samples[i] = sample;
+    }
+    return samples;
+};
+
 const settings = {
     sampleRate: 44100,
     windowSize: 4096
 } as PipelineSettings;
 
-const mockImplementations = [
+const pitchRecognitions = [
     ZeroCrossingRecognition,
     ACFRecognition,
     AMDFPitchRecognition,
     ACFAndAMDFPitchRecognition,
     FFTPitchRecognition,
-    // HPSPitchRecognition,
-    // CBHPSPitchRecognition,
 ];
+
+const pitchRecognitionsWithHarmonics = [
+    HPSPitchRecognition,
+    CBHPSPitchRecognition,
+]
 
 const pitches = [
     100,
@@ -73,7 +92,7 @@ const ACCEPTABLE_ERROR_MARGIN = 0.05; // Allow 5 Hz error
 
 describe('PitchRecognition subclasses', () => {
     pitches.forEach(pitch => {
-        mockImplementations.forEach((Class) => {
+        pitchRecognitions.forEach((Class) => {
             it(`should detect pitch within an acceptable error margin for ${Class.name} pitch ${pitch}`, () => {
                 const recognition = new Class();
                 recognition.setSettings(settings);
@@ -97,6 +116,43 @@ describe('PitchRecognition subclasses', () => {
 
                 const expectedPitch = pitch
                 const waveform = generateSineWave(expectedPitch, settings.sampleRate, settings.windowSize)
+                
+                let computedFrequency = 0;
+                const callback: PitchDetectedCallback = (frequency) => {
+                    computedFrequency = frequency;
+                };
+                
+                recognition.onPitchDetected(callback);
+                filters[0].accept(waveform);
+                
+                expect(computedFrequency).toBeBetween(expectedPitch - expectedPitch * ACCEPTABLE_ERROR_MARGIN, expectedPitch + expectedPitch * ACCEPTABLE_ERROR_MARGIN);
+            });
+        });
+
+        pitchRecognitionsWithHarmonics.forEach((Class) => {
+            it(`should detect pitch within an acceptable error margin for ${Class.name} pitch ${pitch} with multiple harmonics`, () => {
+                const recognition = new Class();
+                recognition.setSettings(settings);
+                const filters = [
+                    new AmplitudeThresholdFilter(0.025),
+                    new HighPassFilter(900),
+                    new MovingAverageFilter(500),
+                    new HammingWindowNode(),
+                ]
+                let lastFilter: StreamNode | null = null;
+                filters.forEach(f => {
+                    f.setSettings(settings);
+                    if(!lastFilter) {
+                        lastFilter = f;
+                        return;
+                    }
+
+                    lastFilter.connect(f);
+                })
+                filters[filters.length-1].connect(recognition);
+
+                const expectedPitch = pitch
+                const waveform = generateHarmonicWave(expectedPitch, settings.sampleRate, settings.windowSize, 5)
                 
                 let computedFrequency = 0;
                 const callback: PitchDetectedCallback = (frequency) => {

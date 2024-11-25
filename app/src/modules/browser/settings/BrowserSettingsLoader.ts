@@ -9,7 +9,7 @@ import MovingAverageFilter from '@/audio/filter/MovingAverageFilter.js';
 import HammingWindowNode from '@/audio/filter/HammingWindowNode.js';
 import FrequencySmootherDecorator from '@/audio/FrequenySmootherDecorator.js';
 import {ACFRecognition} from '../../../main.js';
-import SettingsLoader from '@/audio/SettingsLoader.js';
+import type SettingsLoader from '@/audio/SettingsLoader.js';
 
 /**
  * Settings loader for browser environment.

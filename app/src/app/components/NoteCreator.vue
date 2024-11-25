@@ -104,10 +104,11 @@ let pitchRecognition: PitchDetectionPipeline | null = null;
 const pitchRecognitionFactory = inject<PitchDetectionPipelineFactory>("pitchDetectionFactory");
 const settingsLoader = inject<SettingsLoader>('settingsLoader'); 
 const noteFactory = inject<NoteFactory>('noteFactory')!;
-let noteTrack = new NoteTrack([], null, new NoteTrackMetadata(trackName.value, artist.value, 'name.htn'));
+let noteTrack = new NoteTrack([], new NoteTrackMetadata(trackName.value, artist.value, 'name.htn'));
 let soundTrackPlayer: MediaPlayerInterface | null = null;
 let helperTrackMediaPlayer: MediaPlayerInterface | null = null;
 const notes = computed(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const tmp = recomputeNotes.value;
     return noteTrack.getNotes();
 })
@@ -228,6 +229,7 @@ function addNote(event: MouseEvent, time: number, frequency: number) {
 
         refresh();
     } catch(e) {
+        console.error(e)
     }
 }
 
@@ -254,7 +256,7 @@ function loadMedia(): Promise<MediaPlayerInterface> {
 
         input.onchange = (event: Event) => {
             const target = event.target as HTMLInputElement;
-            let file = target.files![0]
+            const file = target.files![0]
             if(!file) {
                 reject("No file")
             }

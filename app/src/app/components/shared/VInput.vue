@@ -1,5 +1,5 @@
 <template>
-    <input class="input" :type="type" @change="(...args) => $emit('change', ...args)" :value="value" ref="input" :disabled="!!readonly"></input>
+    <input class="input" :type="type" @change="(...args) => $emit('change', ...args)" :value="value" ref="input" :disabled="!!readonly"/>
 </template>
 
 <script setup lang="ts">

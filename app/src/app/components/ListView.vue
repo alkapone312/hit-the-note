@@ -12,7 +12,7 @@
     import NoteTrackMetadata from '@/note/NoteTrackMetadata';
     import VButton from './shared/VButton.vue';
     import VClose from './icons/VClose.vue';
-import Loading from '@App/utils/Loading';
+    import Loading from '@App/utils/Loading';
 
     const items = ref<NoteTrackMetadata[]>([]);
     const htn = new HtnRequestFactory();

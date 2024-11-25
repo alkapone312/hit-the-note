@@ -1,7 +1,7 @@
 import NoteFactory from './NoteFactory.js';
 import type NoteInTime from './NoteInTime.js';
 import NoteInTrack from './NoteInTrack.js';
-import NoteTrackMetadata from './NoteTrackMetadata.js';
+import type NoteTrackMetadata from './NoteTrackMetadata.js';
 
 class NoteTrack {
     
@@ -13,12 +13,12 @@ class NoteTrack {
 
     public constructor(
         private notes: NoteInTime[],
-        private soundtrack: File | null = null,
-        private metadata: NoteTrackMetadata
+        private readonly metadata: NoteTrackMetadata,
+        private soundtrack: File | null = null
     ) {
         this.notes = this.notes.map(note => {
             return new NoteInTrack(note, this);
-        })
+        });
         this.noteFactory = new NoteFactory();
     }
     
@@ -63,7 +63,7 @@ class NoteTrack {
         return this.metadata;
     }
 
-    public setSoundtrack(file: File) {
+    public setSoundtrack(file: File): void {
         this.soundtrack = file;
     }    
 

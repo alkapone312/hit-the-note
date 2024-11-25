@@ -1,4 +1,4 @@
-import RequestParams from "./RequestParams.js";
+import type RequestParams from './RequestParams.js';
 
 class Requester {
     public async request(params: RequestParams): Promise<Response> {

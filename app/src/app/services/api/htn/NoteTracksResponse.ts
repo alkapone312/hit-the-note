@@ -1,4 +1,4 @@
-import NoteTrackMetadata from "@/note/NoteTrackMetadata.js";
+import type NoteTrackMetadata from '@/note/NoteTrackMetadata.js';
 
 class NoteTracksResponse {
     public constructor(private readonly metadata: NoteTrackMetadata[]) {}

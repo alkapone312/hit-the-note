@@ -1,11 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+
 import JSZip from 'jszip';
 import NoteTrack from './NoteTrack.js';
 import NoteFactory from './NoteFactory.js';
-import NoteInTrack from './NoteInTrack.js';
 import NoteTrackMetadata from './NoteTrackMetadata.js';
 
 class NoteTrackImporter {
-    private noteFactory: NoteFactory;
+    private readonly noteFactory: NoteFactory;
 
     public constructor() {
         this.noteFactory = new NoteFactory();
@@ -30,18 +35,18 @@ class NoteTrackImporter {
             );
         });
 
-        const noteTrack = new NoteTrack(notes, null, new NoteTrackMetadata(noteTrackData.name, noteTrackData.artist, noteTrackData.filename));
+        const noteTrack = new NoteTrack(notes, new NoteTrackMetadata(noteTrackData.name, noteTrackData.artist, noteTrackData.filename));
 
         noteTrack.changeTone(noteTrackData.toneChange ?? 0);
         noteTrack.setSoundTrackShift(noteTrackData.soundTrackShift ?? 0);
 
         const soundtrackFile = zip.file(/soundtrack\.(wav|mp3|ogg|flac)/);
-        if (soundtrackFile[0]) {
+        if(soundtrackFile[0]) {
             const soundtrackData = await soundtrackFile[0].async('blob');
             const fileExtension = this.getFileExtensionFromFilename(soundtrackFile[0].name);
             const mimeType = this.getMimeTypeFromExtension(fileExtension);
 
-            const soundtrack = new File([soundtrackData], `soundtrack.${fileExtension}`, { type: mimeType });
+            const soundtrack = new File([soundtrackData], `soundtrack.${fileExtension}`, {type: mimeType});
             noteTrack.setSoundtrack(soundtrack);
         }
 
@@ -49,7 +54,7 @@ class NoteTrackImporter {
     }
 
     private getFileExtensionFromFilename(filename: string): string {
-        return filename.split('.').pop() || '';
+        return filename.split('.').pop() ?? '';
     }
 
     private getMimeTypeFromExtension(extension: string): string {

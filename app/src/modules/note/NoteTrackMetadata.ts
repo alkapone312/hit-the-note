@@ -2,7 +2,7 @@ class NoteTrackMetadata {
     public constructor(
         private name: string,
         private artist: string,
-        private filename: string,
+        private filename: string
     ) {
     }
 
@@ -20,7 +20,7 @@ class NoteTrackMetadata {
 
     public setName(name: string): void {
         this.name = name;
-        this.filename = name.toLowerCase().replace(' ', '-').replace(/[^a-z\-]/g, '') + '.htn'
+        this.filename = name.toLowerCase().replace(' ', '-').replace(/[^a-z\-]/g, '') + '.htn';
     }
 
     public setArtist(artist: string): void {

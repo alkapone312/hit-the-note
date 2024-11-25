@@ -25,12 +25,11 @@ import AudioSettings from '@App/utils/AudioSettings';
 import { FrequencySmootherDecorator, AmplitudeThresholdFilter, HammingWindowNode, HighPassFilter, MovingAverageFilter, ACFRecognition, ACFAndAMDFPitchRecognition, AMDFPitchRecognition, FFTPitchRecognition, HPSPitchRecognition, CBHPSPitchRecognition, ZeroCrossingRecognition, MediaRecorderAudioStream } from '../../main';
 import VPopup from './VPopup.vue';
 import FormComponent from './shared/FormComponent.vue';
-import { NumberOptions, SettingsArray } from './shared/FormTypes';
+import { SettingsArray } from './shared/FormTypes';
 
-let popupSettings: SettingsArray = [];
+const popupSettings: SettingsArray = [];
 const shouldPopup = ref(false);
 const audioSettings = inject<AudioSettings>('settingsLoader');
-const s = audioSettings?.getSettings();
 
 const pitchMap = [
   ZeroCrossingRecognition,
@@ -54,14 +53,14 @@ const settings: SettingsArray = [
     name: "Sample Rate",
     label: "sample_rate",
     type: "select",
-    default: 44100,
-    values: [{value: 44100, name: "44100"}],
+    default: audioSettings.getSettings().sampleRate,
+    values: [{value: audioSettings.getSettings().sampleRate, name: audioSettings.getSettings().sampleRate}],
   },
   {
     name: "Window Size",
     label: "window_size",
     type: "select",
-    default: 4096,
+    default: audioSettings.getSettings().windowSize,
     values: [
       {value: 32, name: "32"}, 
       {value: 64, name: "64"}, 
@@ -106,34 +105,35 @@ const settings: SettingsArray = [
 ]
 
 // TODO: Allow single filter settings manipulation
-const amplitudeThresholdSettings: NumberOptions = {
-  name: "Threshold",
-  label: "threshold",
-  type: "number",
-  range: [0,1],
-  step: 0.01,
-  default: 0.025,
-}
+// const amplitudeThresholdSettings: NumberOptions = {
+//   name: "Threshold",
+//   label: "threshold",
+//   type: "number",
+//   range: [0,1],
+//   step: 0.01,
+//   default: 0.025,
+// }
 
-const highPassFilterSettings: NumberOptions = {
-  name: "Cut-off frequency",
-  label: "cutoff_frequency",
-  type: "number",
-  range: [500, 900],
-  step: 1,
-  default: 900,
-}
+// const highPassFilterSettings: NumberOptions = {
+//   name: "Cut-off frequency",
+//   label: "cutoff_frequency",
+//   type: "number",
+//   range: [500, 900],
+//   step: 1,
+//   default: 900,
+// }
 
-const movingAverageSettings: NumberOptions = {
-  name: "Moving average",
-  label: "moving_average",
-  type: "number",
-  step: 1,
-  default: 500
-}
+// const movingAverageSettings: NumberOptions = {
+//   name: "Moving average",
+//   label: "moving_average",
+//   type: "number",
+//   step: 1,
+//   default: 500
+// }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let currentSettings: any = null;
-function settingsChanged(settings) {
+function settingsChanged(settings: Record<string, unknown>) {
   currentSettings = settings;
 }
 

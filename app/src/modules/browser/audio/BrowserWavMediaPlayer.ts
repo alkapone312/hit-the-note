@@ -1,6 +1,6 @@
 import StreamNode from '@/audio/StreamNode.js';
 import type MediaPlayerInterface from '../../note/MediaPlayerInterface.js';
-import RecordingInterface from '@/audio/RecordingInterface.js';
+import type RecordingInterface from '@/audio/RecordingInterface.js';
 
 class BrowserWavMediaPlayer extends StreamNode implements MediaPlayerInterface, RecordingInterface {
     private readonly audioContext: AudioContext | null = null;
@@ -9,7 +9,7 @@ class BrowserWavMediaPlayer extends StreamNode implements MediaPlayerInterface, 
     
     private audioBuffer: AudioBuffer | null = null;
 
-    private analyser: AnalyserNode | null = null;
+    private readonly analyser: AnalyserNode | null = null;
 
     private isPlaying = false;
     
@@ -17,9 +17,9 @@ class BrowserWavMediaPlayer extends StreamNode implements MediaPlayerInterface, 
     
     private elapsedTime = 0;
 
-    private timeslice = 10;
+    private readonly timeslice = 10;
 
-    private getDataFunction: () => void;
+    private readonly getDataFunction: () => void;
 
     private requestDataInterval: string | number | NodeJS.Timeout | undefined = 0;
     
@@ -38,23 +38,24 @@ class BrowserWavMediaPlayer extends StreamNode implements MediaPlayerInterface, 
             });
         });
     }
-    getFile(): File {
+
+    public getFile(): File {
         return this.wavFile;
     }
 
-    startRecording(): void {
+    public startRecording(): void {
         this.play();
     }
     
-    stopRecording(): void {
+    public stopRecording(): void {
         this.stop();
     }
     
-    setUp(): Promise<void> {
+    public async setUp(): Promise<void> {
         return Promise.resolve();
     }
     
-    public accept(data: Float32Array): void {
+    public accept(): void {
         throw new Error('This node cannot accept data.');
     }
 
@@ -64,7 +65,7 @@ class BrowserWavMediaPlayer extends StreamNode implements MediaPlayerInterface, 
             this.sourceNode = this.audioContext!.createBufferSource();
             this.sourceNode.buffer = this.audioBuffer;
             this.sourceNode.connect(this.analyser!);
-            this.analyser!.connect(this.audioContext!.destination)
+            this.analyser!.connect(this.audioContext!.destination);
             
             const offset = this.elapsedTime ? this.elapsedTime : 0;
             this.startTime = new Date().getTime();

@@ -1,7 +1,7 @@
 <template>
   <div class="form-list-container">
     <div class="form-list">
-      <div v-for="item in results" class="form-item">
+      <div v-for="item in results" :key="item.name" class="form-item">
         <div class="form-item-name">{{ item.name }}</div>
         <VButton class="form-item-remove" @click="removeItem(item)"><VClose/></VButton>
       </div>
@@ -27,7 +27,7 @@
     }>()
 
     const selectedValue = ref(options[0].value)
-    let results = ref(def.map(mapValueToOption).filter(item => !!item))
+    const results = ref(def.map(mapValueToOption).filter(item => !!item))
 
     function removeItem(value): void {
       results.value = results.value.filter((item) => item !== value);

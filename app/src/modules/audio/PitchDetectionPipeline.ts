@@ -14,7 +14,7 @@ class PitchDetectionPipeline {
 
     public constructor(settings: Settings) {
         this.recorder = settings.recorder;
-        this.filterPipeline = settings.filterChain ?? [];
+        this.filterPipeline = settings.filterChain;
         this.pitchRecognition = settings.pitchRecognition;
         this.recorder.setSettings(settings);
         let lastNode = this.recorder as StreamNode;

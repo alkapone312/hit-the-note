@@ -4,15 +4,15 @@ import {createApp} from 'vue';
 import {createPinia} from 'pinia';
 import App from './App.vue';
 import type {MediaPlayerFactory, MediaPlayerInterface, SettingsLoader} from '../main.js';
-import {BrowserWavMediaPlayer, PitchDetectionPipeline, BrowserSettingsLoader, NoteFactory, PitchDetectionPipelineFactory} from '../main.js';
+import {BrowserWavMediaPlayer, BrowserSettingsLoader, NoteFactory, PitchDetectionPipelineFactory} from '../main.js';
 import AudioSettings from './utils/AudioSettings.js';
 
 // pitch recognition service
 (async(): Promise<void> => {    
     const app = createApp(App);
     app.use(createPinia());
-    const settingsLoader = new BrowserSettingsLoader()
-    const defaultSettings = await settingsLoader.load()
+    const settingsLoader = new BrowserSettingsLoader();
+    const defaultSettings = await settingsLoader.load();
     const appAudioSettings = new AudioSettings(defaultSettings);
     
     app.provide<PitchDetectionPipelineFactory>('pitchDetectionFactory', new PitchDetectionPipelineFactory());
@@ -26,7 +26,9 @@ import AudioSettings from './utils/AudioSettings.js';
                 'audio/mpeg'
             ].includes(file.type)) {
                 const player = new BrowserWavMediaPlayer(file);
-                settingsLoader.load().then(settings => player.setSettings(settings));
+                settingsLoader.load().then(settings => {
+                    player.setSettings(settings); 
+                });
                 
                 return player;
             }

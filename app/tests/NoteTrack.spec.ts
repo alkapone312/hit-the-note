@@ -3,12 +3,11 @@ import NoteTrack from '@/note/NoteTrack.js';
 import NoteTrackExporter from '@/note/NoteTrackExporter.js';
 import NoteTrackImporter from '@/note/NoteTrackImporter.js';
 import JSZip from 'jszip';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import fs from "node:fs";
+import { describe, it, expect, beforeEach } from 'vitest';
 import NoteTrackMetadata from '@/note/NoteTrackMetadata.js';
 
 let noteTrack;
-let noteFactory = new NoteFactory();
+const noteFactory = new NoteFactory();
 const defaultNotes = [
     noteFactory.createNoteInTimeForName('G3', 0, 1),
     noteFactory.createNoteInTimeForName('G3', 1, 2),
@@ -26,7 +25,7 @@ const defaultNotes = [
 ]
 
 beforeEach(() => {
-    noteTrack = new NoteTrack(defaultNotes, null, new NoteTrackMetadata('a', 'b', 'c'));
+    noteTrack = new NoteTrack(defaultNotes, new NoteTrackMetadata('a', 'b', 'c'));
 })
 
 describe('NoteTrack', () => {
@@ -68,38 +67,15 @@ describe('NoteTrack', () => {
         const changed = defaultNotes.every((note, index) => {
             return changedNotes[index].getNote().getFrequency() === noteFactory.createNoteInTimeInDifferentTone(note, toneChange).getNote().getFrequency()
         })
+        expect(changed).toBeTruthy()
     });
 });
 
 describe('NoteTrackExporter', () => {
     let noteTrackExporter;
-    let noteTrackMock;
-    let noteMock;
-    let soundtrackMock;
 
     beforeEach(() => {
         noteTrackExporter = new NoteTrackExporter();
-
-        // Mocking note track data
-        noteMock = {
-            getFrequency: vi.fn().mockReturnValue(440),
-            getName: vi.fn().mockReturnValue('A4'),
-        };
-
-        noteTrackMock = {
-            getSoundtrack: vi.fn().mockReturnValue(soundtrackMock),
-            getNotes: vi.fn().mockReturnValue([
-                { getStartTime: vi.fn().mockReturnValue(0), getEndTime: vi.fn().mockReturnValue(5), getNote: vi.fn().mockReturnValue(noteMock) },
-            ]),
-            getToneChange: vi.fn().mockReturnValue(0),
-            getSoundTrackShift: vi.fn().mockReturnValue(0),
-        };
-
-        // Mocking soundtrack file
-        soundtrackMock = {
-            arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)),
-            type: 'audio/wav',
-        };
     });
 
     it('should export NoteTrack to a zip file', async () => {

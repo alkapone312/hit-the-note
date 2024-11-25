@@ -1,14 +1,14 @@
-import Note from "./Note.js";
-import NoteInTime from "./NoteInTime.js";
-import NoteTrack from "./NoteTrack.js";
+import type Note from './Note.js';
+import NoteInTime from './NoteInTime.js';
+import type NoteTrack from './NoteTrack.js';
 
 class NoteInTrack extends NoteInTime {
     public constructor(
         private readonly noteInTime: NoteInTime, 
         private readonly track: NoteTrack
     ) {
-        super(noteInTime.getNote(), noteInTime.getStartTime(), noteInTime.getEndTime())
-        this.validate(noteInTime.getStartTime(), noteInTime.getEndTime())
+        super(noteInTime.getNote(), noteInTime.getStartTime(), noteInTime.getEndTime());
+        this.validate(noteInTime.getStartTime(), noteInTime.getEndTime());
     }
     
     public setStartTime(startTime: number): void {
@@ -37,12 +37,12 @@ class NoteInTrack extends NoteInTime {
         return this.noteInTime.getStartTime();
     }
 
-    private validate(startTime: number, endTime: number) {
-        if(endTime < startTime) {
-            throw new Error("Start time cannot be higher than end time");
+    private validate(startTime: number, endTime: number): void {
+        if (endTime < startTime) {
+            throw new Error('Start time cannot be higher than end time');
         }
         this.track.getNotes().forEach(note => {
-            if(note === this) return;
+            if (note === this) return;
             if (
                 startTime > note.getStartTime() && startTime < note.getEndTime() ||
                 endTime > note.getStartTime() && endTime < note.getEndTime() ||

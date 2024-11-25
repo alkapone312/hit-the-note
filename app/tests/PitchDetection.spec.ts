@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { 
     ACFAndAMDFPitchRecognition,
     AMDFPitchRecognition,
@@ -48,7 +48,6 @@ const generateSineWave = (frequency, sampleRate, numSamples) => {
 
 const generateHarmonicWave = (frequency, sampleRate, numSamples, numHarmonics) => {
     const samples = new Float32Array(numSamples);
-    const angularFrequency = 2 * Math.PI * frequency / sampleRate;
 
     for (let i = 0; i < numSamples; i++) {
         let sample = 0;
@@ -171,7 +170,7 @@ describe('PitchRecognition subclasses', () => {
 describe('Frequency smoother', () => {
     it('Should even out spontanous peaks in frequency', () => {
         const mockPitchRecognition = new class extends PitchRecognition {
-            public accept(data: Float32Array): void {
+            public accept(): void {
                 throw new Error('Method not implemented.');
             }
             public pitch(pitch: number): void {

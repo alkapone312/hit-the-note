@@ -114,16 +114,16 @@ if(file) {
 
 let interval;
 let timeout;
-let started = ref(false);
-let countdown = ref(false);
-let countdownValue = ref<string | number>(6);
+const started = ref(false);
+const countdown = ref(false);
+const countdownValue = ref<string | number>(6);
 function start() {
     const countdownFn = () => {
         if(countdownValue.value != 'GO!') {
             (countdownValue.value as number) -= 1;
             if(countdownValue.value == 0) {
                 countdownValue.value = 'GO!';
-                Sounds.play('long-beep')
+                Sounds.play('longBeep')
             } else {
                 Sounds.play('beep')
             }

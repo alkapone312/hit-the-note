@@ -1,5 +1,5 @@
-import NoteInTime from "./NoteInTime.js";
-import NoteTrack from "./NoteTrack.js";
+import type NoteInTime from './NoteInTime.js';
+import type NoteTrack from './NoteTrack.js';
 
 interface NoteAnalysis {
     note: NoteInTime;
@@ -9,12 +9,15 @@ interface NoteAnalysis {
 }
 
 class NotePoints {
-    private totalPoints: number = 0;
+    private totalPoints = 0;
+
     private currentNote: NoteInTime | null = null;
-    private lastAnalyzedTime: number = 0;
+
+    private lastAnalyzedTime = 0;
+
     private noteAnalysis: NoteAnalysis[] = [];
 
-    public constructor(private noteTrack: NoteTrack) {}
+    public constructor(private readonly noteTrack: NoteTrack) {}
 
     public analyzeAndAddPoints(time: number, frequency: number): void {
         if (time < this.lastAnalyzedTime) {
@@ -38,7 +41,7 @@ class NotePoints {
                     note: this.currentNote,
                     hitTimes: [],
                     missTimes: [],
-                    currentNotePoints: 0, // Initialize current points to 0.
+                    currentNotePoints: 0 // Initialize current points to 0.
                 });
             }
         }
@@ -53,7 +56,7 @@ class NotePoints {
 
         const noteAnalysis = this.getCurrentNoteAnalysis();
 
-        if(!noteAnalysis) {
+        if (!noteAnalysis) {
             return;
         }
 
@@ -100,7 +103,6 @@ class NotePoints {
         const maxPoints = duration * 100;
 
         const elapsedTime = this.lastAnalyzedTime - this.currentNote.getStartTime();
-        const remainingTime = duration - elapsedTime;
 
         const hitRatio = noteAnalysis.hitTimes.length / (noteAnalysis.missTimes.length + noteAnalysis.hitTimes.length);
         const points = maxPoints * hitRatio * elapsedTime / duration;
@@ -108,7 +110,7 @@ class NotePoints {
     }
 
     private getCurrentNoteAnalysis(): NoteAnalysis | null {
-        return this.noteAnalysis.find((n) => n.note === this.currentNote) || null;
+        return this.noteAnalysis.find((n) => n.note === this.currentNote) ?? null;
     }
 }
 

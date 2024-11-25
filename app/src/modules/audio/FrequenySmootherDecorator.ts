@@ -16,6 +16,11 @@ class FrequencySmootherDecorator extends PitchRecognition {
 
     public accept(data: Float32Array): void {
         this.recognition.accept(data);
+    }    
+    
+    public setSettings(settings: PipelineSettings): void {
+        this.recognition.setSettings(settings);
+        super.setSettings(settings);
     }
 
     private smoothFrequency(newFrequency: number): number {
@@ -28,11 +33,6 @@ class FrequencySmootherDecorator extends PitchRecognition {
         const smoothedFrequency = this.median(this.buffer);
     
         return smoothedFrequency;
-    }
-
-    public setSettings(settings: PipelineSettings): void {
-        this.recognition.setSettings(settings);
-        super.setSettings(settings);
     }
 
     private median(data: number[]): number {

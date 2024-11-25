@@ -58,6 +58,7 @@ function loadPanel(newPanel: string) {
 async function loadGame(metadata: NoteTrackMetadata) {
   Loading.load(async () => {
     noteTrack.value = await (await htn.getNoteTrack(metadata.getFilename())).get().getNoteTrack()
+    console.log(noteTrack.value)
     panel.value = 'game';
   })
 }
@@ -65,6 +66,7 @@ async function loadGame(metadata: NoteTrackMetadata) {
 function loadTraining(metadata: NoteTrackMetadata) {
   Loading.load(async () => {
     noteTrack.value = await (await htn.getNoteTrack(metadata.getFilename())).get().getNoteTrack()
+    console.log(noteTrack.value)
     panel.value = 'training';
   })
 }

@@ -88,7 +88,7 @@ let timeInterval: unknown;
 const oscillator = new OscillatorController();
 watch([time, playNotes, isPlaying], ([newTime]) => {
     const note = noteTrack.getNote(newTime);
-    if(!note || !playNotes.value || !isPlaying) {
+    if(!note || !playNotes.value || !isPlaying.value) {
         oscillator.stop();
         return;
     }

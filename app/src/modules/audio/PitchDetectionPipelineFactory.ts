@@ -1,8 +1,8 @@
-import PitchDetectionPipeline from "./PitchDetectionPipeline.js";
-import RecordingInterface from "./RecordingInterface.js";
-import { Settings } from "./Settings.js";
-import SettingsLoader from "./SettingsLoader.js";
-import StreamNode from "./StreamNode.js";
+import PitchDetectionPipeline from './PitchDetectionPipeline.js';
+import type RecordingInterface from './RecordingInterface.js';
+import type {Settings} from './Settings.js';
+import type SettingsLoader from './SettingsLoader.js';
+import type StreamNode from './StreamNode.js';
 
 class PitchDetectionPipelineFactory {
     public createFromSettings(settings: Settings): PitchDetectionPipeline {
@@ -12,7 +12,7 @@ class PitchDetectionPipelineFactory {
         return pitchDetectionPipeline;
     }
 
-    public createFromSettingsWithDifferentRecorder(settings: Settings, recorder: RecordingInterface & StreamNode) {
+    public createFromSettingsWithDifferentRecorder(settings: Settings, recorder: RecordingInterface & StreamNode): PitchDetectionPipeline {
         settings.recorder = recorder;
         const pitchDetectionPipeline = new PitchDetectionPipeline(settings);
         pitchDetectionPipeline.getRecorder().setUp();
@@ -28,7 +28,7 @@ class PitchDetectionPipelineFactory {
         return pitchDetectionPipeline;
     }
 
-    public async createFromLoaderWithDifferentRecorder(loader: SettingsLoader, recorder: RecordingInterface & StreamNode) {
+    public async createFromLoaderWithDifferentRecorder(loader: SettingsLoader, recorder: RecordingInterface & StreamNode): PitchDetectionPipeline {
         const settings = await loader.load();
         settings.recorder = recorder;
         const pitchDetectionPipeline = new PitchDetectionPipeline(settings);

@@ -1,4 +1,4 @@
-import { Settings } from "./Settings.js";
+import type {Settings} from './Settings.js';
 
 interface SettingsLoader {
     load(): Promise<Settings>;

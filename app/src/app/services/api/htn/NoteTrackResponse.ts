@@ -1,4 +1,4 @@
-import NoteTrack from "@/note/NoteTrack.js";
+import type NoteTrack from '@/note/NoteTrack.js';
 
 class NoteTrackResponse {
     public constructor(private readonly noteTrack: NoteTrack) {}

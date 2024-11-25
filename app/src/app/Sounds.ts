@@ -3,13 +3,13 @@ class Sounds {
 
     static {
         this.sounds = {
-            "click": new Audio('sounds/click.wav'),
-            "beep": new Audio('sounds/beep.mp3'),
-            "long-beep": new Audio('sounds/long-beep.mp3')
-        }
+            click: new Audio('sounds/click.wav'),
+            beep: new Audio('sounds/beep.mp3'),
+            longBeep: new Audio('sounds/long-beep.mp3')
+        };
     }
 
-    public static play(name: string) {
+    public static play(name: string): void {
         this.sounds[name].play();
     }
 }

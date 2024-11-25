@@ -15,7 +15,7 @@ describe('NotePoints', () => {
             noteFactory.createNoteInTimeForName('B4', 2, 4)
         ];
 
-        noteTrack = new NoteTrack(notes, null, new NoteTrackMetadata('a', 'b', 'c'));
+        noteTrack = new NoteTrack(notes, new NoteTrackMetadata('a', 'b', 'c'));
         notePoints = new NotePoints(noteTrack);
     });
 

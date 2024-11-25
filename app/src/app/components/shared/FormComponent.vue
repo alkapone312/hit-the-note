@@ -1,5 +1,5 @@
 <template>
-    <div class="form-component" v-for="setting in settings">
+    <div class="form-component" v-for="setting in settings" :key="setting.label">
         <label>{{ setting.name }}</label>
         <VSelect
             v-if="setting.type === 'select'"

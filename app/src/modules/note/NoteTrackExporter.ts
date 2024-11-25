@@ -17,7 +17,7 @@ class NoteTrackExporter {
             startTime: note.getStartTime(),
             endTime: note.getEndTime(),
             frequency: note.getNote().getFrequency(),
-            name: note.getNote().getName(),
+            name: note.getNote().getName()
         }));
 
         const noteTrackData = {
@@ -31,7 +31,7 @@ class NoteTrackExporter {
 
         zip.file('notes.json', JSON.stringify(noteTrackData, null, 2));
 
-        return await zip.generateAsync({ type: 'blob' });
+        return zip.generateAsync({type: 'blob'});
     }
 
     private getFileExtensionFromMimeType(mimeType: string): string {

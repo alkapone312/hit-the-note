@@ -11,10 +11,10 @@
         @change="popupSettingsChanged"
       />
       <div class="popup-buttons">
-        <VButton @click="shouldPopup = false">OK</VButton>
+        <VButton @click="() => {shouldPopup = false;}">OK</VButton>
       </div>
     </VPopup>
-    <VButton @click="$emit('close')">Close</VButton>
+    <VButton @click="() => {applySettings();$emit('close')}">Close</VButton>
   </div>
 </template>
 
@@ -22,7 +22,7 @@
 import { ref, inject } from 'vue';
 import VButton from './shared/VButton.vue';
 import AudioSettings from '@App/utils/AudioSettings';
-import { AmplitudeThresholdFilter, HammingWindowNode, HighPassFilter, MovingAverageFilter, ACFRecognition, ACFAndAMDFPitchRecognition, AMDFPitchRecognition, FFTPitchRecognition, HPSPitchRecognition, CBHPSPitchRecognition, ZeroCrossingRecognition } from '../../main';
+import { FrequencySmootherDecorator, AmplitudeThresholdFilter, HammingWindowNode, HighPassFilter, MovingAverageFilter, ACFRecognition, ACFAndAMDFPitchRecognition, AMDFPitchRecognition, FFTPitchRecognition, HPSPitchRecognition, CBHPSPitchRecognition, ZeroCrossingRecognition, MediaRecorderAudioStream } from '../../main';
 import VPopup from './VPopup.vue';
 import FormComponent from './shared/FormComponent.vue';
 import { NumberOptions, SettingsArray } from './shared/FormTypes';
@@ -31,6 +31,23 @@ let popupSettings: SettingsArray = [];
 const shouldPopup = ref(false);
 const audioSettings = inject<AudioSettings>('settingsLoader');
 const s = audioSettings?.getSettings();
+
+const pitchMap = [
+  ZeroCrossingRecognition,
+  AMDFPitchRecognition,
+  ACFRecognition,
+  ACFAndAMDFPitchRecognition,
+  HPSPitchRecognition,
+  CBHPSPitchRecognition,
+  FFTPitchRecognition
+];
+
+const filterMap = [
+  AmplitudeThresholdFilter,
+  HighPassFilter,
+  MovingAverageFilter,
+  HammingWindowNode
+]
 
 const settings: SettingsArray = [
   {
@@ -63,33 +80,32 @@ const settings: SettingsArray = [
     name: "Filters Pipeline",
     label: "filters_pipeline",
     type: "list",
-    default: [
-      1, 2, 3, 4
-    ],
+    default: audioSettings.getFilters().map(translateFilterClassTypeToId),
     values: [
-      {value: 1, name: "Amplitude threshold"}, 
-      {value: 2, name: "High pass filter"}, 
-      {value: 3, name: "Moving average"},
-      {value: 4, name: "Hamming window"}, 
+      {value: 0, name: "Amplitude threshold"}, 
+      {value: 1, name: "High pass filter"}, 
+      {value: 2, name: "Moving average"},
+      {value: 3, name: "Hamming window"}, 
     ]
   },
   {
     name: "Pitch Recognition",
     label: "pitch_recognition",
     type: "select",
-    default: 3,
+    default: translatePitchClassTypeToId(audioSettings.getSettings().pitchRecognition.recognition),
     values: [
-      {value: 1, name: "Zero crossings"},
-      {value: 2, name: "AMDF"},
-      {value: 3, name: "ACF"},
-      {value: 4, name: "ACF & AMDF"},
-      {value: 5, name: "HPS"},
-      {value: 6, name: "CBHPS"},
-      {value: 7, name: "FFT"},
+      {value: 0, name: "Zero crossings"},
+      {value: 1, name: "AMDF"},
+      {value: 2, name: "ACF"},
+      {value: 3, name: "ACF & AMDF"},
+      {value: 4, name: "HPS"},
+      {value: 5, name: "CBHPS"},
+      {value: 6, name: "FFT"},
     ]
   }
 ]
 
+// TODO: Allow single filter settings manipulation
 const amplitudeThresholdSettings: NumberOptions = {
   name: "Threshold",
   label: "threshold",
@@ -116,28 +132,36 @@ const movingAverageSettings: NumberOptions = {
   default: 500
 }
 
-function popupSettingsChanged() {
-
-}
-
-let lastFilterCount = 4
+let currentSettings: any = null;
 function settingsChanged(settings) {
-  if(settings.filters_pipeline.length > lastFilterCount) {
-    const s = tranlateIdToSettings(settings.filters_pipeline.at(-1));
-    if(s) {
-      popupSettings = [s]
-      shouldPopup.value = true;
-    }
+  currentSettings = settings;
+}
+
+function translateFilterClassTypeToId(c) {
+  return filterMap.findIndex(v => v == c.constructor)
+}
+
+function translatePitchClassTypeToId(c) {
+  return pitchMap.findIndex(v => v == c.constructor)
+}
+
+function applySettings() {
+  if(currentSettings == null) {
+    return;
   }
-  lastFilterCount = settings.filters_pipeline.length
+  audioSettings.getFilters().forEach(element => {
+    audioSettings.removeFilter(element);
+  });
 
-  console.log(settings)
+  // TODO: allow to turn off smoother
+  audioSettings.setRecognition(new FrequencySmootherDecorator(new pitchMap[currentSettings.pitch_recognition]()))
+  currentSettings.filters_pipeline.forEach((index) => {
+    audioSettings.addFilter(new filterMap[index]())
+  })
+  audioSettings.getSettings().recorder = new MediaRecorderAudioStream(10)
+  audioSettings.setSampleRate(currentSettings.sample_rate)
+  audioSettings.setWindowSize(currentSettings.window_size)
 }
-
-function tranlateIdToSettings(id): NumberOptions | undefined {
-  return [amplitudeThresholdSettings, highPassFilterSettings, movingAverageSettings, ][id - 1]
-}
-
 </script>
 
 <style>

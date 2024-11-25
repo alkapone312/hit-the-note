@@ -9,6 +9,9 @@ class AudioSettings implements SettingsLoader {
     }
     
     load(): Promise<Settings> {
+        this.settings.recorder.reset()
+        this.settings.filterChain.forEach(i => i.reset())
+        this.settings.pitchRecognition.reset()
         return Promise.resolve(this.settings)
     }
 
@@ -25,8 +28,11 @@ class AudioSettings implements SettingsLoader {
     }
 
     public removeFilter(filter: StreamNode) {
-        console.log(filter)
         this.settings.filterChain = this.settings.filterChain.filter(f => f !== filter);
+    }
+
+    public getFilters(): StreamNode[] {
+        return this.settings.filterChain;
     }
 
     public setRecognition(recognition: PitchRecognition) {

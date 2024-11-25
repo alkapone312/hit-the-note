@@ -20,6 +20,7 @@
             :min="(setting.range ?? [])[0]"
             :max="(setting.range ?? [])[1]"
             :step="setting.step"
+            @change="(v) => settingUpdated(setting.label, v.target.value)"
         />
     </div>
 </template>

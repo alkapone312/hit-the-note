@@ -5,7 +5,7 @@ import StreamNode from '@/audio/StreamNode.js';
  * Apply amplitude thresholding to filter out low-amplitude noise or silence.
  */
 class AmplitudeThresholdFilter extends StreamNode {
-    public constructor(private readonly threshold: number) {
+    public constructor(private readonly threshold = 0.025) {
         super();
     }
 

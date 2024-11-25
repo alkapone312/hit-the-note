@@ -20,6 +20,13 @@ abstract class StreamNode {
     }
 
     public abstract accept(data: Float32Array): void;
+
+    public reset(): void {
+        const nodesLength = this.nodes.length;
+        for(let i = 0 ; i < nodesLength; i++) {
+            this.nodes.pop();
+        }
+    }
 }
 
 export default StreamNode;

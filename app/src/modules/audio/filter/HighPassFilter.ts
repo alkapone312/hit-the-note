@@ -9,7 +9,7 @@ class HighPassFilter extends StreamNode {
     /**
      * @param cutoffFrequency - The cutoff frequency of the high-pass filter (in Hz).
      */
-    public constructor(private readonly cutoffFrequency: number) {
+    public constructor(private readonly cutoffFrequency = 900) {
         super();
     }
 

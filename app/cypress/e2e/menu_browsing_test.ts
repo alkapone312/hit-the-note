@@ -18,7 +18,7 @@ describe('E2E Tests for Application', () => {
     cy.get('.browser-settings').should('exist');
   });
 
-  it('should play a track in Play view', () => {
+  it('should play a track in training view', () => {
     cy.get('button').contains('Play!').click();
     cy.get('.note-track .train').first().click();
     cy.get('.media-player-button').should('exist');

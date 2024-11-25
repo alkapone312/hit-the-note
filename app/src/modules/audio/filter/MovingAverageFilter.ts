@@ -5,7 +5,7 @@ import StreamNode from '@/audio/StreamNode.js';
  */
 class MovingAverageFilter extends StreamNode {
 
-    public constructor(private readonly windowSize: number) {
+    public constructor(private readonly windowSize = 500) {
         super();
     }
 

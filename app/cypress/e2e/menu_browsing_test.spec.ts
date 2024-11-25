@@ -1,4 +1,4 @@
-describe('E2E Tests for Application', () => {
+describe('Menu browsing E2E Test', () => {
   beforeEach(() => {
     cy.visit('/');
   });

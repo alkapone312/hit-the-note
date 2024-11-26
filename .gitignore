@@ -5,3 +5,5 @@ app/cypress/downloads
 app/cypress/screenshots
 
 backend/database
+
+dist

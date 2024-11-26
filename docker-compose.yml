@@ -13,8 +13,6 @@ services:
       - ./backend:/var/www/html
       - ./backend/apache-config.conf:/etc/apache2/sites-available/000-default.conf
       - ./backend/database:/var/www/html/database
-    environment:
-      - APACHE_DOCUMENT_ROOT=/var/www/html/public
     working_dir: /var/www/html
     networks:
       - hit-the-note-network

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Unit;
 
 use App\Models\NoteTrack;
 use Illuminate\Foundation\Testing\RefreshDatabase;

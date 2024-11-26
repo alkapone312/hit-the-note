@@ -1,0 +1,12 @@
+# Base image for backend (Laravel)
+FROM php:8.2-apache
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libsqlite3-dev \
+    && docker-php-ext-install pdo pdo_sqlite
+    
+RUN a2enmod rewrite
+
+COPY backend/ /var/www/html
+COPY app/dist/* /var/www/html/public

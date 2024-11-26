@@ -14,7 +14,7 @@ import NoteTrackResponse from './NoteTrackResponse.js';
 import NoteTrackImporter from '@/note/NoteTrackImporter.js';
 
 class HtnRequestFactory {
-    private readonly url = 'http://localhost:8080';
+    private readonly url = import.meta.env.VITE_API_URL;
 
     private readonly requester = new Requester();
 

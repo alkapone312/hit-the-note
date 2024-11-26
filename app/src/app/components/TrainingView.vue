@@ -124,11 +124,11 @@ function pause() {
 }
 
 function forward() {
-    time.value += 10
+    time.value += 1
 }
 
 function rewind() {
-    time.value -= 10
+    time.value -= 1
 }
 
 function toStart() {

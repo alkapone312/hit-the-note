@@ -4,8 +4,8 @@
   "main": "index.js",
   "typings": "./dist",
   "scripts": {
-    "dev": "vite",
-    "dev:playground": "vite --config vite-playground.config.ts --host",
+    "dev": "NODE_ENV=development vite",
+    "dev:playground": "NODE_ENV=development vite --config vite-playground.config.ts --host",
     "build": "vite build",
     "preview": "vite preview",
     "test:unit": "vitest",

@@ -1,5 +1,7 @@
 app/dist
 app/docs
 app/node_modules
+app/cypress/downloads
+app/cypress/screenshots
 
 backend/database

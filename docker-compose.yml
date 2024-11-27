@@ -12,6 +12,7 @@ services:
     volumes:
       - ./backend:/var/www/html
       - ./backend/apache-config.conf:/etc/apache2/sites-available/000-default.conf
+      - ./backend/storage/app/private:/var/www/storage
       - ./backend/db:/var/www/storage/database
     working_dir: /var/www/html
     networks:

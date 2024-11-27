@@ -38,98 +38,79 @@
 
 ---
 
-## Installation
+## Development
 1. Clone the repository:
    ```bash
    git clone https://github.com/alkapone312/hit-the-note.git
    cd hit-the-note
    ```
-2. Install backend dependencies:
+2. Run docker compose:
    ```bash
-   cd backend
-   composer install
+   docker compose up
    ```
-3. Install application dependencies:
-   ```bash
-   cd ../app
-   npm install
+3. Check application under:
+Application:
    ```
-
----
-
-## Running the Application
-### Backend
-1. Navigate to the `backend` directory:
-   ```bash
-   cd backend
+   http://localhost:3000
    ```
-2. Run the PHP development server:
-   ```bash
-   php artisan serve
+Backend:
    ```
-   The backend server should now be running at `http://localhost:8000`.
-
-### Application
-1. Navigate to the `app` directory:
-   ```bash
-   cd ../app
+   http://localhost:8080
    ```
-2. Start the development server:
-   ```bash
-   npm start
-   ```
-   The app server should now be running at `http://localhost:3000`.
 
 ---
 
 ## Building the Project
+
+1. Build production ready container: 
+```bash
+./build-prod-container.sh
+```
+2. Load container to docker
+```bash
+docker load < dist/hit-the-note.tar
+```
+3. Run the container
+```bash
+docker run -p 8080:80 jakub/hit-the-note:1.0.0
+```
+You can mount the database on local file system for it to be persisted
+
+```bash
+docker run -p 8080:80 -v ./storage:/var/www/storage jakub/hit-the-note:1.0.0
+```
+---
+
+## Entering containers
+
 ### Backend
 ```bash
-cd backend
-php artisan migrate --force
-php artisan optimize
+./php.sh
 ```
+
 
 ### Application
 ```bash
-cd app
-npm run build
+./node.sh
 ```
 
 ---
 
+## Add new track
+
+```bash
+docker cp ./some-track.htn CONTAINER_ID:/tmp/some-track.htn
+docker exec CONTAINER_ID php artisan note-track:store "Some Track" /tmp/some-track.htn
+```
+
+## Remove track
+
 ## Generating Documentation
 To generate project documentation, use the following commands:
-
-1. **Backend Docs**:
-   ```bash
-   cd backend
-   php artisan l5-swagger:generate # TODO
-   ```
-
-2. **Application Docs**:
-   ```bash
-   cd ../app
-   npm run docs
-   ```
-
----
-
-## Running the Project with Docker Compose
-Use Docker Compose for a fully containerized setup.
-
-1. Build and start the containers:
-   ```bash
-   docker-compose up --build
-   ```
-2. Access the application:
-   - Backend: `http://localhost:8080`
-   - Application: `http://localhost:3000`
-
-3. Stop the containers:
-   ```bash
-   docker-compose down
-   ```
+```bash
+./node.sh
+npm run docs
+```
 
 ---
 
@@ -143,7 +124,3 @@ We welcome contributions from the community! To contribute:
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
-
----
-
-Fill in the placeholders with your specific details. Happy coding! 🎉

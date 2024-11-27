@@ -19,6 +19,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->app->useStoragePath(env('APP_STORAGE_PATH', base_path().'/storage'));
     }
 }

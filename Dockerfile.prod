@@ -6,9 +6,12 @@ RUN apt-get update && apt-get install -y \
     
 RUN a2enmod rewrite
 
+USER www-data
 COPY --chown=www-data:www-data backend/ /var/www/html
 COPY --chown=www-data:www-data app/dist/. /var/www/html/public
 COPY --chown=www-data:www-data backend/apache-config.conf /etc/apache2/sites-available/000-default.conf
+COPY --chown=www-data:www-data backend/storage /var/www/storage
+COPY --chown=www-data:www-data backend/db /var/www/storage/database
 
 WORKDIR /var/www/html/
-CMD ["apache2ctl", "-D", "FOREGROUND"]
+CMD ["./run-script.sh"]

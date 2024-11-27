@@ -65,7 +65,7 @@
                 <VButton @click="importTrack">Import</VButton>
                 <VButton @click="exportTrack">Export</VButton>
             </VPopup>
-            <VButton class="close-button" @click="$emit('close')"><VClose/></VButton>
+            <VButton class="close-button" @click="$emit('close'); close()"><VClose/></VButton>
     </div>
 </template>
 

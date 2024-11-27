@@ -3,7 +3,7 @@
         <div class="metadata">
             <VGameMetadata
                 :metadata="noteTrack.getMetadata()"
-                @close="() => {$emit('close');}"
+                @close="() => {$emit('close');close()}"
             />
         </div>
         <div>
@@ -24,6 +24,7 @@
         />
         <div class="controls">
             <MediaPlayer
+            ref="media-player"
             v-if="file !== null"
             :file="file"
             v-model="time"
@@ -40,7 +41,6 @@
                 @to-stop="toStop"
                 v-else
             >
-
             </MediaPlayerControls>
             <div class="note-scale-controls">
                 <VCheckbox v-model="pinToDot">Snap to point</VCheckbox>
@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import NoteScale from './NoteScale.vue';
-import { inject, ref, defineProps, watch } from 'vue';
+import { inject, ref, defineProps, watch, useTemplateRef } from 'vue';
 import MediaPlayer from './MediaPlayer.vue';
 import CurrentNoteInfo from './CurrentNoteInfo.vue'
 import VCheckbox from './shared/VCheckbox.vue';
@@ -160,6 +160,12 @@ function toneUp() {
 function toneDown() {
     currentTone.value -= 1;
     noteTrack.changeTone(-1);
+}
+
+function close() {
+    console.log(useTemplateRef('media-player').value);
+    pause();
+    oscillator.stop();
 }
 
 </script>

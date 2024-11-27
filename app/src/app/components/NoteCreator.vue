@@ -349,6 +349,11 @@ onUnmounted(() => {
     oscillator.stop()
 })
 
+
+function close() {
+    oscillator.stop();
+    pitchRecognition?.stopDetection();
+}
 </script>
 
 <style scoped>

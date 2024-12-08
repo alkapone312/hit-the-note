@@ -2,6 +2,9 @@ import type RecordingInterface from '@/audio/RecordingInterface.js';
 import StreamException from '@/audio/StreamException.js';
 import StreamNode from '@/audio/StreamNode.js';
 
+/**
+ * Microphone data source, uses Web Audio Api
+ */
 class MediaRecorderAudioStream extends StreamNode implements RecordingInterface {
     private analyser: AnalyserNode;
 

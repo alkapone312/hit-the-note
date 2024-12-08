@@ -4,6 +4,9 @@ import type {Settings} from './Settings.js';
 import type SettingsLoader from './SettingsLoader.js';
 import type StreamNode from './StreamNode.js';
 
+/**
+ * Helper class to create pitch detection pipeline by some parameters.
+ */
 class PitchDetectionPipelineFactory {
     public createFromSettings(settings: Settings): PitchDetectionPipeline {
         const pitchDetectionPipeline = new PitchDetectionPipeline(settings);

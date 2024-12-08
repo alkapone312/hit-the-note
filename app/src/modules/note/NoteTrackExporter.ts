@@ -1,6 +1,9 @@
 import JSZip from 'jszip';
 import type NoteTrack from './NoteTrack.js';
 
+/**
+ * Class that will export note track to file
+ */
 class NoteTrackExporter {
     public async export(noteTrack: NoteTrack): Promise<Blob> {
         const zip = new JSZip();

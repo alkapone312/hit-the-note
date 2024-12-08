@@ -3,6 +3,9 @@
 import Note from './Note.js';
 import NoteInTime from './NoteInTime.js';
 
+/**
+ * Factory of notes allowing for note creation 
+ */
 class NoteFactory {
     protected readonly notes: Record<string, number> = {
         'C0': 16.35,

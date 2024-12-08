@@ -8,6 +8,9 @@ interface NoteAnalysis {
     currentNotePoints: number; // Store the current points for the note.
 }
 
+/**
+ * Class to provide points for trying to match the requested pitch with some error.
+ */
 class NotePoints {
     private totalPoints = 0;
 

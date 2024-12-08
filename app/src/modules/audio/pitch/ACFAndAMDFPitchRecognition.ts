@@ -1,6 +1,14 @@
 import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 
+/**
+ * Pitch recognition algorith performing simuteanosly ACF and 
+ * AMDF functions, and then connects them to create reliable output.
+ */
 class ACFAndAMDFPitchRecognition extends PitchRecognition {
+    
+    /**
+     * {@inheritDoc}
+     */
     public accept(data: Float32Array): void {
         const N = data.length;
         // Step 1: Normalize the input signal to have zero mean (remove DC offset)

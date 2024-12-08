@@ -5,10 +5,16 @@ import StreamNode from '@/audio/StreamNode.js';
  */
 class MovingAverageFilter extends StreamNode {
 
+    /**
+     * @param windowSize - Size of a window on which the moving average will be performed. The higher the size the more frequency will be filtered.
+     */
     public constructor(private readonly windowSize = 500) {
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public accept(data: Float32Array): void {
         const filteredSignal = new Float32Array(data.length);
         for (let i = 0; i < data.length; i++) {

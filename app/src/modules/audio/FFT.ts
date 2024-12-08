@@ -1,4 +1,8 @@
 
+/**
+ * Class performing fft operation, allows to fetch real and imaginary
+ * part of fft and also spectrum of it
+ */
 class FFT {
     private real: Float32Array;
 

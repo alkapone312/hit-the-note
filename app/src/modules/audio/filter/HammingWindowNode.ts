@@ -1,6 +1,13 @@
 import StreamNode from '@/audio/StreamNode.js';
 
+/**
+ * Apply hamming window to signal.
+ */
 class HammingWindowNode extends StreamNode {
+
+    /**
+     * {@inheritDoc}
+     */
     public accept(data: Float32Array): void {
         const N = data.length;
         const windowedSignal = new Float32Array(N);

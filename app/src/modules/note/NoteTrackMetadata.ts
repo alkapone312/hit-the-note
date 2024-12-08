@@ -1,3 +1,6 @@
+/**
+ * Model class for storing metadata of track
+ */
 class NoteTrackMetadata {
     public constructor(
         private name: string,

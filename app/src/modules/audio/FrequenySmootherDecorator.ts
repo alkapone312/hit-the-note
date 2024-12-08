@@ -1,6 +1,11 @@
 import PitchRecognition from './pitch/PitchRecognition.js';
 import type {PipelineSettings} from './Settings.js';
 
+/**
+ * Smooths out the recognized pitch signal by buffering couple
+ * of values and filtering out big peaks in signal. Filtering happens
+ * by performing median operation.
+ */
 class FrequencySmootherDecorator extends PitchRecognition {
     private readonly buffer: number[] = [];
   

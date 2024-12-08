@@ -1,5 +1,8 @@
 import type Note from './Note.js';
 
+/**
+ * Wrapper for note class, placing it in time 
+ */
 class NoteInTime {
     public constructor(
         private note: Note, 

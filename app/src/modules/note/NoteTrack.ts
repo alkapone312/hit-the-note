@@ -3,6 +3,9 @@ import type NoteInTime from './NoteInTime.js';
 import NoteInTrack from './NoteInTrack.js';
 import type NoteTrackMetadata from './NoteTrackMetadata.js';
 
+/**
+ * Model class that stores notes placed in time.
+ */
 class NoteTrack {
     
     private readonly noteFactory: NoteFactory;

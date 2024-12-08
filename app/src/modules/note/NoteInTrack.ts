@@ -2,6 +2,9 @@ import type Note from './Note.js';
 import NoteInTime from './NoteInTime.js';
 import type NoteTrack from './NoteTrack.js';
 
+/**
+ * Decorator for note in time, validates if the business regules are met in note track, when note is being modified.
+ */
 class NoteInTrack extends NoteInTime {
     public constructor(
         private readonly noteInTime: NoteInTime, 

@@ -1,4 +1,6 @@
-
+/**
+ * Interface that should be implemented to play some audio track.
+ */
 interface MediaPlayerInterface {
     play(): void;
     stop(): void;

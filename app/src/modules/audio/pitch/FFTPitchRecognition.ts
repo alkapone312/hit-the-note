@@ -1,6 +1,10 @@
 import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 import FFT from '../FFT.js';
 
+/**
+ * Pitch recognition algorithm that performs fft on a signal and returns
+ * strongest frequency.
+ */
 class FFTPitchRecognition extends PitchRecognition {
     
     private readonly fft = new FFT();
@@ -9,6 +13,9 @@ class FFTPitchRecognition extends PitchRecognition {
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public accept(data: Float32Array): void {
         let index = 0;
         let max = 0;

@@ -1,6 +1,14 @@
 import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 
+/**
+ * Simple pitch detection algorithms that estimates 
+ * pitch by calculating number of times the signal crossed zero.
+ */
 class ZeroCrossingRecognition extends PitchRecognition {
+
+    /**
+     * {@inheritDoc}
+     */
     public accept(data: Float32Array): void {
         const N = data.length;  // Length of the input array
         let zeroCrossings = 0;  // To count the number of zero crossings

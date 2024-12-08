@@ -2,16 +2,18 @@ import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 import FFT from '../FFT.js';
 
 /**
- * Zalecane window size \>= 8192
+ * Pitch recognition algorithm that uses HPS with cepstrum.
  */
 class CBHPSPitchRecognition extends PitchRecognition {
     
+    /**
+     * Class performing fft operation
+     */
     private readonly fft = new FFT();
 
-    public constructor() {
-        super();
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public accept(data: Float32Array): void {
         this.fft.compute(data);
         const spectrum = this.fft.getSpectrum();

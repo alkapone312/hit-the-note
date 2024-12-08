@@ -9,10 +9,13 @@ class HighPassFilter extends StreamNode {
     /**
      * @param cutoffFrequency - The cutoff frequency of the high-pass filter (in Hz).
      */
-    public constructor(private readonly cutoffFrequency = 900) {
+    public constructor(private readonly cutoffFrequency = 50) {
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public accept(data: Float32Array): void {
         const outputSignal = new Float32Array(data.length);
     

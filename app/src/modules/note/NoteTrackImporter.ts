@@ -9,6 +9,9 @@ import NoteTrack from './NoteTrack.js';
 import NoteFactory from './NoteFactory.js';
 import NoteTrackMetadata from './NoteTrackMetadata.js';
 
+/**
+ * Class that will import note track from file.
+ */
 class NoteTrackImporter {
     private readonly noteFactory: NoteFactory;
 

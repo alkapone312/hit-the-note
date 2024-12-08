@@ -2,6 +2,9 @@ import StreamNode from '@/audio/StreamNode.js';
 import type MediaPlayerInterface from '../../note/MediaPlayerInterface.js';
 import type RecordingInterface from '@/audio/RecordingInterface.js';
 
+/**
+ * Allows getting audio data from .wav and .mp3 files, uses Web Audio Api
+ */
 class BrowserWavMediaPlayer extends StreamNode implements MediaPlayerInterface, RecordingInterface {
     private readonly audioContext: AudioContext | null = null;
     

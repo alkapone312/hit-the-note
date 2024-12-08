@@ -1,6 +1,16 @@
 import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 
+/**
+ * Pitch detection algorithm based on autocorrelation. Compares 
+ * signal with it's copy shifted by some time and checks weather 
+ * there was a peak indicating period. Differs with ACF by performing
+ * subtraction instead of multiplication.
+ */
 class AMDFPitchRecognition extends PitchRecognition {
+
+    /**
+     * {@inheritDoc}
+     */
     public accept(data: Float32Array): void {
         const N = data.length;
         // Step 1: Normalize the input signal to have zero mean (remove DC offset)

@@ -2,15 +2,20 @@ import PitchRecognition from '@/audio/pitch/PitchRecognition.js';
 import FFT from '../FFT.js';
 
 /**
- * Zalecane window size \>= 8192
+ * Pitch recognition algorithm estimates the fundamental frequency 
+ * of a signal by down-sampling its spectrum at integer multiples 
+ * and multiplying these down-sampled versions together. 
  */
 class HPSPitchRecognition extends PitchRecognition {
-    private readonly fft = new FFT();
-
-    public constructor() {
-        super();
-    }
     
+    /**
+     * Class performing fft operation
+     */
+    private readonly fft = new FFT();
+    
+    /**
+     * {@inheritDoc}
+     */
     public accept(data: Float32Array): void {
         this.fft.compute(data);
         const spectrum = this.fft.getSpectrum();

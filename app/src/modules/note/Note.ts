@@ -1,4 +1,6 @@
-
+/**
+ * Model class storing note name and its frequency
+ */
 class Note {
     public constructor(
         protected readonly name: string,

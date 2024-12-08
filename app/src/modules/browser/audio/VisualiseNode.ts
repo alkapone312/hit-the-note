@@ -1,6 +1,9 @@
  
 import StreamNode from '@/audio/StreamNode.js';
 
+/**
+ * Writes accepted signal into the canvas provided in constructor.
+ */
 class VisualiseNode extends StreamNode {
     public constructor(
         private readonly width: number, 

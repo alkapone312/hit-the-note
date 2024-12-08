@@ -21,7 +21,8 @@ describe('Track creation E2E test', () => {
   it('should export the track with the correct filename and extension', () => {
     cy.get('button').contains('Create').click();
     cy.get('#app > main > div > div.controls > div.note-scale-controls > button').click()
-    cy.get('#app > main > div > div.popup-container.more-popup > div.settings-inputs > input:nth-child(1)').clear().type('my-track');
+    cy.get('#app > main > div > div.popup-container.more-popup > div.settings-inputs > input:nth-child(1)').clear()
+    cy.get('#app > main > div > div.popup-container.more-popup > div.settings-inputs > input:nth-child(1)').type('my-track');
     cy.get('#app > main > div > div.popup-container.more-popup > button:nth-child(10)').click();
     cy.readFile('cypress/downloads/my-track.htn').should('exist');
   });

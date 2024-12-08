@@ -9,7 +9,7 @@ import AudioSettings from './utils/AudioSettings.js';
 
 // pitch recognition service
 (async(): Promise<void> => {    
-    console.log(import.meta.env)
+    console.log(import.meta.env);
     const app = createApp(App);
     app.use(createPinia());
     const settingsLoader = new BrowserSettingsLoader();

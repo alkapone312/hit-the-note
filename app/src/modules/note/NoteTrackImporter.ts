@@ -41,7 +41,8 @@ class NoteTrackImporter {
         noteTrack.setSoundTrackShift(noteTrackData.soundTrackShift ?? 0);
 
         const soundtrackFile = zip.file(/soundtrack\.(wav|mp3|ogg|flac)/);
-        if(soundtrackFile[0]) {
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+        if (soundtrackFile[0]) {
             const soundtrackData = await soundtrackFile[0].async('blob');
             const fileExtension = this.getFileExtensionFromFilename(soundtrackFile[0].name);
             const mimeType = this.getMimeTypeFromExtension(fileExtension);

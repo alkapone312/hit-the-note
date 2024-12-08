@@ -2,7 +2,7 @@
     <div class="list">
         <VButton class="close-button" @click="$emit('close')"><VClose/></VButton>
         <ListItem class="file-list-item" :metadata="fileMetadata" @play="importTrack('play')" @training="importTrack('training')"/>
-        <ListItem v-for="item in items" :metadata="item" @play="loadGame(item)" @training="loadTraining(item)"></ListItem>
+        <ListItem v-for="(item, index) in items" :key="index" :metadata="item" @play="loadGame(item)" @training="loadTraining(item)"></ListItem>
     </div>
 </template>
 

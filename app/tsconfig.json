@@ -1,9 +1,10 @@
 {
-    "include": ["src/**/*", "tests/**/*"],
+    "include": ["src/**/*", "tests/**/*", "env.d.ts"],
     "compilerOptions": {
         "lib": ["es5", "es2015.promise", "dom", "es2022"],
         "target": "es2015",
-        "module": "NodeNext",
+        "module": "Preserve",
+        "moduleResolution": "bundler",
         "paths": {
             "@/*" : ["./src/modules/*"],
             "@App/*": ["./src/app/*"],

@@ -28,7 +28,7 @@ class PitchDetectionPipelineFactory {
         return pitchDetectionPipeline;
     }
 
-    public async createFromLoaderWithDifferentRecorder(loader: SettingsLoader, recorder: RecordingInterface & StreamNode): PitchDetectionPipeline {
+    public async createFromLoaderWithDifferentRecorder(loader: SettingsLoader, recorder: RecordingInterface & StreamNode): Promise<PitchDetectionPipeline> {
         const settings = await loader.load();
         settings.recorder = recorder;
         const pitchDetectionPipeline = new PitchDetectionPipeline(settings);

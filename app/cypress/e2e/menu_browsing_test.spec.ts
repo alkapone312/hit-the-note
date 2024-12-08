@@ -20,25 +20,25 @@ describe('Menu browsing E2E Test', () => {
 
   it('should play a track in training view', () => {
     cy.get('button').contains('Play!').click();
-    cy.get('.note-track .train').first().click();
+    cy.get('.note-track .train').last().click();
     cy.get('.media-player-button').should('exist');
   });
 
   it('should open training view from a track', () => {
     cy.get('button').contains('Play!').click();
-    cy.get('.note-track .train').first().click();
+    cy.get('.note-track .train').last().click();
     cy.get('.game-container').should('be.visible');
   });
 
   it('should display correct metadata in training view', () => {
     cy.get('button').contains('Play!').click();
-    cy.get('.note-track .train').first().click();
+    cy.get('.note-track .train').last().click();
     cy.get('.metadata-item').should('exist');
   });
 
   it('should return to the main view from training', () => {
     cy.get('button').contains('Play!').click();
-    cy.get('.note-track .train').first().click();
+    cy.get('.note-track .train').last().click();
     cy.get('.game-container .close-button').click();
     cy.get('.menu').should('be.visible');
   });
